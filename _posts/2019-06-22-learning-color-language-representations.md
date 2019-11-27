@@ -5,7 +5,7 @@ author: "Solar Grammars"
 categories: blog
 tags: [blog]
 image: blog/learn-color-reps/gre_set10.png
-color: "#F05343"
+color: "#C02942"
 ---
 
 Grounded language learning tasks allow to characterize the relationships between words semantically (abstracting from their symbolic nature), and based 

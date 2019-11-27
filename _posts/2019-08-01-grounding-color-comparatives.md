@@ -5,14 +5,14 @@ author: "Solar Grammars"
 categories: blog
 tags: [blog]
 image: arctic-1.jpg
-color: "#FC9C3C"
+color: "#D95B43"
 ---
 
 
 
 
 
-The [methods](https://pabloloyola.github.io/articles/learning-color-language-representations) we have covered so far allowed  us to learn  a direct mapping between colors and language. One possible limitation of those approaches is that in reality color perception is intrinsically contextual, in the sense that usually we come up with a description for a newly seen color based on a predefined reference. For example, when
+The methods  we have covered so far allowed  us to learn  a direct mapping between colors and language. One possible limitation of those approaches is that in reality color perception is intrinsically contextual, in the sense that usually we come up with a description for a newly seen color based on a predefined reference. For example, when
 we say a given color is `mustard yellow`, we are basically relating our experienced notion of `mustard`  and a reference `yellow` and associating them
 to express our perception through language. Another example can be seen when we say `dark green` or `deep blue`. In these cases we are adding an adjective to a color based or our predefined notion of it. In that sense, in order to communicate our perception of  `dark green`, we use our preconceived reference of what we understand as `green` and its `dark` variant. In this process, we are implicitly internalizing that the color we are perceiving is `darker` than 
 the reference we have. 
