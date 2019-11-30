@@ -5,7 +5,7 @@ author: "Solar Grammars"
 categories: blog
 tags: [blog]
 image: arctic-1.jpg
-color: "#ECD078"
+color: "#C02942"
 ---
 
 Colors are usually perceived in as part of a composition. It is rare that we can 
@@ -198,12 +198,17 @@ with transversal elements such as shadows that appear across all images.
 
 ![color_vectors_2d](/assets/img/blog/colors-in-context-img/3d.png)  
 
-## Possible Optimizations
+## Possible Improvements/ Optimizations
 
-As we can see, our model is currently split into two main blocks. The fact the we have to perform a clustering
-to reduce the palettes, while can be seen as a limitation, it also allows us to have more control. Another 
+- Single model: As we can see, our model is currently split into two main blocks. The fact the we have to perform a clustering
+to reduce the palettes, while can be seen as a limitation, it also allows us to have more control, like a real pipeline. Another 
 alternative is to merge the steps into one single model, by means of working directly with the original colors
 from the palettes, without having to apply any reduction. 
+
+- Vector arithmetics: if we combine yellow and green in the RGB space,  we probably will obtain a [some kind of blue](https://youtu.be/0fC1qSxpmKo)... most likely.  What if we combine the learned vectors associated to yellow and green? Will the resulting vector be similar to the learned vector of blue too?  
+- Segmenting COCO or using other sources of images: COCO provides a set of very heterogeneous images: people, landscapes, sports etc. What if we run this pipeline on a subset of images that share the same semantics? Lets say, only on images of landscapes, or only images of restaurants. In those cases, for a given color, how the learned
+representations obtained from different sets relate? 
+
 
 ## Incorporating Natural Language
 
@@ -276,7 +281,7 @@ performing image compression. For example, when we do
 Lets see some examples of color graphs obtained from both COCO dataset
 samples as well from art pieces from the WikiArt website:
 
-`COCO` 
+`COCO`: 
 
 
 | | |
@@ -288,7 +293,7 @@ samples as well from art pieces from the WikiArt website:
 <img src="/assets/img/blog/colors-in-context-img/image_graphs/coco5.png"> | <img src="/assets/img/blog/colors-in-context-img/image_graphs/coco5_graph.png">|
 
 
-`WIKIART`
+`WIKIART`:
 
 | | |
 |:-------------------------:|:-------------------------:|
@@ -320,40 +325,29 @@ message passing schema, where
 
 Recently, there has been an extensive list of publications, 
 each of them proposing a specific variation in terms of the how the
-representations are computed. The paper XXX does a great job (basically showing  
-that the myriads of papers that have appeared in the last years are ...basically
+representations are computed. A paper by [Gilmer et. al.](https://arxiv.org/abs/1704.01212) 
+does a great job (basically showing 
+that the myriads of papers that have appeared in the last years are ... basically
 the same) by
-summarizing all the literature and providing a core set of functionalities. If we assume
-an undirected graph  $G$, node features $x_v$ and edge features $e_{vw}$
+summarizing all the literature and providing a description of the core set of 
+functionalities underneath the learning process. In short, if we assume
+an undirected graph  $$G$$, node features $$x_v$$ and edge features $$e_{vw}$$, 
+we will have a message passing phase that runs for $$T$$ time steps, 
+defined in terms of a message function $$M_t$$ and a vertex update function $$U_t$$. 
+Hidden states $$h_v^t$$ at each node are updated based on messages $$m_v^{t+1}$$,
+which in turn is defined as $$m_v^{t+1} = \sum_{w \in N(v)}M_t(h_v^t,h_w^t, e_{vw})$$
+and with  $$h_v^{t+1} = U_t(h_v^t,m_v^{t+1})$$. 
 
-- forward pass:
+A subsequent Readout phase can compute feature vector fot the whole graph, using readout, 
+function $$R$$, $$\hat{y} = R(\{ h_v^T|v \in G  \})$$. 
+Here, as you can image, $$M_t, U_t, R$$ are learnable functions.
 
-  - Message passing phase: 
+In our case, we can easily use this framework in a semi supervised learning setting.
+For each graph associated to each image, we can let the model know the labels (RGB values)
+only from a portion of the nodes. Then, the goal is to infer the RGB vector
+associated to each each node, including both labeled and  unlabeled.  The assumption
+behind this is that the message passing mechanism will eventually be able to 
+propagate information from the seen to the unseen nodes, taking into account 
+the locality of the color composition. 
 
-    - run for $T$ timesteps, defined in terms of 
-
-      - message function $M_t$
-
-      - vertex update function $U_t$
-
-    - hidden states $h_v^t$ at each node are updated based on messages $m_v^{t+1}$
-
-      - $m_v^{t+1} = \sum_{w \in N(v)}M_t(h_v^t,h_w^t, e_{vw})$
-      - $h_v^{t+1} = U_t(h_v^t,m_v^{t+1})$
-
-  - Readout phase:
-
-    - computes feature vector fot the whole graph, using readout function $R$
-    - $\hat{y} = R(\{ h_v^T|v \in G  \})$
-
-- $M_t, U_t, R$ are learnable functions
-
-
-In our case, 
-
-
-## More TODO
-
-- Vector arithmetics: if we combine yellow and green in the RGB space,  we probably will obtain a variation of blue... most likely.  What if we combine the learned vectors associated to yellow and green? Will the resulting vector be similar to the learned vector of blue too ?  
-- Segmenting COCO or using other sources of images: COCO provides a set of very heterogeneous images, people, landscapes, sports etc. What if we run this pipeline on subset of images that share the same semantics ? Lets say, only on images of landscapes, or only images of restaurants. In those cases, for a given color, how the learned
-representations obtained from different sets relate? 
+<img src="/assets/img/blog/colors-in-context-img/message_passing.png" width="200">

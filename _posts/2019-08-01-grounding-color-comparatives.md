@@ -5,7 +5,7 @@ author: "Solar Grammars"
 categories: blog
 tags: [blog]
 image: arctic-1.jpg
-color: "#D95B43"
+color: "#542437"
 ---
 
 
