@@ -25,8 +25,8 @@ it is the most primitive way to do compression. While a palette cannot
 provide a representation of the semantics of the image, at least it can inform us about
 the main colors used and their distribution. 
 
-Lets assume we have a set of images from which we can extract a color palette of $$n$$ colors,  
-$$p_i = \{ c_1, ..., c_n \}$$. With such dataset, we could conduct a simple experiment: We know that in natural language, 
+Lets assume we have a set of images from which we can extract a color palette of $$n$$ colors, $$p_i = \{ c_1, ..., c_n \}$$. 
+With such dataset, we could conduct a simple experiment: We know that in natural language, 
 we can assume that words that occur in the same contexts tend to have the similar meaning, i.e.,
 *you can know a word by the company it keeps*, which is known as the distributional hypothesis. 
 Can we transfer such idea to colors, using the palettes as context?  In other words, 
@@ -42,21 +42,22 @@ Lets start with a very simple approach, using very well known tools to see if we
 in a feasible direction. Firstly, we need some data.  For simplicity, lets use the validation set 
 of the Microsoft COCO dataset. For each image, let's capture a color palette of 6 colors.
 
-![p1](/assets/img/blog/colors-in-context-img/p1.jpg)
+<img src="/assets/img/blog/colors-in-context-img/p1.jpg" width="400px">  
 
-For the above image, let's compute a incremental palettes. As we can see, the colors are appended in terms of their absolute proportion on the image.
-
-![p21](/assets/img/blog/colors-in-context-img/p21.png)  
-![p22](/assets/img/blog/colors-in-context-img/p22.png)  
-![p23](/assets/img/blog/colors-in-context-img/p23.png)  
-![p24](/assets/img/blog/colors-in-context-img/p24.png)  
-![p25](/assets/img/blog/colors-in-context-img/p25.png)  
-![p26](/assets/img/blog/colors-in-context-img/p26.png)  
+For the above image, let's compute a incremental palettes. As we can see, the colors are appended
+in terms of their absolute proportion on the image.  
 
 
-With this data, we can test a direct analogy from natural language BOW models. 
-Lets recall such formulation as , lets say we have a sentence $s$ composed
-by $n$ words , $$s  = \{  w_1, w_2 , ... , w_n \}$$, then a CBOW approach
+<img src="/assets/img/blog/colors-in-context-img/p21.png" style="height:50px;">   
+<img src="/assets/img/blog/colors-in-context-img/p22.png" style="height:50px;">   
+<img src="/assets/img/blog/colors-in-context-img/p23.png" style="height:50px;">   
+<img src="/assets/img/blog/colors-in-context-img/p24.png" style="height:50px;">   
+<img src="/assets/img/blog/colors-in-context-img/p25.png" style="height:50px;">   
+<img src="/assets/img/blog/colors-in-context-img/p26.png" style="height:50px;">   
+
+With this data, we can test a direct analogy from natural language BOW models.
+Lets recall such formulation as , lets say we have a sentence $$s$$ composed
+by $$n$$ words , $$s  = \{  w_1, w_2 , ... , w_n \}$$, then a CBOW approach
 learn vectors $$v_i$$ for a word $$w_i$$ as maximizing the likelihood 
 of $$w_i$$ given its neighborhood  $$\{ w_{i-c} , ... , w_{i+c} \}$$. 
 
@@ -66,42 +67,52 @@ have two red colors that  look quite similar, in reality their RGB
 representation will be different and therefore a model will perceive
 them as different. To solve this issue, we can discretize their representation by clustering them.
 
-Then, for example, we can expect  all variations of `scarlet` color to be grouped on a single cluster. Therefore, on a palette that contains one of these scarlet variations, instead of using the actual color, we can use the centroid/medoid of the associated cluster. 
+Then, for example, we can expect  all variations of `scarlet` color to be grouped on a single 
+cluster. Therefore, on a palette that contains one of these scarlet variations, instead of 
+using the actual color, we can use the centroid/medoid of the associated cluster. 
 
-Lets see first if clustering colors makes sense. For simplicity we can take the RGB or LAB tuples as feature vectors an apply K-means. In order to get a
+Lets see first if clustering colors makes sense. For simplicity we can take the RGB or LAB 
+tuples as feature vectors an apply K-means. In order to get a
 rough estimation of the optimal number of clusters, we can take a look at both 
- distortion ( the average of the squared distances from the cluster centers of the respective clusters ) and   inertia  (the sum of the squared distances to the closest cluster center). For a sample of the data, we get the following: 
+ distortion ( the average of the squared distances from the cluster centers of the respective 
+ clusters ) and   inertia  (the sum of the squared distances to the closest cluster center). For 
+ a sample of the data, we get the following: 
 ![num_clusters_study](/assets/img/blog/colors-in-context-img/num_clusters_study2.png)  
 
-Which roughly tells us a good number of clusters is around 25. This makes sense as we are working with very standard natural images from COCO, so the colors they present should be quite compact. This result was obtained using a sample from 4000 images from which palettes of six colors were extracted, conforming a group of around 22.000 total colors that we clustered using their RGB representation. Changing  the amount of images or using the LAB format as feature vector, did not change considerably  the results. 
+Which roughly tells us a good number of clusters is around 25. This makes sense as we are working 
+with very standard natural images from COCO, so the colors they present should be quite compact. 
+This result was obtained using a sample from 4000 images from which palettes of six colors were 
+extracted, conforming a group of around 22.000 total colors that we clustered using their RGB 
+representation. Changing  the amount of images or using the LAB format as feature vector, did 
+not change considerably  the results. 
 
 Lets take a look at the clusters visually. With $$k$$ = 25, we can see something like this:
 
-![c0](/assets/img/blog/colors-in-context-img/cluster_palettes/0.png)  
-![c1](/assets/img/blog/colors-in-context-img/cluster_palettes/1.png)  
-![c2](/assets/img/blog/colors-in-context-img/cluster_palettes/2.png)  
-![c3](/assets/img/blog/colors-in-context-img/cluster_palettes/3.png)  
-![c4](/assets/img/blog/colors-in-context-img/cluster_palettes/4.png)  
-![c5](/assets/img/blog/colors-in-context-img/cluster_palettes/5.png)  
-![c6](/assets/img/blog/colors-in-context-img/cluster_palettes/6.png)  
-![c7](/assets/img/blog/colors-in-context-img/cluster_palettes/7.png)  
-![c8](/assets/img/blog/colors-in-context-img/cluster_palettes/8.png)  
-![c9](/assets/img/blog/colors-in-context-img/cluster_palettes/9.png)  
-![c10](/assets/img/blog/colors-in-context-img/cluster_palettes/10.png)  
-![c11](/assets/img/blog/colors-in-context-img/cluster_palettes/11.png)  
-![c12](/assets/img/blog/colors-in-context-img/cluster_palettes/12.png)  
-![c13](/assets/img/blog/colors-in-context-img/cluster_palettes/13.png)  
-![c14](/assets/img/blog/colors-in-context-img/cluster_palettes/14.png)  
-![c15](/assets/img/blog/colors-in-context-img/cluster_palettes/15.png)  
-![c16](/assets/img/blog/colors-in-context-img/cluster_palettes/16.png)  
-![c17](/assets/img/blog/colors-in-context-img/cluster_palettes/17.png)  
-![c18](/assets/img/blog/colors-in-context-img/cluster_palettes/18.png)  
-![c19](/assets/img/blog/colors-in-context-img/cluster_palettes/19.png)  
-![c20](/assets/img/blog/colors-in-context-img/cluster_palettes/20.png)  
-![c21](/assets/img/blog/colors-in-context-img/cluster_palettes/21.png)  
-![c22](/assets/img/blog/colors-in-context-img/cluster_palettes/22.png)  
-![c23](/assets/img/blog/colors-in-context-img/cluster_palettes/23.png)  
-![c24](/assets/img/blog/colors-in-context-img/cluster_palettes/24.png)  
+<img src="/assets/img/blog/colors-in-context-img/cluster_palettes/0.png" style="float:left;">  
+<img src="/assets/img/blog/colors-in-context-img/cluster_palettes/1.png" style="float:left;">  
+<img src="/assets/img/blog/colors-in-context-img/cluster_palettes/2.png" style="float:left;">  
+<img src="/assets/img/blog/colors-in-context-img/cluster_palettes/3.png" style="float:left;">  
+<img src="/assets/img/blog/colors-in-context-img/cluster_palettes/4.png" style="float:left;">  
+<img src="/assets/img/blog/colors-in-context-img/cluster_palettes/5.png" style="float:left;">  
+<img src="/assets/img/blog/colors-in-context-img/cluster_palettes/6.png" style="float:left;">  
+<img src="/assets/img/blog/colors-in-context-img/cluster_palettes/7.png" style="float:left;">  
+<img src="/assets/img/blog/colors-in-context-img/cluster_palettes/8.png" style="float:left;">  
+<img src="/assets/img/blog/colors-in-context-img/cluster_palettes/9.png" style="float:left;">  
+<img src="/assets/img/blog/colors-in-context-img/cluster_palettes/10.png" style="float:left;">  
+<img src="/assets/img/blog/colors-in-context-img/cluster_palettes/11.png" style="float:left;">  
+<img src="/assets/img/blog/colors-in-context-img/cluster_palettes/12.png" style="float:left;">  
+<img src="/assets/img/blog/colors-in-context-img/cluster_palettes/13.png" style="float:left;">  
+<img src="/assets/img/blog/colors-in-context-img/cluster_palettes/14.png" style="float:left;">  
+<img src="/assets/img/blog/colors-in-context-img/cluster_palettes/15.png" style="float:left;">  
+<img src="/assets/img/blog/colors-in-context-img/cluster_palettes/16.png" style="float:left;">  
+<img src="/assets/img/blog/colors-in-context-img/cluster_palettes/17.png" style="float:left;">  
+<img src="/assets/img/blog/colors-in-context-img/cluster_palettes/18.png" style="float:left;">  
+<img src="/assets/img/blog/colors-in-context-img/cluster_palettes/19.png" style="float:left;">  
+<img src="/assets/img/blog/colors-in-context-img/cluster_palettes/20.png" style="float:left;">  
+<img src="/assets/img/blog/colors-in-context-img/cluster_palettes/21.png" style="float:left;">  
+<img src="/assets/img/blog/colors-in-context-img/cluster_palettes/22.png" style="float:left;">  
+<img src="/assets/img/blog/colors-in-context-img/cluster_palettes/23.png" style="float:left;">  
+<img src="/assets/img/blog/colors-in-context-img/cluster_palettes/24.png">  
 
 Here we have 20 random elements from each cluster. As we can see, 
 the groups tend to make sense, as there is a clear distinction between them and also a inherent cohesion within each cluster. Of course we 
@@ -122,14 +133,20 @@ $$P(c_i | \{ c_{i-\lambda} , ... , c_{i+\lambda} \} )$$
  
 
 CBOW serves as a nice inspiration, as there is no dependency between the elements in the context window. 
-In our setting,  we also don't want to enforce any ordering, as in the palette, we cannot assume the colors conform a sequence. Something interesting to notice is that when we obtain the original palettes, for each color we can obtain its proportion ( between 0 and 1) . This value
+In our setting,  we also don't want to enforce any ordering, as in the palette, we cannot assume the colors 
+conform a sequence. Something interesting to notice is that when we obtain the original palettes, for each 
+color we can obtain its proportion ( between 0 and 1) . This value
 could be incorporated as a weight when we sum context vectors.  
 
-One of the parameters that impacts the most on the performance of CBOW is actually the size of the context window. In NL, larger windows tend to favor more topical similarities, while shorter ones  privileges more functional similarities. In the context of this problem, we don't know in advance such effect, therefore it will be necessary to explore empirically if there is any difference.
+One of the parameters that impacts the most on the performance of CBOW is actually the size of the context 
+window. In NL, larger windows tend to favor more topical similarities, while shorter ones  privileges more 
+functional similarities. In the context of this problem, we don't know in advance such effect, therefore it 
+will be necessary to explore empirically if there is any difference.
 
-For palettes of six colors, and considering 25 clusters,  moving the window context size from 2 to 5 really does not any 
-noticeable impact. But when we start using  longer palettes, the differences are visible.
-For example, here we show a small experiment with palettes of 20 colors and a number of clusters equal to 400. In the following figures, each learned representation is reduced to a two dimensional point space using TSNE . I
+For palettes of six colors, and considering 25 clusters,  moving the window context size from 2 to 5 really 
+does not any noticeable impact. But when we start using  longer palettes, the differences are visible.
+For example, here we show a small experiment with palettes of 20 colors and a number of clusters equal to 400. In 
+the following figures, each learned representation is reduced to a two dimensional point space using TSNE . I
 have associated to each point the original RGB color, so we can visualize the vectors in terms of their colorful nature. 
 
 
@@ -200,13 +217,13 @@ with transversal elements such as shadows that appear across all images.
 
 ## Possible Improvements/ Optimizations
 
-- Single model: As we can see, our model is currently split into two main blocks. The fact the we have to perform a clustering
-to reduce the palettes, while can be seen as a limitation, it also allows us to have more control, like a real pipeline. Another 
-alternative is to merge the steps into one single model, by means of working directly with the original colors
+- *Single model:* Our model is currently split into two main blocks. The fact the we have to perform a clustering
+to reduce the palettes, while can be seen as a limitation, it also allows us to have more control, like a real pipeline. What
+we can do  is try to merge the steps into one single model, by means of working directly with the original colors
 from the palettes, without having to apply any reduction. 
 
-- Vector arithmetics: if we combine yellow and green in the RGB space,  we probably will obtain a [some kind of blue](https://youtu.be/0fC1qSxpmKo)... most likely.  What if we combine the learned vectors associated to yellow and green? Will the resulting vector be similar to the learned vector of blue too?  
-- Segmenting COCO or using other sources of images: COCO provides a set of very heterogeneous images: people, landscapes, sports etc. What if we run this pipeline on a subset of images that share the same semantics? Lets say, only on images of landscapes, or only images of restaurants. In those cases, for a given color, how the learned
+- *Vector arithmetics:* if we combine yellow and green in the RGB space,  we probably will obtain [some kind of blue](https://youtu.be/0fC1qSxpmKo)... most likely.  What if we combine the learned vectors associated to yellow and green? Will the resulting vector be similar to the learned vector of blue too?  
+- *Segmenting COCO or using other sources of images:* COCO provides a set of very heterogeneous images: people, landscapes, sports etc. What if we run this pipeline on a subset of images that share the same semantics? Lets say, only on images of landscapes, or only images of restaurants. In those cases, for a given color, how the learned
 representations obtained from different sets relate? 
 
 
@@ -214,28 +231,44 @@ representations obtained from different sets relate?
 
 So far, we have been considering only the images and their colors. But the COCO dataset
 provides a set of captions for each image, a source of data that looks quite irresistible.
-But the question is, how can we incorporate such information ? How the representations of the colors
+Then the question is, how can we incorporate such information? How the representations of the colors
 could be `improved` by informing our model/pipeline about the caption associated to the images we
-use to obtain the palettes.  I don't know the answer yet, but lets explore a bit to see in which 
+use to obtain the palettes. I don't know the answer yet, but lets explore a bit to see in which 
 direction we should move.
 
-Lets not make things difficult and keep working with the validation part of COCO. For each image, we can obtain
-one or more captions.  The from each image $i \in I$, we can obtain a pair $$(p_i, s_i)$$, where $$p_i = \{ c_1, ..., c_N \}$$ is  the associated palette of $$N$$ colors, and $$s_i = \{  w_1, ..., w_M \}$$ the caption expressed as a sequence of  words. For each of these captions we can use GLOVE (or any other source of pretrained vectors) to
+Lets not make things difficult and keep working with the validation part of COCO. For each image, we 
+can obtain one or more captions.  The from each image $$i \in I$$, we can obtain a 
+pair $$(p_i, s_i)$$, where $$p_i = \{ c_1, ..., c_N \}$$ is  the associated palette of $$N$$ colors, 
+and $$s_i = \{  w_1, ..., w_M \}$$ the caption expressed as a sequence of  words. For each 
+of these captions we can use GLOVE (or any other source of pretrained vectors) to
 obtain  a good dense representation for each word.
 
+![diagram3](/assets/img/blog/colors-in-context-img/diagram3.png)  
 
-![diagram1](/assets/img/blog/colors-in-context-img/diagram3.png)  
+Given this extra source of information, how could we use the co occurrence patterns associated to 
+the words to support the context based representation learning of colors? We know there is a one 
+to one relationship between the sentences and the palettes: 
 
-Given this extra source of information, how could we use the co occurrence patterns associated to the words to support the context based representation learning of colors? We know there is a one to one relationship between the sentences and the palettes: 
+![diagram4](/assets/img/blog/colors-in-context-img/diagram4.png)  
 
-![diagram1](/assets/img/blog/colors-in-context-img/diagram4.png)  
+Hmmm it seems there is going to be necessary to obtain a representation of the sentence, $$s_i$$. That 
+is not difficult, as we can just do a plain average of the word vectors in $$s_i$$, use something 
+like [Doc2vec](http://proceedings.mlr.press/v32/le14.pdf) or if we care about the dependencies (we probably should), 
+we can use an RNN to encode the sentence and  capture the last hidden state as a representation 
+of the sentence.  In any case, lets assume that for each sentence $$s_i$$ we obtain a dense sentence vector $$sv_i$$. 
 
-Hmmm it seems there is going to be necessary to obtain a representation of the sentence, $$s_i$$. That is not difficult, as we can just do a plain average of the word vectors in $$s_i$$, use something like Doc2vec or if we care about the dependencies (we probably should), we can use an RNN to encode the sentence and  using the last hidden state as a representation of the sentence.  In any case, lets assume that for each sentence $$s_i$$ we obtain a dense sentence vector $$sv_i$$. 
+Lets start with a very simple experiment. For each pair $$(p_i, sv_i)$$ lets use kNN to obtain the $$k$$ 
+closest pairs, based on the cosine similarity between sentence vectors 
 
-Lets start with a very simple experiment. For each pair $$(p_i, sv_i)$$ lets use k-NN to obtain the $$k$$ closest pairs , based on the cosine similarity between sentence vectors. 
-$$p_i, sv_i    \rightarrow k-NN_{sv_i} = \{  sv_1, sv_2 , ... , sv_K\}$$. Each of these sentence vectors have in turn associated a palette. Therefore, we can , transitively, associate the palette $$p_i$$ with a set of $$K$$ palettes based on the underlying similarity of their associated sentences. 
+$$p_i, sv_i    \rightarrow kNN_{sv_i} = \{  sv_1, sv_2 , ... , sv_K\}$$  
 
-![diagram1](/assets/img/blog/colors-in-context-img/diagram6.png)  
+Each of these sentence vectors have in turn associated a palette. Therefore, we can , 
+transitively, associate the palette $$p_i$$ with a set of $$K$$ palettes based on the 
+underlying similarity of their associated sentences. 
+
+![diagram6](/assets/img/blog/colors-in-context-img/diagram6.png)  
+
+
 
 
 For example, for the following  instance:
@@ -246,24 +279,60 @@ For example, for the following  instance:
 
 the closest five pairs are:
 
-`a man reaching out to catch a frisbee`      
-![pcq](/assets/img/blog/colors-in-context-img/pc1.png)     
-`a man jumps to catch a frisbee flying through the air`   
-![pcq](/assets/img/blog/colors-in-context-img/pc2.png)    
+`a man reaching out to catch a frisbee`  
+![pcq](/assets/img/blog/colors-in-context-img/pc1.png)  
+`a man jumps to catch a frisbee flying through the air`  
+![pcq](/assets/img/blog/colors-in-context-img/pc2.png)  
 `there is a dog in the air going to catch a frisbee`  
-![pcq](/assets/img/blog/colors-in-context-img/pc3.png)     
+![pcq](/assets/img/blog/colors-in-context-img/pc3.png)  
 `a man in a grassy field about to catch a frisbee`  
 ![pcq](/assets/img/blog/colors-in-context-img/pc4.png)  
 `a man is in mid air doing a skateboard trick`  
-![pcq](/assets/img/blog/colors-in-context-img/pc5.png) 
+![pcq](/assets/img/blog/colors-in-context-img/pc5.png)  
 
 
 We can see that while simple, the sentence embedding is able 
 to capture quite relevant semantic relationships between sentences. Of course,
-it degrades quite quickly, but that is characteristic of the data under study. 
+it degrades quite quickly, but that a is characteristic of the data under 
+study. 
+
 More interesting is the relationship between the colors. At first glance
-I cannot see any direct similarity at palette level. What we 
-can do is to  TODO!
+I cannot see any direct similarity at palette level on this example. Actually, it looks
+pretty random. I think this is because for this sample, the 
+core word is `frisbee`, which inherently does not have an associated color, right?
+What if we sample the captions by a word that can be easily associated to
+a color, for example **forest**, which I expected to be linked to greens.
+
+For a given sample containing the **forest** word:
+
+
+`a bench in the middle of a lush green forest`  
+![pcq](/assets/img/blog/colors-in-context-img/pc6.png)  
+
+We obtain the following five closest:
+
+
+`a tree sitting in the middle of a lush green field`  
+![pcq](/assets/img/blog/colors-in-context-img/pc7.png)  
+
+`a road in the middle of a beautiful green forest`  
+![pcq](/assets/img/blog/colors-in-context-img/pc8.png)  
+
+`a large brown cow standing on the side of a lush green hill`  
+![pcq](/assets/img/blog/colors-in-context-img/pc9.png)  
+
+`a man and child standing on top of a lush green field`  
+![pcq](/assets/img/blog/colors-in-context-img/pc10.png)  
+
+`a photo of a bench in the middle of the beach`  
+![pcq](/assets/img/blog/colors-in-context-img/pc11.png)  
+
+
+While there is still quick degradation on the semantic 
+similarity across sentences, at least we can see a bit
+more cohesion at color level. 
+
+This is getting more interesting. We could then  TODO
 
 ## More Structure through graphs
 
@@ -276,7 +345,7 @@ that could allow a more comprehensive learning.
 How could we extract a color graph from an image? Actually, there 
 are families of techniques from image processing that compute an
 intermediate graph between image segments, for example, when 
-performing image compression. For example, when we do
+performing image compression.
 
 Lets see some examples of color graphs obtained from both COCO dataset
 samples as well from art pieces from the WikiArt website:
@@ -303,6 +372,10 @@ samples as well from art pieces from the WikiArt website:
 <img src="/assets/img/blog/colors-in-context-img/image_graphs/wiki4.png"> | <img src="/assets/img/blog/colors-in-context-img/image_graphs/wiki4_graph.png">|
 <img src="/assets/img/blog/colors-in-context-img/image_graphs/wiki5.png"> | <img src="/assets/img/blog/colors-in-context-img/image_graphs/wiki5_graph.png">|
 
+We can see that the resulting graphs represent a good discretization 
+of the images, as they seems to cover the color spectrum  quite well.
+The nodes position are not aligned with the actual image 
+composition, but that can be added. 
 
 Having computed these graphs for a set of images, how can we learn
 feature representations that encode the relationships between colors?
@@ -311,17 +384,22 @@ for the edges that connect them.
 
 One easy way would be to reuse most of the code we wrote before and 
 re-apply a CBOW-like approach by sampling random walks from the graph
-This is the idea behind existing approaches such  as Node2vec.
+This is the idea behind existing approaches such  as [Node2vec](https://arxiv.org/abs/1607.00653).
 
 ![](/assets/img/blog/colors-in-context-img/node2vec.png) 
 
 One nice thing about this idea is that the random walks could allow us
-to visualize the progression of colors in certain zones. 
+to visualize the progression of colors in certain zones. But at the same time,
+as we need to define in advance a window, that could be restricting 
+long term color dependencies present on the images. 
 
 
 Lets explore another alternative that is provided  by the family of 
 graph neural networks. This family of models are based on a 
-message passing schema, where 
+message passing schema, where we iteratively learn node representations
+by propagating information through the edge structure. In that sense,
+the representation for a given node at a given time is the result 
+of the aggregation function on all its neighbor nodes. 
 
 Recently, there has been an extensive list of publications, 
 each of them proposing a specific variation in terms of the how the
@@ -338,7 +416,7 @@ Hidden states $$h_v^t$$ at each node are updated based on messages $$m_v^{t+1}$$
 which in turn is defined as $$m_v^{t+1} = \sum_{w \in N(v)}M_t(h_v^t,h_w^t, e_{vw})$$
 and with  $$h_v^{t+1} = U_t(h_v^t,m_v^{t+1})$$. 
 
-A subsequent Readout phase can compute feature vector fot the whole graph, using readout, 
+A subsequent readout phase can compute feature vector for the whole graph, using readout, 
 function $$R$$, $$\hat{y} = R(\{ h_v^T|v \in G  \})$$. 
 Here, as you can image, $$M_t, U_t, R$$ are learnable functions.
 
@@ -348,6 +426,10 @@ only from a portion of the nodes. Then, the goal is to infer the RGB vector
 associated to each each node, including both labeled and  unlabeled.  The assumption
 behind this is that the message passing mechanism will eventually be able to 
 propagate information from the seen to the unseen nodes, taking into account 
-the locality of the color composition. 
+the locality of the color composition expressed by the edge structure.
 
-<img src="/assets/img/blog/colors-in-context-img/message_passing.png" width="200">
+<img src="/assets/img/blog/colors-in-context-img/message_passing.png" width="200px">
+
+In the above figure, we expect the unlabeled node, represented in white, iteratively
+receives a color signal from its neighborhood in the form of a node vector, 
+which can be used to learn the correct RGB tuple. 

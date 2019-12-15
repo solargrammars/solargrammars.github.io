@@ -5,8 +5,10 @@ title: Contact
 
 solargrammars@gmail.com
 
-All content under  [MIT License](http://choosealicense.com/licenses/mit/). 
+All content under [MIT License](http://choosealicense.com/licenses/mit/). 
 
-Most of the code is hosted on my [Github](https://github.com/solargrammars) account. 
+Most of the code is/will be hosted on my [Github](https://github.com/solargrammars) account. 
 
-Thanks to [Ripper](https://www.youtube.com/watch?v=dkFxBp2Y1ew),  [Yuri Gagarin](https://yurigagarinswe.bandcamp.com/) for the constant inspiration.
+Thanks to [Ripper](https://unspeakableaxerecords.bandcamp.com/track/magnetic-solar-storms), 
+[Yuri Gagarin](https://yurigagarinswe.bandcamp.com/track/the-new-order) 
+and [Diplodocus](https://diplodocus.bandcamp.com/track/return-of-the-thunder-lizard) for the constant inspiration.
