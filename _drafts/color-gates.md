@@ -125,6 +125,8 @@ descriptions. This is what we get:
 <tr> <td>powdered sugar</td><td><div style='float:left;width:100px; height:20px;background:#bddebe;'>  </div>  </td>  </tr>
 </table>
 
+Hmm it seems here  Spacy tagged as vers things that are passive voice adjectives. Its fines, as descriptions are short, probably 
+Spacy didnt have much context to work with when deciding the tag. 
 
 `('ADJ', 'NOUN', 'NOUN')`:
 <table>
