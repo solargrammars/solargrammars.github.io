@@ -9,16 +9,19 @@ color: "#D95B43"
 ---
 
 We have explored the relationship of language and colors
-from both word character level perspectives, but in 
+from both word and character level perspectives, but in 
 isolation. Then, the natural question that arises is what 
 if subword structures play an important role in color 
-grounding?  
+grounding?  In other words, what if we combine character
+and word level representations when modeling color-language
+relationships?
 
-When we reviewed the results of the experiments on character 
-level description generation, we found quite interesting 
+When we reviewed the results of the experiments on color generation
+from descriptions using a character 
+level recurrent model, we found quite interesting 
 examples where, as we progressed on the sequences of 
 characters, the generated colors suddenly changed. That was 
-the case of descriptions such as `Strawberry Lipstick` (or 
+the case of descriptions such as `Strawberry lipstick` (or 
 something like that), where the generation up the character
  `w` was giving us a brown-ish color, naturally associated 
 with the word `straw`, which was also present during training. 
@@ -30,16 +33,16 @@ This naturally led us to think, how does the grounding of a
 word or sentence can be understood in terms of the interplay
 between its words and tokens? For a given description, is it 
 a specific character pattern that impact the most on the 
-changes on color  generation? What are the common subword 
+changes at color  generation? What are the common subword 
 structures that command or condition more strongly the color 
 generation? 
 
 In order to answer those questions, we need a way to quantify 
 the contribution of character and word level representations 
-... `together`. Lets say we train a model which learns a 
-character based feature vector that is also combined with a 
-word vector. Both vectors are combined and then used to generate 
-an associated vector. Which one contributes more to minimize 
+... *together*. Lets say we train a model which learns a 
+character based feature vector from each word present in a description. 
+And then we combine such vector with a pretrained vector, also
+associated to the target word?  Which one contributes more to minimize 
 the loss, lets say, expressed as the MSE between the generated 
 color and the ground truth. 
 
@@ -49,7 +52,7 @@ representations. One way to represent such relationship is
 through the concept of `gates`, such as in [Balazs et al](https://arxiv.org/pdf/1904.05584.pdf) 
 or [Miyamoto et al](https://arxiv.org/abs/1606.01700), which in simple terms means 
 to learn a parameter $g$ that we can use to weight the the 
-vector representations coming from both char  and word level:
+vector representations coming from both char  and word levels:
 
 $$w = w_{char} * g +  w_{word} * (1-g)$$ 
 
@@ -59,13 +62,13 @@ that takes as input the word level representation and  outputs
 a scalar or a vector. 
 
 Lets conduct a couple of experiments to see if this way of 
-modeling color descriptions, allow us to obtain interesting 
+modeling color descriptions allow us to obtain interesting 
 insights. As always, lets start with the data. For the 
 purpose of this study, we can reuse the data
 data extracted from ColourLovers, which we have used previously. 
 
 One element we can consider is to condition the descriptions by 
-certain characteristics such as length or even color. For the 
+certain characteristics such as length or even color range. For the 
 moment I think grouping them by 
 the POS tag could give us a good indicator. This is a sample of the 
 descriptions, without considering  any grouping.
@@ -173,7 +176,7 @@ the noun associated is `milk`, which we know has the color `white`
 as the most probable reference. But then, how to turn a plain 
 version of `white` in to `haunted milk`. Here is where it relies
 my main hypothesis on the usefulness of the gating mechanism.
-I am expecting a model that is only character based word based 
+I am expecting a model that is only character-based or only  word-based 
 to fail as I consider necessary for the model to play 
 a bit with a more flexible representation of the description. 
 
@@ -181,20 +184,50 @@ For the `milk` part of the description, I think , yes, just the
 word level vector might be enough. But for making sense of what is
 `haunted`, I think the model should take into account substructures such 
 as `haunt`, which can be only incorporated via the character level 
-representation. Then, I say that
-as `haunt` can be more associated to pale or ghostly concepts (e.g. 
-*The haunted house* or this interesting [list](https://www.thesaurus.com/browse/haunted), then
+representation. Then, 
+as `haunt` can be more associated to pale or ghostly concepts (as in 
+*The haunted house*, or based on this interesting [list](https://www.thesaurus.com/browse/haunted) ), 
 the model could learn to associate the colors in other
 ghost-centric descriptions present in the data (thats important 
 to highlight, I assume that haunted in the sense ghost related stuff, 
 but it could be the case the given the data, we are referring to 
-another type of connotation).
+another type of connotation. Anyway, [here](https://dictionary.cambridge.org/dictionary/english/haunt) 
+is a good definition of what *haunt* means).
 
 In summary, I think a gating mechanism could allow the model
 to `learn to choose` from which source (character level or word level)
 when it needs to generate a color from a description. Moreover, 
 the gates can only help the model to choose one or another, but
 as proportion, gracefully combining both representations. 
+
+The resulting datasets looks like this
+
+
+In terms of how to operationalize a gating mechanism, we can follow
+a standard approach, as seen in the following diagram:
+![](/assets/img/blog/color-gates-img/gating-model.png) 
+
+Here, we have the description `vanilla cream`. The ultimate
+goal is to obtain a vector representation for the whole
+description that can be fed into a linear layer to generate the 
+color tuple. We can do that by processing  each word at a time and 
+then aggregate the word level features vectors. That can be done 
+summing or averaging them, or, if we care about the ordering and
+dependencies between tokens (we should) we could use a word level
+RNN over the word level representations and use the final hidden vector
+as a description level vector.
+
+But the core part is how to obtain a word level representation. Here 
+is where the gating mechanism comes to play. For each word in the description, 
+we follow previous work and  run two simultaneous processes. The first one
+consists of obtaining a character-level feature vector of the word by means
+of a LSTM that runs over the sequence of characters. This representation accounts
+for the morphology aspects of the word and allow us to give more 
+flexibility to the final representation. The second process is to query
+a predefined lookup table and obtain a pretrained feature vector associated to the word,
+for example Glove. This vector is used to to  compute the gate weight $$g$$
+
+
 
 
 
@@ -204,6 +237,7 @@ With this, lets conduct the following  experiment:
   - Just word embedding
   - combine char LSTM + Glove by simple contatenation 
   - combine char LSTM + Glove by gating
+
 
 
 

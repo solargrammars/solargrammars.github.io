@@ -47,16 +47,16 @@
 <meta property="og:title" content="Color Gates" />
 <meta name="author" content="Solar Grammars" />
 <meta property="og:locale" content="en_US" />
-<meta name="description" content="We have explored the relationship of language and colors from both word character level perspectives, but in isolation. Then, the natural question that arises is what if subword structures play an important role in color grounding?" />
-<meta property="og:description" content="We have explored the relationship of language and colors from both word character level perspectives, but in isolation. Then, the natural question that arises is what if subword structures play an important role in color grounding?" />
+<meta name="description" content="We have explored the relationship of language and colors from both word and character level perspectives, but in isolation. Then, the natural question that arises is what if subword structures play an important role in color grounding? In other words, what if we combine character and word level representations when modeling color-language relationships?" />
+<meta property="og:description" content="We have explored the relationship of language and colors from both word and character level perspectives, but in isolation. Then, the natural question that arises is what if subword structures play an important role in color grounding? In other words, what if we combine character and word level representations when modeling color-language relationships?" />
 <link rel="canonical" href="http://localhost:4000/blog/color-gates.html" />
 <meta property="og:url" content="http://localhost:4000/blog/color-gates.html" />
 <meta property="og:site_name" content="Solar Grammars" />
 <meta property="og:image" content="http://localhost:4000/arctic-1.jpg" />
 <meta property="og:type" content="article" />
-<meta property="article:published_time" content="2019-12-17T08:24:18+09:00" />
+<meta property="article:published_time" content="2019-12-19T09:04:33+09:00" />
 <script type="application/ld+json">
-{"description":"We have explored the relationship of language and colors from both word character level perspectives, but in isolation. Then, the natural question that arises is what if subword structures play an important role in color grounding?","@type":"BlogPosting","image":"http://localhost:4000/arctic-1.jpg","url":"http://localhost:4000/blog/color-gates.html","headline":"Color Gates","dateModified":"2019-12-17T08:24:18+09:00","datePublished":"2019-12-17T08:24:18+09:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/blog/color-gates.html"},"author":{"@type":"Person","name":"Solar Grammars"},"@context":"https://schema.org"}</script>
+{"description":"We have explored the relationship of language and colors from both word and character level perspectives, but in isolation. Then, the natural question that arises is what if subword structures play an important role in color grounding? In other words, what if we combine character and word level representations when modeling color-language relationships?","@type":"BlogPosting","image":"http://localhost:4000/arctic-1.jpg","url":"http://localhost:4000/blog/color-gates.html","headline":"Color Gates","dateModified":"2019-12-19T09:04:33+09:00","datePublished":"2019-12-19T09:04:33+09:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/blog/color-gates.html"},"author":{"@type":"Person","name":"Solar Grammars"},"@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
 
@@ -114,7 +114,7 @@
     Written on
     
     December
-    17th,
+    19th,
     2019
     by
     
@@ -131,16 +131,19 @@
   -->
   <article>
     <p>We have explored the relationship of language and colors
-from both word character level perspectives, but in 
+from both word and character level perspectives, but in 
 isolation. Then, the natural question that arises is what 
 if subword structures play an important role in color 
-grounding?</p>
+grounding?  In other words, what if we combine character
+and word level representations when modeling color-language
+relationships?</p>
 
-<p>When we reviewed the results of the experiments on character 
-level description generation, we found quite interesting 
+<p>When we reviewed the results of the experiments on color generation
+from descriptions using a character 
+level recurrent model, we found quite interesting 
 examples where, as we progressed on the sequences of 
 characters, the generated colors suddenly changed. That was 
-the case of descriptions such as <code class="highlighter-rouge">Strawberry Lipstick</code> (or 
+the case of descriptions such as <code class="highlighter-rouge">Strawberry lipstick</code> (or 
 something like that), where the generation up the character
  <code class="highlighter-rouge">w</code> was giving us a brown-ish color, naturally associated 
 with the word <code class="highlighter-rouge">straw</code>, which was also present during training. 
@@ -152,16 +155,16 @@ gradually changing to red.</p>
 word or sentence can be understood in terms of the interplay
 between its words and tokens? For a given description, is it 
 a specific character pattern that impact the most on the 
-changes on color  generation? What are the common subword 
+changes at color  generation? What are the common subword 
 structures that command or condition more strongly the color 
 generation?</p>
 
 <p>In order to answer those questions, we need a way to quantify 
 the contribution of character and word level representations 
-… <code class="highlighter-rouge">together</code>. Lets say we train a model which learns a 
-character based feature vector that is also combined with a 
-word vector. Both vectors are combined and then used to generate 
-an associated vector. Which one contributes more to minimize 
+… <em>together</em>. Lets say we train a model which learns a 
+character based feature vector from each word present in a description. 
+And then we combine such vector with a pretrained vector, also
+associated to the target word?  Which one contributes more to minimize 
 the loss, lets say, expressed as the MSE between the generated 
 color and the ground truth.</p>
 
@@ -171,7 +174,7 @@ representations. One way to represent such relationship is
 through the concept of <code class="highlighter-rouge">gates</code>, such as in <a href="https://arxiv.org/pdf/1904.05584.pdf">Balazs et al</a> 
 or <a href="https://arxiv.org/abs/1606.01700">Miyamoto et al</a>, which in simple terms means 
 to learn a parameter $g$ that we can use to weight the the 
-vector representations coming from both char  and word level:</p>
+vector representations coming from both char  and word levels:</p>
 
 <script type="math/tex; mode=display">w = w_{char} * g +  w_{word} * (1-g)</script>
 
@@ -181,13 +184,13 @@ that takes as input the word level representation and  outputs
 a scalar or a vector.</p>
 
 <p>Lets conduct a couple of experiments to see if this way of 
-modeling color descriptions, allow us to obtain interesting 
+modeling color descriptions allow us to obtain interesting 
 insights. As always, lets start with the data. For the 
 purpose of this study, we can reuse the data
 data extracted from ColourLovers, which we have used previously.</p>
 
 <p>One element we can consider is to condition the descriptions by 
-certain characteristics such as length or even color. For the 
+certain characteristics such as length or even color range. For the 
 moment I think grouping them by 
 the POS tag could give us a good indicator. This is a sample of the 
 descriptions, without considering  any grouping.</p>
@@ -293,7 +296,7 @@ the noun associated is <code class="highlighter-rouge">milk</code>, which we kno
 as the most probable reference. But then, how to turn a plain 
 version of <code class="highlighter-rouge">white</code> in to <code class="highlighter-rouge">haunted milk</code>. Here is where it relies
 my main hypothesis on the usefulness of the gating mechanism.
-I am expecting a model that is only character based word based 
+I am expecting a model that is only character-based or only  word-based 
 to fail as I consider necessary for the model to play 
 a bit with a more flexible representation of the description.</p>
 
@@ -301,20 +304,45 @@ a bit with a more flexible representation of the description.</p>
 word level vector might be enough. But for making sense of what is
 <code class="highlighter-rouge">haunted</code>, I think the model should take into account substructures such 
 as <code class="highlighter-rouge">haunt</code>, which can be only incorporated via the character level 
-representation. Then, I say that
-as <code class="highlighter-rouge">haunt</code> can be more associated to pale or ghostly concepts (e.g. 
-<em>The haunted house</em> or this interesting <a href="https://www.thesaurus.com/browse/haunted">list</a>, then
+representation. Then, 
+as <code class="highlighter-rouge">haunt</code> can be more associated to pale or ghostly concepts (as in 
+<em>The haunted house</em>, or based on this interesting <a href="https://www.thesaurus.com/browse/haunted">list</a> ), 
 the model could learn to associate the colors in other
 ghost-centric descriptions present in the data (thats important 
 to highlight, I assume that haunted in the sense ghost related stuff, 
 but it could be the case the given the data, we are referring to 
-another type of connotation).</p>
+another type of connotation. Anyway, <a href="https://dictionary.cambridge.org/dictionary/english/haunt">here</a> 
+is a good definition of what <em>haunt</em> means).</p>
 
 <p>In summary, I think a gating mechanism could allow the model
 to <code class="highlighter-rouge">learn to choose</code> from which source (character level or word level)
 when it needs to generate a color from a description. Moreover, 
 the gates can only help the model to choose one or another, but
 as proportion, gracefully combining both representations.</p>
+
+<p>In terms of how to operationalize a gating mechanism, we can follow
+a standard approach, as seen in the following diagram:
+<img src="/assets/img/blog/color-gates-img/gating-model.png" alt="" /></p>
+
+<p>Here, we have the description <code class="highlighter-rouge">vanilla cream</code>. The ultimate
+goal is to obtain a vector representation for the whole
+description that can be fed into a linear layer to generate the 
+color tuple. We can do that by processing  each word at a time and 
+then aggregate the word level features vectors. That can be done 
+summing or averaging them, or, if we care about the ordering and
+dependencies between tokens (we should) we could use a word level
+RNN over the word level representations and use the final hidden vector
+as a description level vector.</p>
+
+<p>But the core part is how to obtain a word level representation. Here 
+is where the gating mechanism comes to play. For each word in the description, 
+we follow previous work and  run two simultaneous processes. The first one
+consists of obtaining a character-level feature vector of the word by means
+of a LSTM that runs over the sequence of characters. This representation accounts
+for the morphology aspects of the word and allow us to give more 
+flexibility to the final representation. The second process is to query
+a predefined lookup table and obtain a pretrained feature vector associated to the word,
+for example Glove.</p>
 
 <p>With this, lets conduct the following  experiment:</p>
 

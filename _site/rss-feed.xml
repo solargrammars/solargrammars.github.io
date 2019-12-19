@@ -13,14 +13,16 @@
 				
 				
 					<description>&lt;p&gt;We have explored the relationship of language and colors
-from both word character level perspectives, but in 
+from both word and character level perspectives, but in 
 isolation. Then, the natural question that arises is what 
 if subword structures play an important role in color 
-grounding?&lt;/p&gt;
+grounding?  In other words, what if we combine character
+and word level representations when modeling color-language
+relationships?&lt;/p&gt;
 
 </description>
 				
-				<pubDate>Tue, 17 Dec 2019 08:24:18 +0900</pubDate>
+				<pubDate>Thu, 19 Dec 2019 09:04:33 +0900</pubDate>
 				<link>http://localhost:4000/blog/color-gates.html</link>
 				<guid isPermaLink="true">http://localhost:4000/blog/color-gates.html</guid>
 			</item>
