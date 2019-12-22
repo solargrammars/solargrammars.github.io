@@ -7,7 +7,26 @@
 		<atom:link href="/rss-feed.xml" rel="self" type="application/rss+xml" />
 		
 			<item>
-				<title>Color Gates</title>
+				<title>Palettes and  graphs as color context</title>
+				
+					<dc:creator>Solar Grammars</dc:creator>
+				
+				
+					<description>&lt;p&gt;Colors are usually perceived in as part of a composition. It is rare that we can 
+find them in isolation in nature. In that sense,  probably what colors evoke is 
+tightly associated to the perception of a colorful &lt;code class=&quot;highlighter-rouge&quot;&gt;context&lt;/code&gt;. In other words, how we perceive 
+a certain type of red, does not depend only on such color, but also on the colors
+that surround it.&lt;/p&gt;
+
+</description>
+				
+				<pubDate>Sun, 22 Dec 2019 02:03:43 +0900</pubDate>
+				<link>http://localhost:4000/blog/colors-in-context.html</link>
+				<guid isPermaLink="true">http://localhost:4000/blog/colors-in-context.html</guid>
+			</item>
+		
+			<item>
+				<title>Combining word and character level representations from color descriptions</title>
 				
 					<dc:creator>Solar Grammars</dc:creator>
 				
@@ -22,28 +41,9 @@ relationships?&lt;/p&gt;
 
 </description>
 				
-				<pubDate>Thu, 19 Dec 2019 09:04:33 +0900</pubDate>
+				<pubDate>Sat, 21 Dec 2019 12:02:11 +0900</pubDate>
 				<link>http://localhost:4000/blog/color-gates.html</link>
 				<guid isPermaLink="true">http://localhost:4000/blog/color-gates.html</guid>
-			</item>
-		
-			<item>
-				<title>Colors in Context</title>
-				
-					<dc:creator>Solar Grammars</dc:creator>
-				
-				
-					<description>&lt;p&gt;Colors are usually perceived in as part of a composition. It is rare that we can 
-find them in isolation in nature. In that sense,  probably what colors evoke is 
-tightly associated to the perception of a colorful &lt;code class=&quot;highlighter-rouge&quot;&gt;context&lt;/code&gt;. In other words, how we perceive 
-a certain type of red, does not depend only on such color, but also on the colors
-that surround it.&lt;/p&gt;
-
-</description>
-				
-				<pubDate>Sun, 15 Dec 2019 23:01:57 +0900</pubDate>
-				<link>http://localhost:4000/blog/colors-in-context.html</link>
-				<guid isPermaLink="true">http://localhost:4000/blog/colors-in-context.html</guid>
 			</item>
 		
 			<item>

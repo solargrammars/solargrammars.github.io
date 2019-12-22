@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Colors in Context"
+title: "Palettes and  graphs as color context"
 author: "Solar Grammars"
 categories: blog
 tags: [blog]

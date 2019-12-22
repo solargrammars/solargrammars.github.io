@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Color Gates"
+title: "Combining word and character level representations from color descriptions"
 author: "Solar Grammars"
 categories: blog
 tags: [blog]
@@ -223,22 +223,47 @@ we follow previous work and  run two simultaneous processes. The first one
 consists of obtaining a character-level feature vector of the word by means
 of a LSTM that runs over the sequence of characters. This representation accounts
 for the morphology aspects of the word and allow us to give more 
-flexibility to the final representation. The second process is to query
+flexibility to the final representation. 
+
+The second process is to query
 a predefined lookup table and obtain a pretrained feature vector associated to the word,
-for example Glove. This vector is used to to  compute the gate weight $$g$$
+for example Glove. This vector is used to to  compute the gate weight $$g$$ 
+by means of being fed directly to a linear layer. It is not direct that a 
+pretrained source such as Glove could benefit this specific task. Given 
+the nature of color descrtiption, and how words are associated in this context,
+it could be the case that we could be actually sabotaging ourselves. 
+In color descriptions, nouns serve usually as pivot from where an inherent color
+is referenced. For example, when we describe a color as "sad banana" we know 
+we are reffering to a type of yellow. Same with something than contains nouns
+such  as sun, school bus , vanilla, etc. 
 
+Probably Glove vectors were obtained through at task that is orthogonal to 
+color description grounding. In that sense, the vectors associated to banana 
+and  school bus will probably be quite distant. In Glove , the closest vector to
+banana are probably other fruits vectors such as apple or orange., not other words
+we can associate to yellow . Glove is not color aware, or more generally, pretrained 
+vectors are not attribute aware. That does not mean we can use then as 
+an initial representation and condition them based on additional information, such
+as taxonomies , or even  set them as trainable, which will naturally 
+modify the spatial position. That could be an interesting experiment: to check how 
+much the task changes de vectors we associate, in advance, to a defined color. 
 
+Ok, having such  model ready, and the data we discussed above, we can start our main
+experiment. Lets compare the gating model against the following baselines:
 
-
-
-With this, lets conduct the following  experiment:
-
-- Lets consider 4 models:
-  - Just word embedding
-  - combine char LSTM + Glove by simple contatenation 
-  - combine char LSTM + Glove by gating
+- Glove+: We use Glove as initial trainable vector representation 
+- Just char-based 
+- Combine char LSTM + Glove by simple contatenation 
 
 
 
 
 ![](/assets/img/blog/color-gates-img/losses.png) 
+
+
+
+
+## Possible improvements
+
+There are a lot of ideas related to the architecture itself we could try, in terms of 
+what and how things are wired. 
