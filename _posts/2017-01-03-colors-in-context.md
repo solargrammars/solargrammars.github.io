@@ -435,6 +435,42 @@ chosen when we compress the image.
 
 In the above figure, we expect the unlabeled node, represented in white, iteratively
 receives a color signal from its neighborhood in the form of a node vector, 
-which can be used to learn the correct RGB tuple. 
+which can be used to learn the correct RGB (or Lab) tuple. 
+
+Something noticed during the exploratory training is how the proportion of 
+labeled nodes impacts on the performance of the color generation. 
+
+<img src="/assets/img/blog/colors-in-context-img/losses1.png" >
+<img src="/assets/img/blog/colors-in-context-img/losses3.png" >
 
 
+
+<table class="table_colors" style="width:500px;">
+<tr><td> Generated </td> <td>  Ground truth </td> </tr>
+<tr><td> <div style='width:200px; height:20px;background:#7c9e7a'> </div> </td> <td>  <div style='width:200px; height:20px;background:#5f9177'> </div> </td> </tr>
+<tr><td> <div style='width:200px; height:20px;background:#732d83'> </div> </td> <td>  <div style='width:200px; height:20px;background:#8e4187'> </div> </td> </tr>
+<tr><td> <div style='width:200px; height:20px;background:#c7767c'> </div> </td> <td>  <div style='width:200px; height:20px;background:#9e7879'> </div> </td> </tr>
+<tr><td> <div style='width:200px; height:20px;background:#c18076'> </div> </td> <td>  <div style='width:200px; height:20px;background:#df678a'> </div> </td> </tr>
+<tr><td> <div style='width:200px; height:20px;background:#3e193c'> </div> </td> <td>  <div style='width:200px; height:20px;background:#3e0847'> </div> </td> </tr>
+<tr><td> <div style='width:200px; height:20px;background:#ce7c8a'> </div> </td> <td>  <div style='width:200px; height:20px;background:#df678a'> </div> </td> </tr>
+<tr><td> <div style='width:200px; height:20px;background:#7d80dd'> </div> </td> <td>  <div style='width:200px; height:20px;background:#9784d0'> </div> </td> </tr>
+<tr><td> <div style='width:200px; height:20px;background:#5a8f8b'> </div> </td> <td>  <div style='width:200px; height:20px;background:#46968b'> </div> </td> </tr>
+<tr><td> <div style='width:200px; height:20px;background:#e0609d'> </div> </td> <td>  <div style='width:200px; height:20px;background:#df678a'> </div> </td> </tr>
+<tr><td> <div style='width:200px; height:20px;background:#c5757f'> </div> </td> <td>  <div style='width:200px; height:20px;background:#9e7879'> </div> </td> </tr>
+
+
+</table>
+
+<table class="table_colors" style="width:500px;">
+<tr><td> Generated </td> <td>  Ground truth </td> </tr>
+<tr><td> <div style='width:200px; height:20px;background:#b0bf64'> </div> </td> <td>  <div style='width:200px; height:20px;background:#dab872'> </div> </td> </tr>
+<tr><td> <div style='width:200px; height:20px;background:#2bd9c1'> </div> </td> <td>  <div style='width:200px; height:20px;background:#46968b'> </div> </td> </tr>
+<tr><td> <div style='width:200px; height:20px;background:#39153e'> </div> </td> <td>  <div style='width:200px; height:20px;background:#3e0847'> </div> </td> </tr>
+<tr><td> <div style='width:200px; height:20px;background:#1b4b23'> </div> </td> <td>  <div style='width:200px; height:20px;background:#7e7d7e'> </div> </td> </tr>
+<tr><td> <div style='width:200px; height:20px;background:#8ddd9f'> </div> </td> <td>  <div style='width:200px; height:20px;background:#f9da72'> </div> </td> </tr>
+<tr><td> <div style='width:200px; height:20px;background:#5b5e28'> </div> </td> <td>  <div style='width:200px; height:20px;background:#7e7d7e'> </div> </td> </tr>
+<tr><td> <div style='width:200px; height:20px;background:#bd8678'> </div> </td> <td>  <div style='width:200px; height:20px;background:#df678a'> </div> </td> </tr>
+<tr><td> <div style='width:200px; height:20px;background:#ec8aab'> </div> </td> <td>  <div style='width:200px; height:20px;background:#df678a'> </div> </td> </tr>
+<tr><td> <div style='width:200px; height:20px;background:#b05c29'> </div> </td> <td>  <div style='width:200px; height:20px;background:#eb2037'> </div> </td> </tr>
+<tr><td> <div style='width:200px; height:20px;background:#67dbad'> </div> </td> <td>  <div style='width:200px; height:20px;background:#23a773'> </div> </td> </tr>
+</table>
