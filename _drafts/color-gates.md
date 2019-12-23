@@ -85,7 +85,7 @@ Lets obtain a sample from the top 5 groups of patterns with most
 descriptions. This is what we get:
 
 `('ADJ', 'NOUN')`:
-<table>
+<table class="table_colors">
 <tr> <td>dutch teal</td><td><div style='float:left;width:100px; height:20px;background:#1a6470;'>  </div>  </td>  </tr>
 <tr> <td>hot pink</td><td><div style='float:left;width:100px; height:20px;background:#ff67b4;'>  </div>  </td>  </tr>
 <tr> <td>mighty slate</td><td><div style='float:left;width:100px; height:20px;background:#556270;'>  </div>  </td>  </tr>
@@ -99,7 +99,7 @@ descriptions. This is what we get:
 </table>
 
 `('NOUN', 'NOUN')`:
-<table>
+<table class="table_colors">
 <tr> <td>vanilla cream</td><td><div style='float:left;width:100px; height:20px;background:#fbe6da;'>  </div>  </td>  </tr>
 <tr> <td>vitamin c</td><td><div style='float:left;width:100px; height:20px;background:#d26f36;'>  </div>  </td>  </tr>
 <tr> <td>orange icing</td><td><div style='float:left;width:100px; height:20px;background:#ea3556;'>  </div>  </td>  </tr>
@@ -115,7 +115,7 @@ descriptions. This is what we get:
 
 
 `('VERB', 'NOUN')`:
-<table>
+<table class="table_colors">
 <tr> <td>haunted milk</td><td><div style='float:left;width:100px; height:20px;background:#cdd7b6;'>  </div>  </td>  </tr>
 <tr> <td>raspberry lemonade</td><td><div style='float:left;width:100px; height:20px;background:#d2c2f1;'>  </div>  </td>  </tr>
 <tr> <td>minted peas</td><td><div style='float:left;width:100px; height:20px;background:#c8f0b2;'>  </div>  </td>  </tr>
@@ -132,7 +132,7 @@ Hmm it seems here  Spacy tagged as vers things that are passive voice adjectives
 Spacy didnt have much context to work with when deciding the tag. 
 
 `('ADJ', 'NOUN', 'NOUN')`:
-<table>
+<table class="table_colors">
 <tr> <td>hawaiian lava fields</td><td><div style='float:left;width:100px; height:20px;background:#4f4e57;'>  </div>  </td>  </tr>
 <tr> <td>new yolk city</td><td><div style='float:left;width:100px; height:20px;background:#ffa111;'>  </div>  </td>  </tr>
 <tr> <td>white chocolate fill</td><td><div style='float:left;width:100px; height:20px;background:#f8ecc9;'>  </div>  </td>  </tr>
@@ -147,7 +147,7 @@ Spacy didnt have much context to work with when deciding the tag.
 </table>
 
 `('ADJ','ADJ','NOUN')`:
-<table>
+<table class="table_colors">
 <tr> <td>parttime super girl</td><td><div style='float:left;width:100px; height:20px;background:#e45635;'>  </div>  </td>  </tr>
 <tr> <td>expensive black wool</td><td><div style='float:left;width:100px; height:20px;background:#0f0a06;'>  </div>  </td>  </tr>
 <tr> <td>white kitten nose</td><td><div style='float:left;width:100px; height:20px;background:#ffd0d4;'>  </div>  </td>  </tr>
@@ -200,8 +200,6 @@ when it needs to generate a color from a description. Moreover,
 the gates can only help the model to choose one or another, but
 as proportion, gracefully combining both representations. 
 
-The resulting datasets looks like this
-
 
 In terms of how to operationalize a gating mechanism, we can follow
 a standard approach, as seen in the following diagram:
@@ -230,21 +228,24 @@ a predefined lookup table and obtain a pretrained feature vector associated to t
 for example Glove. This vector is used to to  compute the gate weight $$g$$ 
 by means of being fed directly to a linear layer. It is not direct that a 
 pretrained source such as Glove could benefit this specific task. Given 
-the nature of color descrtiption, and how words are associated in this context,
+the nature of color description, and how words are associated in this context,
 it could be the case that we could be actually sabotaging ourselves. 
 In color descriptions, nouns serve usually as pivot from where an inherent color
 is referenced. For example, when we describe a color as "sad banana" we know 
-we are reffering to a type of yellow. Same with something than contains nouns
+we are referring to a type of yellow. Same with something than contains nouns
 such  as sun, school bus , vanilla, etc. 
 
 Probably Glove vectors were obtained through at task that is orthogonal to 
-color description grounding. In that sense, the vectors associated to banana 
-and  school bus will probably be quite distant. In Glove , the closest vector to
-banana are probably other fruits vectors such as apple or orange., not other words
-we can associate to yellow . Glove is not color aware, or more generally, pretrained 
-vectors are not attribute aware. That does not mean we can use then as 
+color description grounding, which is basically training a language model, where
+we try to maximize the likelihood of a word given a defined context. In that sense,
+if we assume two yellow things , such as `banana` and `taxi`  their vectors in Glove
+will probably be quite distant, as there do not co-occur  so frequently. In Glove , the closest vectors to
+banana are probably are associated to other fruits, such as apple or orange, and the
+closest vectors to taxi will be probably associated to other transportation mediums. 
+Glove is not color aware, or more generally, pretrained 
+vectors are not attribute-aware. That does not mean we cannot use then as 
 an initial representation and condition them based on additional information, such
-as taxonomies , or even  set them as trainable, which will naturally 
+as, for example, WordNet, or set them as trainable, which will naturally 
 modify the spatial position. That could be an interesting experiment: to check how 
 much the task changes de vectors we associate, in advance, to a defined color. 
 

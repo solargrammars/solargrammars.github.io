@@ -423,13 +423,18 @@ Here, as you can image, $$M_t, U_t, R$$ are learnable functions.
 In our case, we can easily use this framework in a semi supervised learning setting.
 For each graph associated to each image, we can let the model know the labels (RGB values)
 only from a portion of the nodes. Then, the goal is to infer the RGB vector
-associated to each each node, including both labeled and  unlabeled.  The assumption
+associated to  each node, including both labeled and unlabeled.  The assumption
 behind this is that the message passing mechanism will eventually be able to 
 propagate information from the seen to the unseen nodes, taking into account 
-the locality of the color composition expressed by the edge structure.
+the locality of the color composition expressed by the edge structure. This is an important
+point to notice: colors in a composition such a natural image tend to form
+neighborhoods, and they  can be as granular as we want, depending on the parameters
+chosen when we compress the image.  
 
 <img src="/assets/img/blog/colors-in-context-img/message_passing.png" width="200px">
 
 In the above figure, we expect the unlabeled node, represented in white, iteratively
 receives a color signal from its neighborhood in the form of a node vector, 
 which can be used to learn the correct RGB tuple. 
+
+
