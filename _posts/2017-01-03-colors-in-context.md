@@ -438,12 +438,29 @@ receives a color signal from its neighborhood in the form of a node vector,
 which can be used to learn the correct RGB (or Lab) tuple. 
 
 Something noticed during the exploratory training is how the proportion of 
-labeled nodes impacts on the performance of the color generation. 
+labeled nodes impacts on the performance of the color generation. Naturally, the more
+nodes we have labeled, the better the results, as more information will be encoded in 
+the graph. Here we can see how a small portion of nodes compare against a big one. 
+While in terms of loss in the labeled set there no much difference, it is clear 
+that  in the case of the unlabeled nodes, there is a advantage. 
 
-<img src="/assets/img/blog/colors-in-context-img/losses1.png" >
 <img src="/assets/img/blog/colors-in-context-img/losses3.png" >
+<img src="/assets/img/blog/colors-in-context-img/losses4.png" >
 
+Just the number of nodes is not enough, but its connectivity
+is also very important. As we are in a message passing configuration, if the information
+cannot be propagated from the labeled nodes to the unlabeled ones, the learning will 
+be poor even if we consider a larger proportion of nodes with labels. In that sense,
+average degree of the nodes we have adding is more relevant than the pure number of them. 
+That is an interesting  design decision in terms of data acquisition when designing 
+a machine learning model under this scenario
 
+While the loss can help us to automate the the search for better parameters, does not
+tell much about the actual results. Lets take a look at some samples from the generated
+colors. In the first place, we have the results for the labeled set. It seems to
+be a easy task for the model, naturally. This is just a safe check, just to 
+make sure we are not making any big mistake. In any case, I can see clear differences in terms of
+brightness, specially in the case of pinks.
 
 <table class="table_colors" style="width:500px;">
 <tr><td> Generated </td> <td>  Ground truth </td> </tr>
@@ -457,20 +474,69 @@ labeled nodes impacts on the performance of the color generation.
 <tr><td> <div style='width:200px; height:20px;background:#5a8f8b'> </div> </td> <td>  <div style='width:200px; height:20px;background:#46968b'> </div> </td> </tr>
 <tr><td> <div style='width:200px; height:20px;background:#e0609d'> </div> </td> <td>  <div style='width:200px; height:20px;background:#df678a'> </div> </td> </tr>
 <tr><td> <div style='width:200px; height:20px;background:#c5757f'> </div> </td> <td>  <div style='width:200px; height:20px;background:#9e7879'> </div> </td> </tr>
-
-
 </table>
+
+
+Now, the more interesting result. Here we can see a sample of of the color generation for nodes that
+from the unlabeled set, i.e., the produced color is the result of the label propagation through the link structure
+of the graphs under study. The following  sample is obtained randomly, and it is presented sorted in terms
+of the euclidean distance between  the generated and ground truth color, so we can visualize more effectively how the 
+results degrade.
+
+
 
 <table class="table_colors" style="width:500px;">
 <tr><td> Generated </td> <td>  Ground truth </td> </tr>
-<tr><td> <div style='width:200px; height:20px;background:#b0bf64'> </div> </td> <td>  <div style='width:200px; height:20px;background:#dab872'> </div> </td> </tr>
-<tr><td> <div style='width:200px; height:20px;background:#2bd9c1'> </div> </td> <td>  <div style='width:200px; height:20px;background:#46968b'> </div> </td> </tr>
-<tr><td> <div style='width:200px; height:20px;background:#39153e'> </div> </td> <td>  <div style='width:200px; height:20px;background:#3e0847'> </div> </td> </tr>
-<tr><td> <div style='width:200px; height:20px;background:#1b4b23'> </div> </td> <td>  <div style='width:200px; height:20px;background:#7e7d7e'> </div> </td> </tr>
-<tr><td> <div style='width:200px; height:20px;background:#8ddd9f'> </div> </td> <td>  <div style='width:200px; height:20px;background:#f9da72'> </div> </td> </tr>
-<tr><td> <div style='width:200px; height:20px;background:#5b5e28'> </div> </td> <td>  <div style='width:200px; height:20px;background:#7e7d7e'> </div> </td> </tr>
-<tr><td> <div style='width:200px; height:20px;background:#bd8678'> </div> </td> <td>  <div style='width:200px; height:20px;background:#df678a'> </div> </td> </tr>
-<tr><td> <div style='width:200px; height:20px;background:#ec8aab'> </div> </td> <td>  <div style='width:200px; height:20px;background:#df678a'> </div> </td> </tr>
-<tr><td> <div style='width:200px; height:20px;background:#b05c29'> </div> </td> <td>  <div style='width:200px; height:20px;background:#eb2037'> </div> </td> </tr>
-<tr><td> <div style='width:200px; height:20px;background:#67dbad'> </div> </td> <td>  <div style='width:200px; height:20px;background:#23a773'> </div> </td> </tr>
+<tr><td> <div style='width:200px; height:20px;background:#499b93'> </div> </td> <td>  <div style='width:200px; height:20px;background:#46968b'> </div> </td> </tr>
+<tr><td> <div style='width:200px; height:20px;background:#e86d9e'> </div> </td> <td>  <div style='width:200px; height:20px;background:#df678a'> </div> </td> </tr>
+<tr><td> <div style='width:200px; height:20px;background:#5a8f81'> </div> </td> <td>  <div style='width:200px; height:20px;background:#46968b'> </div> </td> </tr>
+<tr><td> <div style='width:200px; height:20px;background:#db7c9b'> </div> </td> <td>  <div style='width:200px; height:20px;background:#df678a'> </div> </td> </tr>
+<tr><td> <div style='width:200px; height:20px;background:#72278c'> </div> </td> <td>  <div style='width:200px; height:20px;background:#8e4187'> </div> </td> </tr>
+<tr><td> <div style='width:200px; height:20px;background:#846a57'> </div> </td> <td>  <div style='width:200px; height:20px;background:#7e7d7e'> </div> </td> </tr>
+<tr><td> <div style='width:200px; height:20px;background:#c78776'> </div> </td> <td>  <div style='width:200px; height:20px;background:#df678a'> </div> </td> </tr>
+<tr><td> <div style='width:200px; height:20px;background:#b2bd5e'> </div> </td> <td>  <div style='width:200px; height:20px;background:#dab872'> </div> </td> </tr>
+<tr><td> <div style='width:200px; height:20px;background:#c08775'> </div> </td> <td>  <div style='width:200px; height:20px;background:#df678a'> </div> </td> </tr>
+<tr><td> <div style='width:200px; height:20px;background:#e3dde1'> </div> </td> <td>  <div style='width:200px; height:20px;background:#fffffe'> </div> </td> </tr>
+<tr><td> <div style='width:200px; height:20px;background:#e7f074'> </div> </td> <td>  <div style='width:200px; height:20px;background:#fefe44'> </div> </td> </tr>
+<tr><td> <div style='width:200px; height:20px;background:#e4de34'> </div> </td> <td>  <div style='width:200px; height:20px;background:#aae252'> </div> </td> </tr>
+<tr><td> <div style='width:200px; height:20px;background:#60cbb2'> </div> </td> <td>  <div style='width:200px; height:20px;background:#46968b'> </div> </td> </tr>
+<tr><td> <div style='width:200px; height:20px;background:#612a7d'> </div> </td> <td>  <div style='width:200px; height:20px;background:#4a3d3b'> </div> </td> </tr>
+<tr><td> <div style='width:200px; height:20px;background:#9d19c4'> </div> </td> <td>  <div style='width:200px; height:20px;background:#8e4187'> </div> </td> </tr>
+<tr><td> <div style='width:200px; height:20px;background:#861a36'> </div> </td> <td>  <div style='width:200px; height:20px;background:#b94859'> </div> </td> </tr>
+<tr><td> <div style='width:200px; height:20px;background:#73e171'> </div> </td> <td>  <div style='width:200px; height:20px;background:#5f9177'> </div> </td> </tr>
+<tr><td> <div style='width:200px; height:20px;background:#3eb87f'> </div> </td> <td>  <div style='width:200px; height:20px;background:#7e7d7e'> </div> </td> </tr>
+<tr><td> <div style='width:200px; height:20px;background:#76932e'> </div> </td> <td>  <div style='width:200px; height:20px;background:#58e730'> </div> </td> </tr>
+<tr><td> <div style='width:200px; height:20px;background:#a4d66b'> </div> </td> <td>  <div style='width:200px; height:20px;background:#7e7d7e'> </div> </td> </tr>
+<tr><td> <div style='width:200px; height:20px;background:#aa9522'> </div> </td> <td>  <div style='width:200px; height:20px;background:#fe7b4f'> </div> </td> </tr>
+<tr><td> <div style='width:200px; height:20px;background:#56661d'> </div> </td> <td>  <div style='width:200px; height:20px;background:#7e7d7e'> </div> </td> </tr>
+<tr><td> <div style='width:200px; height:20px;background:#59621c'> </div> </td> <td>  <div style='width:200px; height:20px;background:#7e7d7e'> </div> </td> </tr>
+<tr><td> <div style='width:200px; height:20px;background:#206125'> </div> </td> <td>  <div style='width:200px; height:20px;background:#5d9670'> </div> </td> </tr>
+<tr><td> <div style='width:200px; height:20px;background:#e6dfcd'> </div> </td> <td>  <div style='width:200px; height:20px;background:#a6948f'> </div> </td> </tr>
+<tr><td> <div style='width:200px; height:20px;background:#9feaa2'> </div> </td> <td>  <div style='width:200px; height:20px;background:#808178'> </div> </td> </tr>
+<tr><td> <div style='width:200px; height:20px;background:#501d41'> </div> </td> <td>  <div style='width:200px; height:20px;background:#7e7d7e'> </div> </td> </tr>
+<tr><td> <div style='width:200px; height:20px;background:#eae9cd'> </div> </td> <td>  <div style='width:200px; height:20px;background:#a6948f'> </div> </td> </tr>
+<tr><td> <div style='width:200px; height:20px;background:#1a1f3e'> </div> </td> <td>  <div style='width:200px; height:20px;background:#7e7d7e'> </div> </td> </tr>
+<tr><td> <div style='width:200px; height:20px;background:#551b28'> </div> </td> <td>  <div style='width:200px; height:20px;background:#fe0a01'> </div> </td> </tr>
 </table>
+
+While there are clear mistakes by the model, specially at the end of the list, I think in general the these is a feasible correspondence. This means,
+the node representation we are learning via the graph neural net is able to encode in a good way the the information propagated by the neighboring nodes, 
+in this case, the color. There are several things we can discuss from this small experiment and  its limitations. 
+
+For example, when we generate the graphs,  we first discretize the image into color zones, given a specified threshold. This resulting set of colors will be our nodes.
+Then, as mentioned above, the edges are generated in terms of if two color zones  are contiguous. In that sense, for most parts , edges associate two colors
+that are similar, or belong to the same portion of the color spectrum. But naturally there are cases were two color zones are contiguous, but their colors are totally
+different. Think , for example, in the case of an image that has grass next to a road. In this case, the is a big chance that a green gets linked a grey. Having
+this type of edges is part of the nature of the problem, but certainly  could be confusing the model, as one unlabeled node could be receiving  information 
+that is two heterogeneous, that ultimately its generated color will be kind of random. An alternative could to just ignore edges between nodes that are too dissimilar,
+but in turn that could generate a very disjoint graph, just small connected components without any inter-color transference. That is not so interesting.
+
+
+The code to reproduce the experiments on this article will be available here:
+
+<https://github.com/solargrammars/colors-in-context>
+
+
+
+
+

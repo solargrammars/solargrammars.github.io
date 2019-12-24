@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.6.3">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2019-12-24T02:28:49+09:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Solar Grammars</title><subtitle></subtitle><author><name></name></author><entry><title type="html">Palettes and graphs as color context</title><link href="http://localhost:4000/blog/colors-in-context.html" rel="alternate" type="text/html" title="Palettes and  graphs as color context" /><published>2017-01-03T00:00:00+09:00</published><updated>2017-01-03T00:00:00+09:00</updated><id>http://localhost:4000/blog/colors-in-context</id><content type="html" xml:base="http://localhost:4000/blog/colors-in-context.html">&lt;p&gt;Colors are usually perceived in as part of a composition. It is rare that we can 
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.6.3">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2019-12-24T12:41:38+09:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Solar Grammars</title><subtitle></subtitle><author><name></name></author><entry><title type="html">Palettes and graphs as color context</title><link href="http://localhost:4000/blog/colors-in-context.html" rel="alternate" type="text/html" title="Palettes and  graphs as color context" /><published>2017-01-03T00:00:00+09:00</published><updated>2017-01-03T00:00:00+09:00</updated><id>http://localhost:4000/blog/colors-in-context</id><content type="html" xml:base="http://localhost:4000/blog/colors-in-context.html">&lt;p&gt;Colors are usually perceived in as part of a composition. It is rare that we can 
 find them in isolation in nature. In that sense,  probably what colors evoke is 
 tightly associated to the perception of a colorful &lt;code class=&quot;highlighter-rouge&quot;&gt;context&lt;/code&gt;. In other words, how we perceive 
 a certain type of red, does not depend only on such color, but also on the colors
@@ -477,10 +477,29 @@ receives a color signal from its neighborhood in the form of a node vector,
 which can be used to learn the correct RGB (or Lab) tuple.&lt;/p&gt;
 
 &lt;p&gt;Something noticed during the exploratory training is how the proportion of 
-labeled nodes impacts on the performance of the color generation.&lt;/p&gt;
+labeled nodes impacts on the performance of the color generation. Naturally, the more
+nodes we have labeled, the better the results, as more information will be encoded in 
+the graph. Here we can see how a small portion of nodes compare against a big one. 
+While in terms of loss in the labeled set there no much difference, it is clear 
+that  in the case of the unlabeled nodes, there is a advantage.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;/assets/img/blog/colors-in-context-img/losses1.png&quot; /&gt;
-&lt;img src=&quot;/assets/img/blog/colors-in-context-img/losses3.png&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/img/blog/colors-in-context-img/losses3.png&quot; /&gt;
+&lt;img src=&quot;/assets/img/blog/colors-in-context-img/losses4.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Just the number of nodes is not enough, but its connectivity
+is also very important. As we are in a message passing configuration, if the information
+cannot be propagated from the labeled nodes to the unlabeled ones, the learning will 
+be poor even if we consider a larger proportion of nodes with labels. In that sense,
+average degree of the nodes we have adding is more relevant than the pure number of them. 
+That is an interesting  design decision in terms of data acquisition when designing 
+a machine learning model under this scenario&lt;/p&gt;
+
+&lt;p&gt;While the loss can help us to automate the the search for better parameters, does not
+tell much about the actual results. Lets take a look at some samples from the generated
+colors. In the first place, we have the results for the labeled set. It seems to
+be a easy task for the model, naturally. This is just a safe check, just to 
+make sure we are not making any big mistake. In any case, I can see clear differences in terms of
+brightness, specially in the case of pinks.&lt;/p&gt;
 
 &lt;table class=&quot;table_colors&quot; style=&quot;width:500px;&quot;&gt;
 &lt;tr&gt;&lt;td&gt; Generated &lt;/td&gt; &lt;td&gt;  Ground truth &lt;/td&gt; &lt;/tr&gt;
@@ -494,23 +513,63 @@ labeled nodes impacts on the performance of the color generation.&lt;/p&gt;
 &lt;tr&gt;&lt;td&gt; &lt;div style=&quot;width:200px; height:20px;background:#5a8f8b&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;td&gt;  &lt;div style=&quot;width:200px; height:20px;background:#46968b&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;/tr&gt;
 &lt;tr&gt;&lt;td&gt; &lt;div style=&quot;width:200px; height:20px;background:#e0609d&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;td&gt;  &lt;div style=&quot;width:200px; height:20px;background:#df678a&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;/tr&gt;
 &lt;tr&gt;&lt;td&gt; &lt;div style=&quot;width:200px; height:20px;background:#c5757f&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;td&gt;  &lt;div style=&quot;width:200px; height:20px;background:#9e7879&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;/tr&gt;
-
-
 &lt;/table&gt;
+
+&lt;p&gt;Now, the more interesting result. Here we can see a sample of of the color generation for nodes that
+from the unlabeled set, i.e., the produced color is the result of the label propagation through the link structure
+of the graphs under study. The following  sample is obtained randomly, and it is presented sorted in terms
+of the euclidean distance between  the generated and ground truth color, so we can visualize more effectively how the 
+results degrade.&lt;/p&gt;
 
 &lt;table class=&quot;table_colors&quot; style=&quot;width:500px;&quot;&gt;
 &lt;tr&gt;&lt;td&gt; Generated &lt;/td&gt; &lt;td&gt;  Ground truth &lt;/td&gt; &lt;/tr&gt;
-&lt;tr&gt;&lt;td&gt; &lt;div style=&quot;width:200px; height:20px;background:#b0bf64&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;td&gt;  &lt;div style=&quot;width:200px; height:20px;background:#dab872&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;/tr&gt;
-&lt;tr&gt;&lt;td&gt; &lt;div style=&quot;width:200px; height:20px;background:#2bd9c1&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;td&gt;  &lt;div style=&quot;width:200px; height:20px;background:#46968b&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;/tr&gt;
-&lt;tr&gt;&lt;td&gt; &lt;div style=&quot;width:200px; height:20px;background:#39153e&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;td&gt;  &lt;div style=&quot;width:200px; height:20px;background:#3e0847&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;/tr&gt;
-&lt;tr&gt;&lt;td&gt; &lt;div style=&quot;width:200px; height:20px;background:#1b4b23&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;td&gt;  &lt;div style=&quot;width:200px; height:20px;background:#7e7d7e&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;/tr&gt;
-&lt;tr&gt;&lt;td&gt; &lt;div style=&quot;width:200px; height:20px;background:#8ddd9f&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;td&gt;  &lt;div style=&quot;width:200px; height:20px;background:#f9da72&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;/tr&gt;
-&lt;tr&gt;&lt;td&gt; &lt;div style=&quot;width:200px; height:20px;background:#5b5e28&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;td&gt;  &lt;div style=&quot;width:200px; height:20px;background:#7e7d7e&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;/tr&gt;
-&lt;tr&gt;&lt;td&gt; &lt;div style=&quot;width:200px; height:20px;background:#bd8678&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;td&gt;  &lt;div style=&quot;width:200px; height:20px;background:#df678a&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;/tr&gt;
-&lt;tr&gt;&lt;td&gt; &lt;div style=&quot;width:200px; height:20px;background:#ec8aab&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;td&gt;  &lt;div style=&quot;width:200px; height:20px;background:#df678a&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;/tr&gt;
-&lt;tr&gt;&lt;td&gt; &lt;div style=&quot;width:200px; height:20px;background:#b05c29&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;td&gt;  &lt;div style=&quot;width:200px; height:20px;background:#eb2037&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;/tr&gt;
-&lt;tr&gt;&lt;td&gt; &lt;div style=&quot;width:200px; height:20px;background:#67dbad&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;td&gt;  &lt;div style=&quot;width:200px; height:20px;background:#23a773&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;/tr&gt;
-&lt;/table&gt;</content><author><name>Solar Grammars</name></author><category term="blog" /><summary type="html">Colors are usually perceived in as part of a composition. It is rare that we can find them in isolation in nature. In that sense, probably what colors evoke is tightly associated to the perception of a colorful context. In other words, how we perceive a certain type of red, does not depend only on such color, but also on the colors that surround it.</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:4000/arctic-1.jpg" /></entry><entry><title type="html">Grounding Color Comparatives</title><link href="http://localhost:4000/blog/grounding-color-comparatives.html" rel="alternate" type="text/html" title="Grounding Color Comparatives" /><published>2017-01-02T00:00:00+09:00</published><updated>2017-01-02T00:00:00+09:00</updated><id>http://localhost:4000/blog/grounding-color-comparatives</id><content type="html" xml:base="http://localhost:4000/blog/grounding-color-comparatives.html">&lt;p&gt;The methods  we have covered so far allowed  us to learn  a direct mapping between colors and language. One possible limitation of those approaches is that in reality color perception is intrinsically contextual, in the sense that usually we come up with a description for a newly seen color based on a predefined reference. For example, when
+&lt;tr&gt;&lt;td&gt; &lt;div style=&quot;width:200px; height:20px;background:#499b93&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;td&gt;  &lt;div style=&quot;width:200px; height:20px;background:#46968b&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt; &lt;div style=&quot;width:200px; height:20px;background:#e86d9e&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;td&gt;  &lt;div style=&quot;width:200px; height:20px;background:#df678a&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt; &lt;div style=&quot;width:200px; height:20px;background:#5a8f81&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;td&gt;  &lt;div style=&quot;width:200px; height:20px;background:#46968b&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt; &lt;div style=&quot;width:200px; height:20px;background:#db7c9b&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;td&gt;  &lt;div style=&quot;width:200px; height:20px;background:#df678a&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt; &lt;div style=&quot;width:200px; height:20px;background:#72278c&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;td&gt;  &lt;div style=&quot;width:200px; height:20px;background:#8e4187&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt; &lt;div style=&quot;width:200px; height:20px;background:#846a57&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;td&gt;  &lt;div style=&quot;width:200px; height:20px;background:#7e7d7e&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt; &lt;div style=&quot;width:200px; height:20px;background:#c78776&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;td&gt;  &lt;div style=&quot;width:200px; height:20px;background:#df678a&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt; &lt;div style=&quot;width:200px; height:20px;background:#b2bd5e&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;td&gt;  &lt;div style=&quot;width:200px; height:20px;background:#dab872&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt; &lt;div style=&quot;width:200px; height:20px;background:#c08775&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;td&gt;  &lt;div style=&quot;width:200px; height:20px;background:#df678a&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt; &lt;div style=&quot;width:200px; height:20px;background:#e3dde1&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;td&gt;  &lt;div style=&quot;width:200px; height:20px;background:#fffffe&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt; &lt;div style=&quot;width:200px; height:20px;background:#e7f074&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;td&gt;  &lt;div style=&quot;width:200px; height:20px;background:#fefe44&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt; &lt;div style=&quot;width:200px; height:20px;background:#e4de34&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;td&gt;  &lt;div style=&quot;width:200px; height:20px;background:#aae252&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt; &lt;div style=&quot;width:200px; height:20px;background:#60cbb2&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;td&gt;  &lt;div style=&quot;width:200px; height:20px;background:#46968b&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt; &lt;div style=&quot;width:200px; height:20px;background:#612a7d&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;td&gt;  &lt;div style=&quot;width:200px; height:20px;background:#4a3d3b&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt; &lt;div style=&quot;width:200px; height:20px;background:#9d19c4&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;td&gt;  &lt;div style=&quot;width:200px; height:20px;background:#8e4187&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt; &lt;div style=&quot;width:200px; height:20px;background:#861a36&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;td&gt;  &lt;div style=&quot;width:200px; height:20px;background:#b94859&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt; &lt;div style=&quot;width:200px; height:20px;background:#73e171&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;td&gt;  &lt;div style=&quot;width:200px; height:20px;background:#5f9177&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt; &lt;div style=&quot;width:200px; height:20px;background:#3eb87f&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;td&gt;  &lt;div style=&quot;width:200px; height:20px;background:#7e7d7e&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt; &lt;div style=&quot;width:200px; height:20px;background:#76932e&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;td&gt;  &lt;div style=&quot;width:200px; height:20px;background:#58e730&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt; &lt;div style=&quot;width:200px; height:20px;background:#a4d66b&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;td&gt;  &lt;div style=&quot;width:200px; height:20px;background:#7e7d7e&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt; &lt;div style=&quot;width:200px; height:20px;background:#aa9522&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;td&gt;  &lt;div style=&quot;width:200px; height:20px;background:#fe7b4f&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt; &lt;div style=&quot;width:200px; height:20px;background:#56661d&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;td&gt;  &lt;div style=&quot;width:200px; height:20px;background:#7e7d7e&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt; &lt;div style=&quot;width:200px; height:20px;background:#59621c&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;td&gt;  &lt;div style=&quot;width:200px; height:20px;background:#7e7d7e&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt; &lt;div style=&quot;width:200px; height:20px;background:#206125&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;td&gt;  &lt;div style=&quot;width:200px; height:20px;background:#5d9670&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt; &lt;div style=&quot;width:200px; height:20px;background:#e6dfcd&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;td&gt;  &lt;div style=&quot;width:200px; height:20px;background:#a6948f&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt; &lt;div style=&quot;width:200px; height:20px;background:#9feaa2&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;td&gt;  &lt;div style=&quot;width:200px; height:20px;background:#808178&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt; &lt;div style=&quot;width:200px; height:20px;background:#501d41&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;td&gt;  &lt;div style=&quot;width:200px; height:20px;background:#7e7d7e&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt; &lt;div style=&quot;width:200px; height:20px;background:#eae9cd&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;td&gt;  &lt;div style=&quot;width:200px; height:20px;background:#a6948f&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt; &lt;div style=&quot;width:200px; height:20px;background:#1a1f3e&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;td&gt;  &lt;div style=&quot;width:200px; height:20px;background:#7e7d7e&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt; &lt;div style=&quot;width:200px; height:20px;background:#551b28&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;td&gt;  &lt;div style=&quot;width:200px; height:20px;background:#fe0a01&quot;&gt; &lt;/div&gt; &lt;/td&gt; &lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;p&gt;While there are clear mistakes by the model, specially at the end of the list, I think in general the these is a feasible correspondence. This means,
+the node representation we are learning via the graph neural net is able to encode in a good way the the information propagated by the neighboring nodes, 
+in this case, the color. There are several things we can discuss from this small experiment and  its limitations.&lt;/p&gt;
+
+&lt;p&gt;For example, when we generate the graphs,  we first discretize the image into color zones, given a specified threshold. This resulting set of colors will be our nodes.
+Then, as mentioned above, the edges are generated in terms of if two color zones  are contiguous. In that sense, for most parts , edges associate two colors
+that are similar, or belong to the same portion of the color spectrum. But naturally there are cases were two color zones are contiguous, but their colors are totally
+different. Think , for example, in the case of an image that has grass next to a road. In this case, the is a big chance that a green gets linked a grey. Having
+this type of edges is part of the nature of the problem, but certainly  could be confusing the model, as one unlabeled node could be receiving  information 
+that is two heterogeneous, that ultimately its generated color will be kind of random. An alternative could to just ignore edges between nodes that are too dissimilar,
+but in turn that could generate a very disjoint graph, just small connected components without any inter-color transference. That is not so interesting.&lt;/p&gt;
+
+&lt;p&gt;The code to reproduce the experiments on this article will be available here:&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/solargrammars/colors-in-context&quot;&gt;https://github.com/solargrammars/colors-in-context&lt;/a&gt;&lt;/p&gt;</content><author><name>Solar Grammars</name></author><category term="blog" /><summary type="html">Colors are usually perceived in as part of a composition. It is rare that we can find them in isolation in nature. In that sense, probably what colors evoke is tightly associated to the perception of a colorful context. In other words, how we perceive a certain type of red, does not depend only on such color, but also on the colors that surround it.</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:4000/arctic-1.jpg" /></entry><entry><title type="html">Grounding Color Comparatives</title><link href="http://localhost:4000/blog/grounding-color-comparatives.html" rel="alternate" type="text/html" title="Grounding Color Comparatives" /><published>2017-01-02T00:00:00+09:00</published><updated>2017-01-02T00:00:00+09:00</updated><id>http://localhost:4000/blog/grounding-color-comparatives</id><content type="html" xml:base="http://localhost:4000/blog/grounding-color-comparatives.html">&lt;p&gt;The methods  we have covered so far allowed  us to learn  a direct mapping between colors and language. One possible limitation of those approaches is that in reality color perception is intrinsically contextual, in the sense that usually we come up with a description for a newly seen color based on a predefined reference. For example, when
 we say a given color is &lt;code class=&quot;highlighter-rouge&quot;&gt;mustard yellow&lt;/code&gt;, we are basically relating our experienced notion of &lt;code class=&quot;highlighter-rouge&quot;&gt;mustard&lt;/code&gt;  and a reference &lt;code class=&quot;highlighter-rouge&quot;&gt;yellow&lt;/code&gt; and associating them
 to express our perception through language. Another example can be seen when we say &lt;code class=&quot;highlighter-rouge&quot;&gt;dark green&lt;/code&gt; or &lt;code class=&quot;highlighter-rouge&quot;&gt;deep blue&lt;/code&gt;. In these cases we are adding an adjective to a color based or our predefined notion of it. In that sense, in order to communicate our perception of  &lt;code class=&quot;highlighter-rouge&quot;&gt;dark green&lt;/code&gt;, we use our preconceived reference of what we understand as &lt;code class=&quot;highlighter-rouge&quot;&gt;green&lt;/code&gt; and its &lt;code class=&quot;highlighter-rouge&quot;&gt;dark&lt;/code&gt; variant. In this process, we are implicitly internalizing that the color we are perceiving is &lt;code class=&quot;highlighter-rouge&quot;&gt;darker&lt;/code&gt; than 
 the reference we have.&lt;/p&gt;
