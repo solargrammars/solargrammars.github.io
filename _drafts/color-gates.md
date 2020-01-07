@@ -132,7 +132,7 @@ descriptions. This is what we get:
 </table>
 
 Hmm it seems here  Spacy tagged as vers things that are passive voice adjectives. Its fine, as descriptions are short, probably 
-Spacy didnt have much context to work with when deciding the tag. 
+Spacy didn't have much context to work with when deciding the tag. 
 
 `('ADJ', 'NOUN', 'NOUN')`:
 <table class="table_colors">
@@ -258,11 +258,26 @@ experiment. Lets compare the gating model against the following baselines:
 
 - Word-level LSTM, initialized with  Glove vectors (trainable). 
 - Character-based LSTM,  initializing char vectors randomly.
-- Combine Character-level LSTM  and Word-level by contatenation
+- Combine Character-level LSTM  and Word-level by concatenation
 
-We can compare the outoput of those models to see if the gating 
-mechanism shows advantajes in both quantitative  (MSE loss) and qualitative 
+We can compare the output of those models to see if the gating 
+mechanism shows advantages in both quantitative  (MSE loss) and qualitative 
 ways.
+
+<table class="table_colors">
+
+<tr><td> Description </td> <td> Generated Color </td> <td> Ground Truth </td>       </tr>
+<tr> <td>violent orange</td> <td> <div style='width:120px; height:30px;background:#f25337'> </div> </td> <td>  <div style='width:120px; height:30px;background:#ff7808'> </div> </td> </tr>
+<tr> <td>harley quinn</td> <td> <div style='width:120px; height:30px;background:#a1975e'> </div> </td> <td>  <div style='width:120px; height:30px;background:#c1218a'> </div> </td> </tr>
+<tr> <td>dream seeker</td> <td> <div style='width:120px; height:30px;background:#a07e8d'> </div> </td> <td>  <div style='width:120px; height:30px;background:#e7ddf4'> </div> </td> </tr>
+<tr> <td>city steps</td> <td> <div style='width:120px; height:30px;background:#a58986'> </div> </td> <td>  <div style='width:120px; height:30px;background:#dccfbf'> </div> </td> </tr>
+<tr> <td>frosty limeade</td> <td> <div style='width:120px; height:30px;background:#c0cb9d'> </div> </td> <td>  <div style='width:120px; height:30px;background:#e6fabe'> </div> </td> </tr>
+<tr> <td>sunshine serenade</td> <td> <div style='width:120px; height:30px;background:#d3b05e'> </div> </td> <td>  <div style='width:120px; height:30px;background:#efe7d8'> </div> </td> </tr>
+<tr> <td>high fidelity blue</td> <td> <div style='width:120px; height:30px;background:#5b47a9'> </div> </td> <td>  <div style='width:120px; height:30px;background:#1f97cc'> </div> </td> </tr>
+<tr> <td>peppermint minty</td> <td> <div style='width:120px; height:30px;background:#9ec2b4'> </div> </td> <td>  <div style='width:120px; height:30px;background:#0dffbd'> </div> </td> </tr>
+<tr> <td>iced lemon</td> <td> <div style='width:120px; height:30px;background:#e2d979'> </div> </td> <td>  <div style='width:120px; height:30px;background:#d3c77a'> </div> </td> </tr>
+<tr> <td>rosa blu</td> <td> <div style='width:120px; height:30px;background:#7f72c1'> </div> </td> <td>  <div style='width:120px; height:30px;background:#3d5295'> </div> </td> </tr>
+</table>
 
 
 
@@ -275,3 +290,4 @@ ways.
 
 There are a lot of ideas related to the architecture itself we could try, in terms of 
 what and how things are wired. 
+

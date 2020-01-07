@@ -9,7 +9,15 @@ color: "#C02942"
 ---
 
 Colors are usually perceived in as part of a composition. It is rare that we can 
-find them in isolation in nature. In that sense,  probably what colors evoke is 
+find them in isolation in nature. Sometimes we find
+articles, usually associated to marketing, where people make a direct relationship
+between a color and an emotion or a feeling. For example, when the color
+red is associated to `passion` and and green to `hope`. Such relationships could
+be true to some extent, but I think it is also important to consider the context associated
+to such perceptions. A red color indeed can express passion, but in some cases, given 
+the set of other colors present in the composition, it could also express sadness or fear.  
+
+ In that sense,  probably what colors evoke is 
 tightly associated to the perception of a colorful `context`. In other words, how we perceive 
 a certain type of red, does not depend only on such color, but also on the colors
 that surround it. 
@@ -535,8 +543,3 @@ but in turn that could generate a very disjoint graph, just small connected comp
 The code to reproduce the experiments on this article will be available here:
 
 <https://github.com/solargrammars/colors-in-context>
-
-
-
-
-
