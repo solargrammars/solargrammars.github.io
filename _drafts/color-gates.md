@@ -8,7 +8,7 @@ image: arctic-1.jpg
 color: "#D95B43"
 ---
 
-We have explored the relationship betwenn language and colors
+We have explored the relationship between language and colors
 from both word and character level perspectives, but in 
 isolation. Then, the natural question that arises is what 
 if subword structures play an important role in color 
@@ -42,7 +42,8 @@ In order to answer those questions, we need a way to quantify
 the contribution of character and word level representations 
 together. Lets say we have two ways to obtain a feature vector
 for each word. The first one: we use a RNN  which learns a 
-character based feature vector from the word. The second one:
+character based feature vector from the word, jyust like we did before.
+The second one:
 we directly query a source of pretrained vectors, such as Word2vec
 or Glove. Which one contributes more to minimize 
 the loss, lets say, expressed as the MSE between the generated 
@@ -50,12 +51,13 @@ color and the ground truth?
 
 Fortunately, there has been quite interesting research
 on the interplay between character and  word level 
-representations. One way to represent such relationship is 
+representations (besides just concatenating both vectors) 
+One way to represent such relationship is 
 through the concept of `gates`, such as in 
 [Balazs et. al.](https://arxiv.org/pdf/1904.05584.pdf) 
 or [Miyamoto et. al.](https://arxiv.org/abs/1606.01700), which 
 in simple terms means to learn a parameter $g$ that we can use 
-to weight the the vector representations coming from both char 
+to weight the vector representations coming from both char 
 and word levels:
 
 $$w = w_{char} * g +  w_{word} * (1-g)$$ 
@@ -211,7 +213,7 @@ the standard approach from the Balazs et al paper, as seen in the following diag
 Here, we have the description `vanilla cream`. The ultimate
 goal is to obtain a vector representation for the whole
 description that can be fed into a linear layer to generate the 
-color tuple (as a RGB vector). We can do that by processing  each word at a time and 
+color tuple (as a RGB or Lab color vector). We can do that by processing  each word at a time and 
 then aggregate the word level features vectors. That can be done 
 summing or averaging them, or, if we care about the ordering and
 dependency between tokens (we should), we could use a word level
@@ -254,15 +256,44 @@ modify the spatial position. That could be an interesting experiment: to check h
 much the task changes de vectors we associate, in advance, to a defined color. 
 
 Ok, having such model ready, and the data we discussed above, we can start our main
-experiment. Lets compare the gating model against the following baselines:
+experiment. Lets consider the following models:
 
-- Word-level LSTM, initialized with  Glove vectors (trainable). 
+
 - Character-based LSTM,  initializing char vectors randomly.
 - Combine Character-level LSTM  and Word-level by concatenation
+- Combine Character-level LSTM  and Word-level by gating
 
-We can compare the output of those models to see if the gating 
-mechanism shows advantages in both quantitative  (MSE loss) and qualitative 
-ways.
+Lets take a look at the results and try to answer the questions
+we posed above .
+
+Regarding the use of pretrained vectors ...
+
+Regarding the usefulness of the gating mechanism ...
+
+
+Well, the above experiment led us with a weird feeling. 
+I was expecting that a gating mechanism really improve
+the color generation over just a simple concatenation
+of the word representations. But lets not give up yet . 
+Lets use a different scenario to 
+to see if the gating mechanism can shine. 
+
+In the previous experiment, for simplicity, we prepared the data
+in a way that all words have an associated
+pretrained vector (ie, we discarded all the 
+descriptions that contain at least one word
+which do not appear in Glove). Thats a strong
+assumption. In reality, color description,
+users can use any word they consider appropiate
+to describe a color. Some words are quite
+unique and ... .
+
+
+
+
+
+
+
 
 <table class="table_colors">
 
@@ -282,6 +313,11 @@ ways.
 
 
 ![](/assets/img/blog/color-gates-img/losses.png) 
+
+
+If we analyze the loss curves for the four experiments, we can see that..
+
+
 
 
 
