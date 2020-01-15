@@ -284,22 +284,22 @@ dev loss to achieve  a quasi-stable state.
 Regarding the use of pretrained vectors, does Glove help? 
 Contrary to my initial assumption, it kinda help XD:  
 
-IMG
+![](/assets/img/blog/color-gates-img/loss1.png) 
 
 The above graph says a lot. In the first place we can see that 
 when we use glove, in both glove and random models we can achieve
 a lower dev loss. The difference is not that big but it is considerable
-spacially as both models reached a stable state in terms of their
+specially as both models reached a stable state in terms of their
 training loss. The second interesting thing here is  
 that doe this dataset, basically gating does not give any 
-advantaje over the simple contactenation of word representations 
-when we use glove, and when we use random vectors, clearly contactenation
+advantage over the simple concatenation of word representations 
+when we use glove, and when we use random vectors, clearly concatenation
 beats gating by a respectable margin.  
 
 Now, if we take the two best performing models and compare against
-a char-only model, we can see a clear advantaje
+a char-only model, we can see a clear advantage
 
-IMG
+![](/assets/img/blog/color-gates-img/loss2.png) 
 
 The char-only model, needs to learn from  scratch more fine-grained
 relationships, therefore it is natural for it to be slower. Having 
@@ -326,7 +326,7 @@ pretrained vector (ie, we discarded all the
 descriptions that contain at least one word
 which do not appear in Glove). Thats a strong
 assumption. In reality, in color description, as subjective as it is,
-users can use any word they consider appropiate
+users can use any word they consider appropriate
 to describe a color. Some words could be quite unique
 or rare, tightly associated to the persons cultural 
 background or experiences. Most likely those words
@@ -336,7 +336,7 @@ Thats an interesting scenario to assess the usefulness
 of the gating mechanism. When a word we use has not 
 an associated pretrained vector, what we basically do 
 is to assign a random vector...which can be quite useless
-in most cases. In that sense, we can see a good oportunity
+in most cases. In that sense, we can see a good opportunity
 for the gating mechanism: if we are currently trying 
 to obtain a vector representation for a word, the gating
 mechanism should ideally put a larger weight to the
@@ -364,7 +364,7 @@ character level representation, when the
 
 
 
-![](/assets/img/blog/color-gates-img/losses.png) 
+
 
 
 If we analyze the loss curves for the four experiments, we can see that..
