@@ -259,22 +259,64 @@ Ok, having such model ready, and the data we discussed above, we can start our m
 experiment. Lets consider the following models:
 
 
-- Character-based LSTM,  initializing char vectors randomly.
+- Character-based LSTM (char-only)
 - Combine Character-level LSTM  and Word-level by concatenation
+  - word level vectors initialized randomly (concat-random)
+  - word level vectors initialized with Glove (concat-glove)
 - Combine Character-level LSTM  and Word-level by gating
+  - word level vectors initialized randomly (gating-random)   
+  - word level vectors initialized with Glove (gating-glove)
 
-Lets take a look at the results and try to answer the questions
-we posed above .
 
-Regarding the use of pretrained vectors ...
+Lets take a look at the results from this five models and see 
+what interesting stuff we can get.
 
-Regarding the usefulness of the gating mechanism ...
+Something important to notice is that models that combine
+representations tend to be harder to train than just character 
+level based model. In, in the exploratory runs, it was
+kind of  difficult to find  a configuration that make 
+the training stable. The most promising optimizer across
+models was Adam, with a very low initial learning  of 0.0001. 
+Overfitting was a huge issue, therefore using decay was essential
+(more important that Dropout I would say )  to let the training and 
+dev loss to achieve  a quasi-stable state.  
 
+Regarding the use of pretrained vectors, does Glove help? 
+Contrary to my initial assumption, it kinda help XD:  
+
+IMG
+
+The above graph says a lot. In the first place we can see that 
+when we use glove, in both glove and random models we can achieve
+a lower dev loss. The difference is not that big but it is considerable
+spacially as both models reached a stable state in terms of their
+training loss. The second interesting thing here is  
+that doe this dataset, basically gating does not give any 
+advantaje over the simple contactenation of word representations 
+when we use glove, and when we use random vectors, clearly contactenation
+beats gating by a respectable margin.  
+
+Now, if we take the two best performing models and compare against
+a char-only model, we can see a clear advantaje
+
+IMG
+
+The char-only model, needs to learn from  scratch more fine-grained
+relationships, therefore it is natural for it to be slower. Having 
+access to a word level representation to encapsule characters as 
+cohesive entities, seems to really speed up the training, and allows
+to model to achieve a lower dev loss.   
+
+
+Having visualized the losses, lets take a look a the actual 
+generated colors for a sample of the unseen dataset.  
+
+TABLE
 
 Well, the above experiment led us with a weird feeling. 
 I was expecting that a gating mechanism really improve
 the color generation over just a simple concatenation
-of the word representations. But lets not give up yet . 
+of the word representations. But lets not give up yet. 
 Lets use a different scenario to 
 to see if the gating mechanism can shine. 
 
@@ -283,12 +325,22 @@ in a way that all words have an associated
 pretrained vector (ie, we discarded all the 
 descriptions that contain at least one word
 which do not appear in Glove). Thats a strong
-assumption. In reality, color description,
+assumption. In reality, in color description, as subjective as it is,
 users can use any word they consider appropiate
-to describe a color. Some words are quite
-unique and ... .
+to describe a color. Some words could be quite unique
+or rare, tightly associated to the persons cultural 
+background or experiences. Most likely those words
+will not have a pretrained vector available. 
 
-
+Thats an interesting scenario to assess the usefulness 
+of the gating mechanism. When a word we use has not 
+an associated pretrained vector, what we basically do 
+is to assign a random vector...which can be quite useless
+in most cases. In that sense, we can see a good oportunity
+for the gating mechanism: if we are currently trying 
+to obtain a vector representation for a word, the gating
+mechanism should ideally put a larger weight to the
+character level representation, when the 
 
 
 
