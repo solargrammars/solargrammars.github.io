@@ -47,16 +47,16 @@
 <meta property="og:title" content="Combining word and character level representations from color descriptions" />
 <meta name="author" content="Solar Grammars" />
 <meta property="og:locale" content="en_US" />
-<meta name="description" content="We have explored the relationship betwenn language and colors from both word and character level perspectives, but in isolation. Then, the natural question that arises is what if subword structures play an important role in color grounding? In other words, what if we combine character and word level representations when modeling color-language relationships?" />
-<meta property="og:description" content="We have explored the relationship betwenn language and colors from both word and character level perspectives, but in isolation. Then, the natural question that arises is what if subword structures play an important role in color grounding? In other words, what if we combine character and word level representations when modeling color-language relationships?" />
+<meta name="description" content="We have explored the relationship between language and colors from both word and character level perspectives, but in isolation. Then, the natural question that arises is what if subword structures play an important role in color grounding? In other words, what if we combine character and word level representations when modeling color-language relationships?" />
+<meta property="og:description" content="We have explored the relationship between language and colors from both word and character level perspectives, but in isolation. Then, the natural question that arises is what if subword structures play an important role in color grounding? In other words, what if we combine character and word level representations when modeling color-language relationships?" />
 <link rel="canonical" href="http://localhost:4000/blog/color-gates.html" />
 <meta property="og:url" content="http://localhost:4000/blog/color-gates.html" />
 <meta property="og:site_name" content="Solar Grammars" />
 <meta property="og:image" content="http://localhost:4000/arctic-1.jpg" />
 <meta property="og:type" content="article" />
-<meta property="article:published_time" content="2020-01-07T23:59:08+09:00" />
+<meta property="article:published_time" content="2020-01-16T00:43:05+09:00" />
 <script type="application/ld+json">
-{"description":"We have explored the relationship betwenn language and colors from both word and character level perspectives, but in isolation. Then, the natural question that arises is what if subword structures play an important role in color grounding? In other words, what if we combine character and word level representations when modeling color-language relationships?","@type":"BlogPosting","image":"http://localhost:4000/arctic-1.jpg","url":"http://localhost:4000/blog/color-gates.html","headline":"Combining word and character level representations from color descriptions","dateModified":"2020-01-07T23:59:08+09:00","datePublished":"2020-01-07T23:59:08+09:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/blog/color-gates.html"},"author":{"@type":"Person","name":"Solar Grammars"},"@context":"https://schema.org"}</script>
+{"description":"We have explored the relationship between language and colors from both word and character level perspectives, but in isolation. Then, the natural question that arises is what if subword structures play an important role in color grounding? In other words, what if we combine character and word level representations when modeling color-language relationships?","@type":"BlogPosting","image":"http://localhost:4000/arctic-1.jpg","url":"http://localhost:4000/blog/color-gates.html","headline":"Combining word and character level representations from color descriptions","dateModified":"2020-01-16T00:43:05+09:00","datePublished":"2020-01-16T00:43:05+09:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/blog/color-gates.html"},"author":{"@type":"Person","name":"Solar Grammars"},"@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
 
@@ -125,7 +125,7 @@
   
   -->
   <article>
-    <p>We have explored the relationship betwenn language and colors
+    <p>We have explored the relationship between language and colors
 from both word and character level perspectives, but in 
 isolation. Then, the natural question that arises is what 
 if subword structures play an important role in color 
@@ -159,7 +159,8 @@ generation?</p>
 the contribution of character and word level representations 
 together. Lets say we have two ways to obtain a feature vector
 for each word. The first one: we use a RNN  which learns a 
-character based feature vector from the word. The second one:
+character based feature vector from the word, jyust like we did before.
+The second one:
 we directly query a source of pretrained vectors, such as Word2vec
 or Glove. Which one contributes more to minimize 
 the loss, lets say, expressed as the MSE between the generated 
@@ -167,12 +168,13 @@ color and the ground truth?</p>
 
 <p>Fortunately, there has been quite interesting research
 on the interplay between character and  word level 
-representations. One way to represent such relationship is 
+representations (besides just concatenating both vectors) 
+One way to represent such relationship is 
 through the concept of <code class="highlighter-rouge">gates</code>, such as in 
 <a href="https://arxiv.org/pdf/1904.05584.pdf">Balazs et. al.</a> 
 or <a href="https://arxiv.org/abs/1606.01700">Miyamoto et. al.</a>, which 
 in simple terms means to learn a parameter $g$ that we can use 
-to weight the the vector representations coming from both char 
+to weight the vector representations coming from both char 
 and word levels:</p>
 
 <script type="math/tex; mode=display">w = w_{char} * g +  w_{word} * (1-g)</script>
@@ -325,7 +327,7 @@ the standard approach from the Balazs et al paper, as seen in the following diag
 <p>Here, we have the description <code class="highlighter-rouge">vanilla cream</code>. The ultimate
 goal is to obtain a vector representation for the whole
 description that can be fed into a linear layer to generate the 
-color tuple (as a RGB vector). We can do that by processing  each word at a time and 
+color tuple (as a RGB or Lab color vector). We can do that by processing  each word at a time and 
 then aggregate the word level features vectors. That can be done 
 summing or averaging them, or, if we care about the ordering and
 dependency between tokens (we should), we could use a word level
@@ -368,17 +370,96 @@ modify the spatial position. That could be an interesting experiment: to check h
 much the task changes de vectors we associate, in advance, to a defined color.</p>
 
 <p>Ok, having such model ready, and the data we discussed above, we can start our main
-experiment. Lets compare the gating model against the following baselines:</p>
+experiment. Lets consider the following models:</p>
 
 <ul>
-  <li>Word-level LSTM, initialized with  Glove vectors (trainable).</li>
-  <li>Character-based LSTM,  initializing char vectors randomly.</li>
-  <li>Combine Character-level LSTM  and Word-level by concatenation</li>
+  <li>Character-based LSTM (char-only)</li>
+  <li>Combine Character-level LSTM  and Word-level by concatenation
+    <ul>
+      <li>word level vectors initialized randomly (concat-random)</li>
+      <li>word level vectors initialized with Glove (concat-glove)</li>
+    </ul>
+  </li>
+  <li>Combine Character-level LSTM  and Word-level by gating
+    <ul>
+      <li>word level vectors initialized randomly (gating-random)</li>
+      <li>word level vectors initialized with Glove (gating-glove)</li>
+    </ul>
+  </li>
 </ul>
 
-<p>We can compare the output of those models to see if the gating 
-mechanism shows advantages in both quantitative  (MSE loss) and qualitative 
-ways.</p>
+<p>Lets take a look at the results from this five models and see 
+what interesting stuff we can get.</p>
+
+<p>Something important to notice is that models that combine
+representations tend to be harder to train than just character 
+level based model. In, in the exploratory runs, it was
+kind of  difficult to find  a configuration that make 
+the training stable. The most promising optimizer across
+models was Adam, with a very low initial learning  of 0.0001. 
+Overfitting was a huge issue, therefore using decay was essential
+(more important that Dropout I would say )  to let the training and 
+dev loss to achieve  a quasi-stable state.</p>
+
+<p>Regarding the use of pretrained vectors, does Glove help? 
+Contrary to my initial assumption, it kinda help XD:</p>
+
+<p>IMG</p>
+
+<p>The above graph says a lot. In the first place we can see that 
+when we use glove, in both glove and random models we can achieve
+a lower dev loss. The difference is not that big but it is considerable
+spacially as both models reached a stable state in terms of their
+training loss. The second interesting thing here is<br />
+that doe this dataset, basically gating does not give any 
+advantaje over the simple contactenation of word representations 
+when we use glove, and when we use random vectors, clearly contactenation
+beats gating by a respectable margin.</p>
+
+<p>Now, if we take the two best performing models and compare against
+a char-only model, we can see a clear advantaje</p>
+
+<p>IMG</p>
+
+<p>The char-only model, needs to learn from  scratch more fine-grained
+relationships, therefore it is natural for it to be slower. Having 
+access to a word level representation to encapsule characters as 
+cohesive entities, seems to really speed up the training, and allows
+to model to achieve a lower dev loss.</p>
+
+<p>Having visualized the losses, lets take a look a the actual 
+generated colors for a sample of the unseen dataset.</p>
+
+<p>TABLE</p>
+
+<p>Well, the above experiment led us with a weird feeling. 
+I was expecting that a gating mechanism really improve
+the color generation over just a simple concatenation
+of the word representations. But lets not give up yet. 
+Lets use a different scenario to 
+to see if the gating mechanism can shine.</p>
+
+<p>In the previous experiment, for simplicity, we prepared the data
+in a way that all words have an associated
+pretrained vector (ie, we discarded all the 
+descriptions that contain at least one word
+which do not appear in Glove). Thats a strong
+assumption. In reality, in color description, as subjective as it is,
+users can use any word they consider appropiate
+to describe a color. Some words could be quite unique
+or rare, tightly associated to the persons cultural 
+background or experiences. Most likely those words
+will not have a pretrained vector available.</p>
+
+<p>Thats an interesting scenario to assess the usefulness 
+of the gating mechanism. When a word we use has not 
+an associated pretrained vector, what we basically do 
+is to assign a random vector…which can be quite useless
+in most cases. In that sense, we can see a good oportunity
+for the gating mechanism: if we are currently trying 
+to obtain a vector representation for a word, the gating
+mechanism should ideally put a larger weight to the
+character level representation, when the</p>
 
 <table class="table_colors">
 
@@ -396,6 +477,8 @@ ways.</p>
 </table>
 
 <p><img src="/assets/img/blog/color-gates-img/losses.png" alt="" /></p>
+
+<p>If we analyze the loss curves for the four experiments, we can see that..</p>
 
 <h2 id="possible-improvements">Possible improvements</h2>
 
