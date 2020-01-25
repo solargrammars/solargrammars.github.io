@@ -336,15 +336,24 @@ Thats an interesting scenario to assess the usefulness
 of the gating mechanism. When a word we use has not 
 an associated pretrained vector, what we basically do 
 is to assign a random vector...which can be quite useless
-in most cases. In that sense, we can see a good opportunity
+in most cases. 
+
+In that sense, we can see a good opportunity
 for the gating mechanism: if we are currently trying 
-to obtain a vector representation for a word, the gating
-mechanism should ideally put a larger weight to the
-character level representation, when the 
+to obtain a vector representation for a word in a sentence,
+lets say the adjective `breakable`
+but such world does not have a pretrained vector associated, 
+would it be great if the gating mechanism put more 
+weight into the character level representation, which could
+have possibly already learned good representations of words
+that are associated to the target word, such as  `broken`or
+`breaking` and their relationship with color generation (
+lets imagine )
 
-
-
-
+In order to test this new hypothesis, we need a new dataset
+that actually contains words without a propoer pretrained
+representation and even noisier color descriptions. Lets 
+generare such dataset and inspect its characteristics
 
 
 <table class="table_colors">
