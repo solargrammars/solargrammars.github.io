@@ -41,13 +41,14 @@ generation?
 In order to answer those questions, we need a way to quantify 
 the contribution of character and word level representations 
 together. Lets say we have two ways to obtain a feature vector
-for each word. The first one: we use a RNN  which learns a 
-character based feature vector from the word, jyust like we did before.
+for each word present in a description. The first one: we use a RNN  which learns a 
+character based feature vector from the word, just like we did before.
 The second one:
 we directly query a source of pretrained vectors, such as Word2vec
-or Glove. Which one contributes more to minimize 
+or Glove. In this setting, which one contributes then most to minimize 
 the loss, lets say, expressed as the MSE between the generated 
-color and the ground truth? 
+color and the ground truth? What type of combination is the optimal ?
+
 
 Fortunately, there has been quite interesting research
 on the interplay between character and  word level 
@@ -72,17 +73,11 @@ modeling color descriptions allow us to obtain interesting
 insights. As always, lets start with the data. For the 
 purpose of this study, we can reuse the data
 data extracted from ColourLovers, which we have used previously. 
-
-While we can use all the available data on a train/test split,
-something we  can consider is to condition the descriptions by 
-certain characteristics such as length or even color range. For the 
-moment I think grouping them by 
-the POS tag could give us a good indicator, as it could  give
-us nice insights about the language usage when people describe 
-colors. I was advised not to use NLTK by my expert NLP friends,
-so all the results here are based on Spacy.  In terms of patterns 
-of POS tags within the
-descriptions, we can see something like this:
+This source of data is quite interesting given the variability
+and abstractness in the use of language. Additionally, while 
+they tend to be short (usually no more than five tokens) their
+composition is quite diverse, as we can see if we extract
+POS patterns. 
 
 ![](/assets/img/blog/color-gates-img/pos_freqs.png) 
 
@@ -133,7 +128,7 @@ descriptions. This is what we get:
 <tr> <td>powdered sugar</td><td><div style='float:left;width:100px; height:20px;background:#bddebe;'>  </div>  </td>  </tr>
 </table>
 
-Hmm it seems here  Spacy tagged as vers things that are passive voice adjectives. Its fine, as descriptions are short, probably 
+Hmm it seems here  Spacy tagged as verbs things that are passive voice adjectives. It's fine, as descriptions are short, probably 
 Spacy didn't have much context to work with when deciding the tag. 
 
 `('ADJ', 'NOUN', 'NOUN')`:
@@ -168,10 +163,6 @@ Spacy didn't have much context to work with when deciding the tag.
 
 In general we can see a good correlation between what each description 
 expresses and the colors it has associated. 
-Interestingly, in the case of `(VERB, NOUN)`, it seems the parser
-got a bit confused and most of the instances can be regarded as
-part of the  `(ADJECTIVE, NOUN)`.
-
 
 There are several instances where the adjective is quite vague, 
 such as in the case of `haunted` in `haunted milk`. In those cases,
@@ -181,8 +172,8 @@ the noun associated is `milk`, which we know has the color `white`
 as the most probable reference. But then, how to turn a plain 
 version of `white` in to `haunted milk`. Here is where it relies
 my main hypothesis on the usefulness of the gating mechanism.
-I am expecting models that is only character-based or only  word-based 
-to fail as I consider necessary  to consider 
+I expect models that are only character-based or only  word-based 
+to perform poorly as it seems to be necessary  to consider 
 a bit  more flexible representation of the description. 
 
 For the `milk` part of the description, I think , yes, just the 
@@ -190,7 +181,7 @@ word level vector might be enough. But for making sense of what is
 `haunted`, I think the model should take into account substructures such 
 as `haunt`, which can be only incorporated via the character level 
 representation. Then, 
-as `haunt` can be more associated to `pale` or `ghostly` concepts (as in 
+as `haunt` can be more associated to `pale` or `ghostly` terms (as in 
 `The haunted house`, or based on this interesting [list](https://www.thesaurus.com/browse/haunted) ), 
 the model could learn to associate the colors from other
 ghost-centric descriptions present in the data (thats important 
@@ -207,7 +198,7 @@ a weight we can later inspect to give to obtain more explanatory insights.
 
 
 In terms of how to operationalize a gating mechanism, we can follow
-the standard approach from the Balazs et al paper, as seen in the following diagram:
+the standard approach from the Balazs et. al. paper, as seen in the following diagram:
 ![](/assets/img/blog/color-gates-img/gating-model.png) 
 
 Here, we have the description `vanilla cream`. The ultimate
@@ -240,7 +231,7 @@ is referenced. For example, when we describe a color as "sad banana" we know
 we are referring to a type of yellow. Same with something than contains nouns
 such  as sun, school bus, vanilla, etc. 
 
-Glove vectors were obtained through at task that is orthogonal to 
+Glove vectors were obtained through a task that is different to 
 color description grounding, which is basically training a language model, where
 we try to maximize the likelihood of a word given a defined context. In that sense,
 if we assume two yellow things, such as `banana` and `taxi`, their vectors in Glove
@@ -268,7 +259,7 @@ experiment. Lets consider the following models:
   - word level vectors initialized with Glove (gating-glove)
 
 
-Lets take a look at the results from this five models and see 
+Let's take a look at the results from this five models and see 
 what interesting stuff we can get.
 
 Something important to notice is that models that combine
@@ -284,7 +275,7 @@ dev loss to achieve  a quasi-stable state.
 Regarding the use of pretrained vectors, does Glove help? 
 Contrary to my initial assumption, it kinda help XD:  
 
-![](/assets/img/blog/color-gates-img/loss1.png) 
+![](/assets/img/blog/color-gates-img/loss1clean.png) 
 
 The above graph says a lot. In the first place we can see that 
 when we use glove, in both glove and random models we can achieve
@@ -299,13 +290,14 @@ beats gating by a respectable margin.
 Now, if we take the two best performing models and compare against
 a char-only model, we can see a clear advantage
 
-![](/assets/img/blog/color-gates-img/loss2.png) 
+
+![](/assets/img/blog/color-gates-img/loss2clean.png) 
 
 The char-only model, needs to learn from  scratch more fine-grained
 relationships, therefore it is natural for it to be slower. Having 
 access to a word level representation to encapsule characters as 
 cohesive entities, seems to really speed up the training, and allows
-to model to achieve a lower dev loss.   
+to model to achieve a lower dev loss.
 
 
 Having visualized the losses, lets take a look a the actual 
@@ -314,21 +306,21 @@ generated colors for a sample of the unseen dataset.
 TABLE
 
 Well, the above experiment led us with a weird feeling. 
-I was expecting that a gating mechanism really improve
+I was expecting that a gating mechanism really improved
 the color generation over just a simple concatenation
-of the word representations. But lets not give up yet. 
+of the word representations. But let's not give up yet. 
 Lets use a different scenario to 
 to see if the gating mechanism can shine. 
 
 In the previous experiment, for simplicity, we prepared the data
 in a way that all words have an associated
-pretrained vector (ie, we discarded all the 
+pretrained vector (i.e., we discarded all the 
 descriptions that contain at least one word
 which do not appear in Glove). Thats a strong
 assumption. In reality, in color description, as subjective as it is,
-users can use any word they consider appropriate
+people can use any word they consider appropriate
 to describe a color. Some words could be quite unique
-or rare, tightly associated to the persons cultural 
+or rare, tightly associated to the person's cultural 
 background or experiences. Most likely those words
 will not have a pretrained vector available. 
 
@@ -346,14 +338,39 @@ but such world does not have a pretrained vector associated,
 would it be great if the gating mechanism put more 
 weight into the character level representation, which could
 have possibly already learned good representations of words
-that are associated to the target word, such as  `broken`or
-`breaking` and their relationship with color generation (
-lets imagine )
+that are associated to the target word, such as  `broken` or
+`breaking` and their relationship with color generation.
 
 In order to test this new hypothesis, we need a new dataset
-that actually contains words without a propoer pretrained
+that actually contains words without a proper pretrained
 representation and even noisier color descriptions. Lets 
-generare such dataset and inspect its characteristics
+generate such dataset and inspect its characteristics.
+
+Lets relax a little bit the descriptions we are allowing words
+that do not appear initially in Glove, but still only
+allowing words whose frequency is higher than two and also 
+descriptions that are at least two word long. We can regard
+this dataset as a bit noisier than the original one, but
+not super noisy. If we repeat the experiment with
+the same models, we obtain the following results. 
+
+![](/assets/img/blog/color-gates-img/loss1medium.png) 
+![](/assets/img/blog/color-gates-img/loss2medium.png) 
+
+Hmmm, even with a noisier dataset, the results are quite
+similar. No problem. Let's force the model to use the 
+raw dataset: straight out of the Colourlovers crawler, 
+without any special filtering besides removing alphanumerical
+symbols.
+
+Let us repeat the experiment with the same models, and now:
+![](/assets/img/blog/color-gates-img/loss1noise.png) 
+![](/assets/img/blog/color-gates-img/loss2noise.png) 
+
+Here we can see that the gating model is able to reach
+a lower test loss than the rest of alternatives.
+
+
 
 
 <table class="table_colors">
@@ -376,10 +393,10 @@ generare such dataset and inspect its characteristics
 
 
 
-If we analyze the loss curves for the four experiments, we can see that..
 
-
-
+Well, as a result, after taking into consideration the experiments, 
+while we cannot conclude that a gating mechanism always provide a better 
+performance than the rest of configurations. 
 
 
 
