@@ -301,7 +301,7 @@ th, td {
 .table_colors {
   border: 0px; }
 
-.table_colors td {
+.table_colors td, th {
   padding: 2px 0px 2px 0px;
   border-left: 0px;
   border-right: 0px;

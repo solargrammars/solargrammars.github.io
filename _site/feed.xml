@@ -1,4 +1,381 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.6.3">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2020-02-02T22:55:11+09:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Solar Grammars</title><subtitle></subtitle><author><name></name></author><entry><title type="html">Palettes and graphs as color context</title><link href="http://localhost:4000/blog/colors-in-context.html" rel="alternate" type="text/html" title="Palettes and  graphs as color context" /><published>2017-01-03T00:00:00+09:00</published><updated>2017-01-03T00:00:00+09:00</updated><id>http://localhost:4000/blog/colors-in-context</id><content type="html" xml:base="http://localhost:4000/blog/colors-in-context.html">&lt;p&gt;Colors are usually perceived in as part of a composition. It is rare that we can 
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.6.3">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2020-02-09T20:08:15+09:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Solar Grammars</title><subtitle></subtitle><author><name></name></author><entry><title type="html">Combining word and character level representations from color descriptions</title><link href="http://localhost:4000/blog/color-gates.html" rel="alternate" type="text/html" title="Combining word and character level representations from color descriptions" /><published>2017-01-04T00:00:00+09:00</published><updated>2017-01-04T00:00:00+09:00</updated><id>http://localhost:4000/blog/color-gates</id><content type="html" xml:base="http://localhost:4000/blog/color-gates.html">&lt;p&gt;We have explored the relationship between language and colors
+from both word and character level perspectives, but in 
+isolation. Then, the natural question that arises is what 
+if subword structures play an important role in color 
+grounding?  In other words, what if we combine character
+and word level representations when modeling color-language
+relationships?&lt;/p&gt;
+
+&lt;p&gt;When we reviewed the results of the experiments on color generation
+from descriptions using a character 
+level recurrent model, we found quite interesting 
+examples where, as we progressed on the sequences of 
+characters, the generated colors suddenly changed. That was 
+the case of descriptions such as &lt;code class=&quot;highlighter-rouge&quot;&gt;Strawberry lipstick&lt;/code&gt; (or 
+something like that), where the color generation up the character
+ &lt;code class=&quot;highlighter-rouge&quot;&gt;w&lt;/code&gt; (from strawberry) was giving us a brown-ish color, naturally 
+associated with the word &lt;code class=&quot;highlighter-rouge&quot;&gt;straw&lt;/code&gt;, which was also present during training. 
+Then, suddenly, as the model incorporated the remaining tokens 
+sequentially, &lt;code class=&quot;highlighter-rouge&quot;&gt;b -&amp;gt; e -&amp;gt; r -&amp;gt; r...&lt;/code&gt; the output color was 
+gradually changing to something more reddish (associated to
+strawberry).&lt;/p&gt;
+
+&lt;p&gt;This led us to think, how does the grounding of a 
+word or sentence can be understood in terms of the interplay
+between its words and characters? For a given description, is it 
+a specific character pattern that impact the most on the 
+changes at color generation? or what are the common subword 
+structures that command or condition more strongly the color 
+generation?&lt;/p&gt;
+
+&lt;p&gt;In order to answer those questions, we need a way to quantify 
+the contribution of character and word level representations 
+together. Lets say we have two ways to obtain a feature vector
+for each word present in a description. The first one: we use a RNN  which learns a 
+character based feature vector from the word, just like we did before.
+The second one:
+we directly query a source of pretrained vectors, such as Word2vec
+or Glove. In this setting, which one contributes then most to minimize 
+the loss, lets say, expressed as the MSE between the generated 
+color and the ground truth? What type of combination is the optimal ?&lt;/p&gt;
+
+&lt;p&gt;Fortunately, there has been quite interesting research
+on the interplay between character and  word level 
+representations (besides just concatenating both vectors) 
+One way to represent such relationship is 
+through the concept of &lt;code class=&quot;highlighter-rouge&quot;&gt;gates&lt;/code&gt;, such as in 
+&lt;a href=&quot;https://arxiv.org/pdf/1904.05584.pdf&quot;&gt;Balazs et. al.&lt;/a&gt; 
+or &lt;a href=&quot;https://arxiv.org/abs/1606.01700&quot;&gt;Miyamoto et. al.&lt;/a&gt;, which 
+in simple terms means to learn a parameter $g$ that we can use 
+to weight the vector representations coming from both char 
+and word levels:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;w = w_{char} * g +  w_{word} * (1-g)&lt;/script&gt;
+
+&lt;p&gt;Here &lt;script type=&quot;math/tex&quot;&gt;g&lt;/script&gt; can be a scalar or a vector. Both cases work almost 
+the same, in which the idea is to have a fully connected layer 
+that takes as input the word level representation and  outputs 
+a scalar or a vector.&lt;/p&gt;
+
+&lt;p&gt;Lets conduct a couple of experiments to see if this way of 
+modeling color descriptions allow us to obtain interesting 
+insights. As always, lets start with the data. For the 
+purpose of this study, we can reuse the data
+data extracted from ColourLovers, which we have used previously. 
+This source of data is quite interesting given the variability
+and abstractness in the use of language. Additionally, while 
+they tend to be short (usually no more than five tokens) their
+composition is quite diverse, as we can see if we extract
+POS patterns.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/img/blog/color-gates-img/pos_freqs.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Lets obtain a sample from the top 5 groups of patterns with most 
+descriptions. This is what we get:&lt;/p&gt;
+
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;('ADJ', 'NOUN')&lt;/code&gt;:&lt;/p&gt;
+&lt;table class=&quot;table_colors&quot;&gt;
+&lt;tr&gt; &lt;td&gt;dutch teal&lt;/td&gt;&lt;td&gt;&lt;div style=&quot;float:left;width:100px; height:20px;background:#1a6470;&quot;&gt;  &lt;/div&gt;  &lt;/td&gt;  &lt;/tr&gt;
+&lt;tr&gt; &lt;td&gt;hot pink&lt;/td&gt;&lt;td&gt;&lt;div style=&quot;float:left;width:100px; height:20px;background:#ff67b4;&quot;&gt;  &lt;/div&gt;  &lt;/td&gt;  &lt;/tr&gt;
+&lt;tr&gt; &lt;td&gt;mighty slate&lt;/td&gt;&lt;td&gt;&lt;div style=&quot;float:left;width:100px; height:20px;background:#556270;&quot;&gt;  &lt;/div&gt;  &lt;/td&gt;  &lt;/tr&gt;
+&lt;tr&gt; &lt;td&gt;certain frogs&lt;/td&gt;&lt;td&gt;&lt;div style=&quot;float:left;width:100px; height:20px;background:#c3ff68;&quot;&gt;  &lt;/div&gt;  &lt;/td&gt;  &lt;/tr&gt;
+&lt;tr&gt; &lt;td&gt;millennial blue&lt;/td&gt;&lt;td&gt;&lt;div style=&quot;float:left;width:100px; height:20px;background:#374bde;&quot;&gt;  &lt;/div&gt;  &lt;/td&gt;  &lt;/tr&gt;
+&lt;tr&gt; &lt;td&gt;black tulip&lt;/td&gt;&lt;td&gt;&lt;div style=&quot;float:left;width:100px; height:20px;background:#340943;&quot;&gt;  &lt;/div&gt;  &lt;/td&gt;  &lt;/tr&gt;
+&lt;tr&gt; &lt;td&gt;lipgloss boost&lt;/td&gt;&lt;td&gt;&lt;div style=&quot;float:left;width:100px; height:20px;background:#d7217e;&quot;&gt;  &lt;/div&gt;  &lt;/td&gt;  &lt;/tr&gt;
+&lt;tr&gt; &lt;td&gt;green tea&lt;/td&gt;&lt;td&gt;&lt;div style=&quot;float:left;width:100px; height:20px;background:#edc003;&quot;&gt;  &lt;/div&gt;  &lt;/td&gt;  &lt;/tr&gt;
+&lt;tr&gt; &lt;td&gt;cheery pink&lt;/td&gt;&lt;td&gt;&lt;div style=&quot;float:left;width:100px; height:20px;background:#fa3a7f;&quot;&gt;  &lt;/div&gt;  &lt;/td&gt;  &lt;/tr&gt;
+&lt;tr&gt; &lt;td&gt;juicy pink&lt;/td&gt;&lt;td&gt;&lt;div style=&quot;float:left;width:100px; height:20px;background:#dd037e;&quot;&gt;  &lt;/div&gt;  &lt;/td&gt;  &lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;('NOUN', 'NOUN')&lt;/code&gt;:&lt;/p&gt;
+&lt;table class=&quot;table_colors&quot;&gt;
+&lt;tr&gt; &lt;td&gt;vanilla cream&lt;/td&gt;&lt;td&gt;&lt;div style=&quot;float:left;width:100px; height:20px;background:#fbe6da;&quot;&gt;  &lt;/div&gt;  &lt;/td&gt;  &lt;/tr&gt;
+&lt;tr&gt; &lt;td&gt;vitamin c&lt;/td&gt;&lt;td&gt;&lt;div style=&quot;float:left;width:100px; height:20px;background:#d26f36;&quot;&gt;  &lt;/div&gt;  &lt;/td&gt;  &lt;/tr&gt;
+&lt;tr&gt; &lt;td&gt;orange icing&lt;/td&gt;&lt;td&gt;&lt;div style=&quot;float:left;width:100px; height:20px;background:#ea3556;&quot;&gt;  &lt;/div&gt;  &lt;/td&gt;  &lt;/tr&gt;
+&lt;tr&gt; &lt;td&gt;barbie world&lt;/td&gt;&lt;td&gt;&lt;div style=&quot;float:left;width:100px; height:20px;background:#e20092;&quot;&gt;  &lt;/div&gt;  &lt;/td&gt;  &lt;/tr&gt;
+&lt;tr&gt; &lt;td&gt;sugar champagne&lt;/td&gt;&lt;td&gt;&lt;div style=&quot;float:left;width:100px; height:20px;background:#f9cdad;&quot;&gt;  &lt;/div&gt;  &lt;/td&gt;  &lt;/tr&gt;
+&lt;tr&gt; &lt;td&gt;metro blue&lt;/td&gt;&lt;td&gt;&lt;div style=&quot;float:left;width:100px; height:20px;background:#2c89e6;&quot;&gt;  &lt;/div&gt;  &lt;/td&gt;  &lt;/tr&gt;
+&lt;tr&gt; &lt;td&gt;brides blush&lt;/td&gt;&lt;td&gt;&lt;div style=&quot;float:left;width:100px; height:20px;background:#ea69ae;&quot;&gt;  &lt;/div&gt;  &lt;/td&gt;  &lt;/tr&gt;
+&lt;tr&gt; &lt;td&gt;moon warrior&lt;/td&gt;&lt;td&gt;&lt;div style=&quot;float:left;width:100px; height:20px;background:#51445f;&quot;&gt;  &lt;/div&gt;  &lt;/td&gt;  &lt;/tr&gt;
+&lt;tr&gt; &lt;td&gt;love affair&lt;/td&gt;&lt;td&gt;&lt;div style=&quot;float:left;width:100px; height:20px;background:#856cc9;&quot;&gt;  &lt;/div&gt;  &lt;/td&gt;  &lt;/tr&gt;
+&lt;tr&gt; &lt;td&gt;heirloom hydrangea&lt;/td&gt;&lt;td&gt;&lt;div style=&quot;float:left;width:100px; height:20px;background:#b954f2;&quot;&gt;  &lt;/div&gt;  &lt;/td&gt;  &lt;/tr&gt;
+
+&lt;/table&gt;
+
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;('VERB', 'NOUN')&lt;/code&gt;:&lt;/p&gt;
+&lt;table class=&quot;table_colors&quot;&gt;
+&lt;tr&gt; &lt;td&gt;haunted milk&lt;/td&gt;&lt;td&gt;&lt;div style=&quot;float:left;width:100px; height:20px;background:#cdd7b6;&quot;&gt;  &lt;/div&gt;  &lt;/td&gt;  &lt;/tr&gt;
+&lt;tr&gt; &lt;td&gt;raspberry lemonade&lt;/td&gt;&lt;td&gt;&lt;div style=&quot;float:left;width:100px; height:20px;background:#d2c2f1;&quot;&gt;  &lt;/div&gt;  &lt;/td&gt;  &lt;/tr&gt;
+&lt;tr&gt; &lt;td&gt;minted peas&lt;/td&gt;&lt;td&gt;&lt;div style=&quot;float:left;width:100px; height:20px;background:#c8f0b2;&quot;&gt;  &lt;/div&gt;  &lt;/td&gt;  &lt;/tr&gt;
+&lt;tr&gt; &lt;td&gt;strawberry lipgloss&lt;/td&gt;&lt;td&gt;&lt;div style=&quot;float:left;width:100px; height:20px;background:#ce5d9b;&quot;&gt;  &lt;/div&gt;  &lt;/td&gt;  &lt;/tr&gt;
+&lt;tr&gt; &lt;td&gt;irish sea&lt;/td&gt;&lt;td&gt;&lt;div style=&quot;float:left;width:100px; height:20px;background:#13a445;&quot;&gt;  &lt;/div&gt;  &lt;/td&gt;  &lt;/tr&gt;
+&lt;tr&gt; &lt;td&gt;poached ivory&lt;/td&gt;&lt;td&gt;&lt;div style=&quot;float:left;width:100px; height:20px;background:#d8d8c0;&quot;&gt;  &lt;/div&gt;  &lt;/td&gt;  &lt;/tr&gt;
+&lt;tr&gt; &lt;td&gt;wedded passion&lt;/td&gt;&lt;td&gt;&lt;div style=&quot;float:left;width:100px; height:20px;background:#630947;&quot;&gt;  &lt;/div&gt;  &lt;/td&gt;  &lt;/tr&gt;
+&lt;tr&gt; &lt;td&gt;imagine roses&lt;/td&gt;&lt;td&gt;&lt;div style=&quot;float:left;width:100px; height:20px;background:#fe016b;&quot;&gt;  &lt;/div&gt;  &lt;/td&gt;  &lt;/tr&gt;
+&lt;tr&gt; &lt;td&gt;rosen maiden&lt;/td&gt;&lt;td&gt;&lt;div style=&quot;float:left;width:100px; height:20px;background:#ffa4a0;&quot;&gt;  &lt;/div&gt;  &lt;/td&gt;  &lt;/tr&gt;
+&lt;tr&gt; &lt;td&gt;powdered sugar&lt;/td&gt;&lt;td&gt;&lt;div style=&quot;float:left;width:100px; height:20px;background:#bddebe;&quot;&gt;  &lt;/div&gt;  &lt;/td&gt;  &lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;p&gt;Hmm it seems here  Spacy tagged as verbs things that are passive voice adjectives. It’s fine, as descriptions are short, probably 
+Spacy didn’t have much context to work with when deciding the tag.&lt;/p&gt;
+
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;('ADJ', 'NOUN', 'NOUN')&lt;/code&gt;:&lt;/p&gt;
+&lt;table class=&quot;table_colors&quot;&gt;
+&lt;tr&gt; &lt;td&gt;hawaiian lava fields&lt;/td&gt;&lt;td&gt;&lt;div style=&quot;float:left;width:100px; height:20px;background:#4f4e57;&quot;&gt;  &lt;/div&gt;  &lt;/td&gt;  &lt;/tr&gt;
+&lt;tr&gt; &lt;td&gt;new yolk city&lt;/td&gt;&lt;td&gt;&lt;div style=&quot;float:left;width:100px; height:20px;background:#ffa111;&quot;&gt;  &lt;/div&gt;  &lt;/td&gt;  &lt;/tr&gt;
+&lt;tr&gt; &lt;td&gt;white chocolate fill&lt;/td&gt;&lt;td&gt;&lt;div style=&quot;float:left;width:100px; height:20px;background:#f8ecc9;&quot;&gt;  &lt;/div&gt;  &lt;/td&gt;  &lt;/tr&gt;
+&lt;tr&gt; &lt;td&gt;unreal food pills&lt;/td&gt;&lt;td&gt;&lt;div style=&quot;float:left;width:100px; height:20px;background:#fa6900;&quot;&gt;  &lt;/div&gt;  &lt;/td&gt;  &lt;/tr&gt;
+&lt;tr&gt; &lt;td&gt;red velvet cake&lt;/td&gt;&lt;td&gt;&lt;div style=&quot;float:left;width:100px; height:20px;background:#6e2e37;&quot;&gt;  &lt;/div&gt;  &lt;/td&gt;  &lt;/tr&gt;
+&lt;tr&gt; &lt;td&gt;royal passion rc&lt;/td&gt;&lt;td&gt;&lt;div style=&quot;float:left;width:100px; height:20px;background:#4b1139;&quot;&gt;  &lt;/div&gt;  &lt;/td&gt;  &lt;/tr&gt;
+&lt;tr&gt; &lt;td&gt;pure sun tanning&lt;/td&gt;&lt;td&gt;&lt;div style=&quot;float:left;width:100px; height:20px;background:#eb053f;&quot;&gt;  &lt;/div&gt;  &lt;/td&gt;  &lt;/tr&gt;
+&lt;tr&gt; &lt;td&gt;soft lace pink&lt;/td&gt;&lt;td&gt;&lt;div style=&quot;float:left;width:100px; height:20px;background:#ffebeb;&quot;&gt;  &lt;/div&gt;  &lt;/td&gt;  &lt;/tr&gt;
+&lt;tr&gt; &lt;td&gt;sexy police officer&lt;/td&gt;&lt;td&gt;&lt;div style=&quot;float:left;width:100px; height:20px;background:#f7374b;&quot;&gt;  &lt;/div&gt;  &lt;/td&gt;  &lt;/tr&gt;
+&lt;tr&gt; &lt;td&gt;cold morning dew&lt;/td&gt;&lt;td&gt;&lt;div style=&quot;float:left;width:100px; height:20px;background:#c8ebfe;&quot;&gt;  &lt;/div&gt;  &lt;/td&gt;  &lt;/tr&gt;
+
+&lt;/table&gt;
+
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;('ADJ','ADJ','NOUN')&lt;/code&gt;:&lt;/p&gt;
+&lt;table class=&quot;table_colors&quot;&gt;
+&lt;tr&gt; &lt;td&gt;parttime super girl&lt;/td&gt;&lt;td&gt;&lt;div style=&quot;float:left;width:100px; height:20px;background:#e45635;&quot;&gt;  &lt;/div&gt;  &lt;/td&gt;  &lt;/tr&gt;
+&lt;tr&gt; &lt;td&gt;expensive black wool&lt;/td&gt;&lt;td&gt;&lt;div style=&quot;float:left;width:100px; height:20px;background:#0f0a06;&quot;&gt;  &lt;/div&gt;  &lt;/td&gt;  &lt;/tr&gt;
+&lt;tr&gt; &lt;td&gt;white kitten nose&lt;/td&gt;&lt;td&gt;&lt;div style=&quot;float:left;width:100px; height:20px;background:#ffd0d4;&quot;&gt;  &lt;/div&gt;  &lt;/td&gt;  &lt;/tr&gt;
+&lt;tr&gt; &lt;td&gt;typical light grey&lt;/td&gt;&lt;td&gt;&lt;div style=&quot;float:left;width:100px; height:20px;background:#e7e7e7;&quot;&gt;  &lt;/div&gt;  &lt;/td&gt;  &lt;/tr&gt;
+&lt;tr&gt; &lt;td&gt;old fine paper&lt;/td&gt;&lt;td&gt;&lt;div style=&quot;float:left;width:100px; height:20px;background:#f0eee1;&quot;&gt;  &lt;/div&gt;  &lt;/td&gt;  &lt;/tr&gt;
+&lt;tr&gt; &lt;td&gt;rich red wedding&lt;/td&gt;&lt;td&gt;&lt;div style=&quot;float:left;width:100px; height:20px;background:#88090b;&quot;&gt;  &lt;/div&gt;  &lt;/td&gt;  &lt;/tr&gt;
+&lt;tr&gt; &lt;td&gt;hawaiian blue light&lt;/td&gt;&lt;td&gt;&lt;div style=&quot;float:left;width:100px; height:20px;background:#66aef3;&quot;&gt;  &lt;/div&gt;  &lt;/td&gt;  &lt;/tr&gt;
+&lt;tr&gt; &lt;td&gt;little blue eyes&lt;/td&gt;&lt;td&gt;&lt;div style=&quot;float:left;width:100px; height:20px;background:#486060;&quot;&gt;  &lt;/div&gt;  &lt;/td&gt;  &lt;/tr&gt;
+&lt;tr&gt; &lt;td&gt;vintage new york&lt;/td&gt;&lt;td&gt;&lt;div style=&quot;float:left;width:100px; height:20px;background:#90797e;&quot;&gt;  &lt;/div&gt;  &lt;/td&gt;  &lt;/tr&gt;
+&lt;tr&gt; &lt;td&gt;blue eyed girl&lt;/td&gt;&lt;td&gt;&lt;div style=&quot;float:left;width:100px; height:20px;background:#2b70bb;&quot;&gt;  &lt;/div&gt;  &lt;/td&gt;  &lt;/tr&gt;
+
+&lt;/table&gt;
+
+&lt;p&gt;In general we can see a good correlation between what each description 
+expresses and the colors it has associated.&lt;/p&gt;
+
+&lt;p&gt;There are several instances where the adjective is quite vague, 
+such as in the case of &lt;code class=&quot;highlighter-rouge&quot;&gt;haunted&lt;/code&gt; in &lt;code class=&quot;highlighter-rouge&quot;&gt;haunted milk&lt;/code&gt;. In those cases,
+we can expect any model to have a hard time trying to figure
+out how to learn the specific variation of the color. In that example,
+the noun associated is &lt;code class=&quot;highlighter-rouge&quot;&gt;milk&lt;/code&gt;, which we know has the color &lt;code class=&quot;highlighter-rouge&quot;&gt;white&lt;/code&gt;
+as the most probable reference. But then, how to turn a plain 
+version of &lt;code class=&quot;highlighter-rouge&quot;&gt;white&lt;/code&gt; in to &lt;code class=&quot;highlighter-rouge&quot;&gt;haunted milk&lt;/code&gt;. Here is where it relies
+my main hypothesis on the usefulness of the gating mechanism.
+I expect models that are only character-based or only  word-based 
+to perform poorly as it seems to be necessary  to consider 
+a bit  more flexible representation of the description.&lt;/p&gt;
+
+&lt;p&gt;For the &lt;code class=&quot;highlighter-rouge&quot;&gt;milk&lt;/code&gt; part of the description, I think , yes, just the 
+word level vector might be enough. But for making sense of what is
+&lt;code class=&quot;highlighter-rouge&quot;&gt;haunted&lt;/code&gt;, I think the model should take into account substructures such 
+as &lt;code class=&quot;highlighter-rouge&quot;&gt;haunt&lt;/code&gt;, which can be only incorporated via the character level 
+representation. Then, 
+as &lt;code class=&quot;highlighter-rouge&quot;&gt;haunt&lt;/code&gt; can be more associated to &lt;code class=&quot;highlighter-rouge&quot;&gt;pale&lt;/code&gt; or &lt;code class=&quot;highlighter-rouge&quot;&gt;ghostly&lt;/code&gt; terms (as in 
+&lt;code class=&quot;highlighter-rouge&quot;&gt;The haunted house&lt;/code&gt;, or based on this interesting &lt;a href=&quot;https://www.thesaurus.com/browse/haunted&quot;&gt;list&lt;/a&gt; ), 
+the model could learn to associate the colors from other
+ghost-centric descriptions present in the data (thats important 
+to highlight, I assume that &lt;code class=&quot;highlighter-rouge&quot;&gt;haunted&lt;/code&gt; in the sense ghost related stuff, 
+but it could be the case the given the data, we are referring to 
+another type of connotation. Anyway, &lt;a href=&quot;https://dictionary.cambridge.org/dictionary/english/haunt&quot;&gt;here&lt;/a&gt; 
+is a good definition of what &lt;code class=&quot;highlighter-rouge&quot;&gt;haunt&lt;/code&gt; means).&lt;/p&gt;
+
+&lt;p&gt;In summary, I think a gating mechanism could allow the model
+to &lt;code class=&quot;highlighter-rouge&quot;&gt;learn to choose&lt;/code&gt; from which source (character level or word level)
+when it needs to learn to  generate a color from a description. Moreover, 
+the gates does not provide a binary value, but
+a weight we can later inspect to give to obtain more explanatory insights.&lt;/p&gt;
+
+&lt;p&gt;In terms of how to operationalize a gating mechanism, we can follow
+the standard approach from the Balazs et. al. paper, as seen in the following diagram:
+&lt;img src=&quot;/assets/img/blog/color-gates-img/gating-model.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Here, we have the description &lt;code class=&quot;highlighter-rouge&quot;&gt;vanilla cream&lt;/code&gt;. The ultimate
+goal is to obtain a vector representation for the whole
+description that can be fed into a linear layer to generate the 
+color tuple (as a RGB or Lab color vector). We can do that by processing  each word at a time and 
+then aggregate the word level features vectors. That can be done 
+summing or averaging them, or, if we care about the ordering and
+dependency between tokens (we should), we could use a word level
+RNN over the word-level representations and use the final hidden vector
+as a description-level vector.&lt;/p&gt;
+
+&lt;p&gt;But the core part is how to obtain a word-level representation. Here 
+is where the gating mechanism comes to play. For each word in the description, 
+we follow previous work and run two simultaneous processes. The first one
+consists of obtaining a character-level feature vector of the word by means
+of a LSTM that runs over the sequence of characters. This representation accounts
+for the morphology aspects of the word and allow us to give more 
+flexibility to the final representation.&lt;/p&gt;
+
+&lt;p&gt;The second process is to query
+a lookup table and obtain a pretrained feature vector associated to the word,
+for example Glove. This vector is used to compute the gate weight &lt;script type=&quot;math/tex&quot;&gt;g&lt;/script&gt; 
+by means of being fed directly to a linear layer. It is not direct that a 
+pretrained source such as Glove could benefit this specific task. Given 
+the nature of color description, and how words are associated in this context,
+it could be the case that we could be actually sabotaging ourselves. 
+In color descriptions, nouns serve usually as pivot from where an inherent color
+is referenced. For example, when we describe a color as “sad banana” we know 
+we are referring to a type of yellow. Same with something than contains nouns
+such  as sun, school bus, vanilla, etc.&lt;/p&gt;
+
+&lt;p&gt;Glove vectors were obtained through a task that is different to 
+color description grounding, which is basically training a language model, where
+we try to maximize the likelihood of a word given a defined context. In that sense,
+if we assume two yellow things, such as &lt;code class=&quot;highlighter-rouge&quot;&gt;banana&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;taxi&lt;/code&gt;, their vectors in Glove
+will probably be quite distant, as those words do not co-occur so frequently. In 
+Glove, the closest vectors to &lt;code class=&quot;highlighter-rouge&quot;&gt;banana&lt;/code&gt; are probably are associated to other fruits, 
+such as apple or orange, and the closest vectors to &lt;code class=&quot;highlighter-rouge&quot;&gt;taxi&lt;/code&gt; will be probably 
+associated to other transportation mediums. 
+Glove is not color aware, or more generally, pretrained 
+vectors are not attribute-aware. That does not mean we cannot use then as 
+an initial representation and condition them based on additional information, such
+as, for example, WordNet, or set them as trainable, which will naturally 
+modify the spatial position. That could be an interesting experiment: to check how 
+much the task changes de vectors we associate, in advance, to a defined color.&lt;/p&gt;
+
+&lt;p&gt;Ok, having such model ready, and the data we discussed above, we can start our main
+experiment. Lets consider the following models:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Character-based LSTM (char-only)&lt;/li&gt;
+  &lt;li&gt;Combine Character-level LSTM  and Word-level by concatenation
+    &lt;ul&gt;
+      &lt;li&gt;word level vectors initialized randomly (concat-random)&lt;/li&gt;
+      &lt;li&gt;word level vectors initialized with Glove (concat-glove)&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Combine Character-level LSTM  and Word-level by gating
+    &lt;ul&gt;
+      &lt;li&gt;word level vectors initialized randomly (gating-random)&lt;/li&gt;
+      &lt;li&gt;word level vectors initialized with Glove (gating-glove)&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Let’s take a look at the results from this five models and see 
+what interesting stuff we can get.&lt;/p&gt;
+
+&lt;p&gt;Something important to notice is that models that combine
+representations tend to be harder to train than just character 
+level based model. In, in the exploratory runs, it was
+kind of  difficult to find  a configuration that make 
+the training stable. The most promising optimizer across
+models was Adam, with a very low initial learning  of 0.0001. 
+Overfitting was a huge issue, therefore using decay was essential
+(more important that Dropout I would say )  to let the training and 
+dev loss to achieve  a quasi-stable state.&lt;/p&gt;
+
+&lt;p&gt;Regarding the use of pretrained vectors, does Glove help? 
+Contrary to my initial assumption, it kinda help XD:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/img/blog/color-gates-img/loss1clean.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;The above graph says a lot. In the first place we can see that 
+when we use glove, in both glove and random models we can achieve
+a lower dev loss. The difference is not that big but it is considerable
+specially as both models reached a stable state in terms of their
+training loss. The second interesting thing here is&lt;br /&gt;
+that doe this dataset, basically gating does not give any 
+advantage over the simple concatenation of word representations 
+when we use glove, and when we use random vectors, clearly concatenation
+beats gating by a respectable margin.&lt;/p&gt;
+
+&lt;p&gt;Now, if we take the two best performing models and compare against
+a char-only model, we can see a clear advantage:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/img/blog/color-gates-img/loss2clean.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;The char-only model needs to learn from  scratch more fine-grained
+relationships, therefore it is natural for it to be slower. Having 
+access to a word level representation to encapsule characters as 
+cohesive entities, seems to really speed up the training, and allows
+to model to achieve a lower dev loss.&lt;/p&gt;
+
+&lt;p&gt;Having visualized the losses, let’s take a look a the actual 
+generated colors for a sample from  the unseen dataset.&lt;/p&gt;
+
+&lt;table class=&quot;table_colors&quot;&gt;&lt;tr&gt;&lt;th&gt;Descripton&lt;/th&gt;&lt;th&gt;gating random&lt;/th&gt;&lt;th&gt;gating glove&lt;/th&gt;&lt;th&gt;concat random&lt;/th&gt;&lt;th&gt;concat glove&lt;/th&gt;&lt;th&gt;only char&lt;/th&gt;&lt;th&gt; Ground truth&lt;/th&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;bat ears&lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#5b484a&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#794946&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#4f3f52&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#7e4945&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#989782&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#8b7c83&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;sequoia glitter&lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#90736a&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#8d6169&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#92776c&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#936362&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#856a7a&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#c46411&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;romantic music&lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#a47868&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#a7667a&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#b0637a&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#ab687c&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#927881&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#bbb9df&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;kitty espionage&lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#ac8372&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#958288&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#b7926a&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#958184&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#8f787a&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#fac162&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;first peach&lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#eea480&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#f7a076&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#f0a57f&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#f6a67c&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#e3ab7f&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#eabc9d&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;sunny eyes&lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#b69582&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#b5b36d&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#b0b66c&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#aab16e&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#b2a271&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#ff0579&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;black diamond eyes&lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#434b59&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#4a4c68&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#364567&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#233b5c&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#4e554a&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#31161c&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;empty canvas&lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#ab9e91&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#9aa292&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#b1ad90&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#98a79a&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#a47e71&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#cedd90&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;tangerine fade&lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#ec7e55&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#ea904b&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#ed8f51&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#eb8b51&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#a28d76&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#efa04c&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;witchy rendezvous&lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#785a57&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#64405c&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#825560&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#603255&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#b08876&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#762075&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;p&gt;Well, the above experiment led us with a weird feeling. 
+I was expecting that a gating mechanism really improved
+the color generation over just a simple concatenation
+of the word representations. But let’s not give up yet. 
+Lets use a different scenario to 
+to see if the gating mechanism can shine.&lt;/p&gt;
+
+&lt;p&gt;In the previous experiment, for simplicity, we prepared the data
+in a way that all words have an associated
+pretrained vector (i.e., we discarded all the 
+descriptions that contain at least one word
+which do not appear in Glove). Thats a strong
+assumption. In reality, in color description, as subjective as it is,
+people can use any word they consider appropriate
+to describe a color. Some words could be quite unique
+or rare, tightly associated to the person’s cultural 
+background or experiences. Most likely those words
+will not have a pretrained vector available.&lt;/p&gt;
+
+&lt;p&gt;Thats an interesting scenario to assess the usefulness 
+of the gating mechanism. When a word we use has not 
+an associated pretrained vector, what we basically do 
+is to assign a random vector…which can be quite useless
+in most cases.&lt;/p&gt;
+
+&lt;p&gt;In that sense, we can see a good opportunity
+for the gating mechanism: if we are currently trying 
+to obtain a vector representation for a word in a sentence,
+lets say the adjective &lt;code class=&quot;highlighter-rouge&quot;&gt;breakable&lt;/code&gt;
+but such world does not have a pretrained vector associated, 
+would it be great if the gating mechanism put more 
+weight into the character level representation, which could
+have possibly already learned good representations of words
+that are associated to the target word, such as  &lt;code class=&quot;highlighter-rouge&quot;&gt;broken&lt;/code&gt; or
+&lt;code class=&quot;highlighter-rouge&quot;&gt;breaking&lt;/code&gt; and their relationship with color generation.&lt;/p&gt;
+
+&lt;p&gt;In order to test this new hypothesis, we need a new dataset
+that actually contains words without a proper pretrained
+representation and even noisier color descriptions. Lets 
+generate such dataset and inspect its characteristics.&lt;/p&gt;
+
+&lt;p&gt;Lets relax a little bit the descriptions we are allowing words
+that do not appear initially in Glove, but still only
+allowing words whose frequency is higher than two and also 
+descriptions that are at least two word long. We can regard
+this dataset as a bit noisier than the original one, but
+not super noisy. If we repeat the experiment with
+the same models, we obtain the following results.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/img/blog/color-gates-img/loss1medium.png&quot; alt=&quot;&quot; /&gt; 
+&lt;img src=&quot;/assets/img/blog/color-gates-img/loss2medium.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;table class=&quot;table_colors&quot;&gt;&lt;tr&gt;&lt;th&gt;Descripton&lt;/th&gt;&lt;th&gt;gating random&lt;/th&gt;&lt;th&gt;gating glove&lt;/th&gt;&lt;th&gt;concat random&lt;/th&gt;&lt;th&gt;concat glove&lt;/th&gt;&lt;th&gt;only char&lt;/th&gt;&lt;th&gt; Ground truth&lt;/th&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;bat ears&lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#5b484a&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#794946&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#4f3f52&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#7e4945&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#989782&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#8b7c83&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;sequoia glitter&lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#90736a&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#8d6169&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#92776c&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#936362&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#856a7a&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#c46411&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;romantic music&lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#a47868&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#a7667a&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#b0637a&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#ab687c&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#927881&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#bbb9df&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;kitty espionage&lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#ac8372&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#958288&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#b7926a&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#958184&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#8f787a&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#fac162&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;first peach&lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#eea480&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#f7a076&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#f0a57f&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#f6a67c&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#e3ab7f&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#eabc9d&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;sunny eyes&lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#b69582&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#b5b36d&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#b0b66c&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#aab16e&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#b2a271&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#ff0579&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;black diamond eyes&lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#434b59&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#4a4c68&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#364567&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#233b5c&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#4e554a&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#31161c&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;empty canvas&lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#ab9e91&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#9aa292&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#b1ad90&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#98a79a&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#a47e71&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#cedd90&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;tangerine fade&lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#ec7e55&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#ea904b&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#ed8f51&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#eb8b51&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#a28d76&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#efa04c&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;witchy rendezvous&lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#785a57&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#64405c&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#825560&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#603255&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#b08876&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#762075&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;p&gt;Hmmm, even with a noisier dataset, the results are quite
+similar. No problem. Let’s force the model to use the 
+raw dataset: straight out of the Colourlovers crawler, 
+without any special filtering besides removing alphanumerical
+symbols.&lt;/p&gt;
+
+&lt;p&gt;Let us repeat the experiment with the same models, and now:
+&lt;img src=&quot;/assets/img/blog/color-gates-img/loss1noise.png&quot; alt=&quot;&quot; /&gt; 
+&lt;img src=&quot;/assets/img/blog/color-gates-img/loss2noise.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;table class=&quot;table_colors&quot;&gt;&lt;tr&gt;&lt;th&gt;Descripton&lt;/th&gt;&lt;th&gt;gating random&lt;/th&gt;&lt;th&gt;gating glove&lt;/th&gt;&lt;th&gt;concat random&lt;/th&gt;&lt;th&gt;concat glove&lt;/th&gt;&lt;th&gt;only char&lt;/th&gt;&lt;th&gt; Ground truth&lt;/th&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;bat ears&lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#5b484a&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#794946&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#4f3f52&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#7e4945&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#989782&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#8b7c83&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;sequoia glitter&lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#90736a&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#8d6169&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#92776c&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#936362&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#856a7a&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#c46411&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;romantic music&lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#a47868&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#a7667a&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#b0637a&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#ab687c&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#927881&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#bbb9df&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;kitty espionage&lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#ac8372&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#958288&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#b7926a&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#958184&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#8f787a&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#fac162&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;first peach&lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#eea480&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#f7a076&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#f0a57f&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#f6a67c&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#e3ab7f&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#eabc9d&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;sunny eyes&lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#b69582&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#b5b36d&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#b0b66c&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#aab16e&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#b2a271&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#ff0579&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;black diamond eyes&lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#434b59&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#4a4c68&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#364567&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#233b5c&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#4e554a&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#31161c&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;empty canvas&lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#ab9e91&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#9aa292&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#b1ad90&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#98a79a&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#a47e71&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#cedd90&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;tangerine fade&lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#ec7e55&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#ea904b&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#ed8f51&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#eb8b51&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#a28d76&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#efa04c&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;witchy rendezvous&lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#785a57&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#64405c&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#825560&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#603255&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#b08876&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#762075&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;p&gt;Here we can see that the gating model is able to reach
+a lower test loss than the rest of alternatives.
+But at the same time, we can see that the character-based
+model is now able slightly outperform the other 
+methods.&lt;/p&gt;
+
+&lt;p&gt;Well, as a result, after taking into consideration the experiments and
+the different datasets,  we cannot directly conclude that a gating mechanism 
+always provide a better 
+performance than the rest of configurations. We are considering a generic 
+architecture for the specific problem of color grounding. My guess is
+that we should design a more ad-hoc mechanism that takes into consideration
+the unique characteristics of the problem. In the next post, lets keep 
+exploring this problem and testing  some alternatives.&lt;/p&gt;</content><author><name>Solar Grammars</name></author><category term="blog" /><summary type="html">We have explored the relationship between language and colors from both word and character level perspectives, but in isolation. Then, the natural question that arises is what if subword structures play an important role in color grounding? In other words, what if we combine character and word level representations when modeling color-language relationships?</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:4000/arctic-1.jpg" /></entry><entry><title type="html">Palettes and graphs as color context</title><link href="http://localhost:4000/blog/colors-in-context.html" rel="alternate" type="text/html" title="Palettes and  graphs as color context" /><published>2017-01-03T00:00:00+09:00</published><updated>2017-01-03T00:00:00+09:00</updated><id>http://localhost:4000/blog/colors-in-context</id><content type="html" xml:base="http://localhost:4000/blog/colors-in-context.html">&lt;p&gt;Colors are usually perceived in as part of a composition. It is rare that we can 
 find them in isolation in nature. Sometimes we find
 articles, usually associated to marketing, where people make a direct relationship
 between a color and an emotion or a feeling. For example, when the color
