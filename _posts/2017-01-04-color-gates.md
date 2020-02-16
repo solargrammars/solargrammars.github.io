@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Combining word and character level representations from color descriptions"
+title: "Combining Word and Character level Representations from Color Descriptions"
 author: "Solar Grammars"
 categories: blog
 tags: [blog]
