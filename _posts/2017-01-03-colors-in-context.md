@@ -8,11 +8,11 @@ image: arctic-1.jpg
 color: "#C02942"
 ---
 
-Colors are usually perceived in as part of a composition. It is rare that we can 
+Colors are usually perceived as part of a composition. It is rare that we can 
 find them in isolation in nature. Sometimes we find
 articles, usually associated to marketing, where people make a direct relationship
 between a color and an emotion or a feeling. For example, when the color
-red is associated to `passion` and and green to `hope`. Such relationships could
+red is associated to `passion` and green to `hope`. Such relationships could
 be true to some extent, but I think it is also important to consider the context associated
 to such perceptions. A red color indeed can express passion, but in some cases, given 
 the set of other colors present in the composition, it could also express sadness or fear.  
@@ -33,7 +33,7 @@ it is the most primitive way to do compression. While a palette cannot
 provide a representation of the semantics of the image, at least it can inform us about
 the main colors used and their distribution. 
 
-Lets assume we have a set of images from which we can extract a color palette of $$n$$ colors, $$p_i = \{ c_1, ..., c_n \}$$. 
+Let's assume we have a set of images from which we can extract a color palette of $$n$$ colors, $$p_i = \{ c_1, ..., c_n \}$$. 
 With such dataset, we could conduct a simple experiment: We know that in natural language, 
 we can assume that words that occur in the same contexts tend to have the similar meaning, i.e.,
 *you can know a word by the company it keeps*, which is known as the distributional hypothesis. 
@@ -46,8 +46,8 @@ a common agreement on  how bathrooms look like, like a pattern in which such col
 `greens` and `browns` will be predominant, while `pinks` will be very unlikely to appear. Can 
 we leverage such regularities to learn dense feature vectors for each color?
 
-Lets start with a very simple approach, using very well known tools to see if we are heading
-in a feasible direction. Firstly, we need some data.  For simplicity, lets use the validation set 
+Let's start with a very simple approach, using very well known tools to see if we are heading
+in a feasible direction. Firstly, we need some data.  For simplicity, let's use the validation set 
 of the Microsoft COCO dataset. For each image, let's capture a color palette of 6 colors.
 
 <img src="/assets/img/blog/colors-in-context-img/p1.jpg" width="400px">  
@@ -64,7 +64,7 @@ in terms of their absolute proportion on the image.
 <img src="/assets/img/blog/colors-in-context-img/p26.png" style="height:50px;">   
 
 With this data, we can test a direct analogy from natural language BOW models.
-Lets recall such formulation as , lets say we have a sentence $$s$$ composed
+Let's recall such formulation as , let's say we have a sentence $$s$$ composed
 by $$n$$ words , $$s  = \{  w_1, w_2 , ... , w_n \}$$, then a CBOW approach
 learn vectors $$v_i$$ for a word $$w_i$$ as maximizing the likelihood 
 of $$w_i$$ given its neighborhood  $$\{ w_{i-c} , ... , w_{i+c} \}$$. 
@@ -79,7 +79,7 @@ Then, for example, we can expect  all variations of `scarlet` color to be groupe
 cluster. Therefore, on a palette that contains one of these scarlet variations, instead of 
 using the actual color, we can use the centroid/medoid of the associated cluster. 
 
-Lets see first if clustering colors makes sense. For simplicity we can take the RGB or LAB 
+Let's see first if clustering colors makes sense. For simplicity we can take the RGB or LAB 
 tuples as feature vectors an apply K-means. In order to get a
 rough estimation of the optimal number of clusters, we can take a look at both 
  distortion ( the average of the squared distances from the cluster centers of the respective 
@@ -94,7 +94,7 @@ extracted, conforming a group of around 22.000 total colors that we clustered us
 representation. Changing  the amount of images or using the LAB format as feature vector, did 
 not change considerably  the results. 
 
-Lets take a look at the clusters visually. With $$k$$ = 25, we can see something like this:
+Let's take a look at the clusters visually. With $$k$$ = 25, we can see something like this:
 
 <img src="/assets/img/blog/colors-in-context-img/cluster_palettes/0.png" style="float:left;">  
 <img src="/assets/img/blog/colors-in-context-img/cluster_palettes/1.png" style="float:left;">  
@@ -127,7 +127,7 @@ the groups tend to make sense, as there is a clear distinction between them and 
 can refine and adapt the number of clusters  based on the requirements of any  downstream task, but let's use this result for the moment. 
 
 With this, we can  associate each color with its cluster id so 
-we can generate  the reduced palettes. Now, lets learn a vector representation from each element in the reduced
+we can generate  the reduced palettes. Now, let's learn a vector representation from each element in the reduced
 palettes, i.e., a dense vector for each cluster id. We want to exploit the co-occurrence of the colors in the palettes
 making a direct analogy as how words co occur in a set of sentences. In that sense we can train the reduced palettes in
 the same way sentences are used in CBOW: 
@@ -164,9 +164,9 @@ have associated to each point the original RGB color, so we can visualize the ve
 |<img src="/assets/img/blog/colors-in-context-img/window_sizes/context_size_8.png">|<img src="/assets/img/blog/colors-in-context-img/window_sizes/context_size_9.png">|<img src="/assets/img/blog/colors-in-context-img/window_sizes/context_size_10.png">|
 
 
-Based on the above, we can start question ourselves a bit and 
+Based on the above, we can question ourselves a bit and 
 try to ask what would make a good context-informed color
-representation? Is it ok if we obtain vectors that group 
+representation? Is it ok if we obtain vectors that associate 
 similar colors  into well defined groups? In some sense yes, 
 but for such thing probably just using the RGB or LAB 
 representation of the colors is enough. I think while it is
@@ -175,13 +175,13 @@ similar colors, at the same time  I find it equally important that
 these representation also encode the closeness of the colors 
 in the context of the images the come from. Going back 
 to the example we talked before, if we analyze images
-of landscapes of forests, we probably can see groups of greens (lets
-say , representing trees , vegetation ) closer to groups
+of landscapes of forests, we probably can see groups of greens (let's
+say , representing trees or vegetation ) closer to groups
 of light blues and whites on one side (the clouds and sky)
 and also some groups of brown and grays (the ground). 
 It is not entirely clear which configuration is better, but
 from the results, I would probably choose something between 4 and 5
-for context window. 
+as a context window. 
 
 
 At this point, we have a vector representation the can 
@@ -194,7 +194,7 @@ each color in the cluster in terms of its distance to the centroid.
 
 ![diagram1](/assets/img/blog/colors-in-context-img/diagram1.png)  
 
-In the above figure, lets say for cluster $$k$$  we obtained a vector representation
+In the above figure, let's say for cluster $$k$$  we obtained a vector representation
 $$v_k$$. Let $$c_i$$ be the medoid color and we arbitrarily associate $$v_k$$ to that point.
 Then, we need to find a way to obtain a vector to all the other $c_j$ members of the cluster, taking
 into account $$v_k$$ as reference. A natural way to proceed would be to use the distance  $$d_{ij}$$ between $$c_i$$ and
@@ -231,7 +231,7 @@ we can do  is try to merge the steps into one single model, by means of working 
 from the palettes, without having to apply any reduction. 
 
 - *Vector arithmetics:* if we combine yellow and green in the RGB space,  we probably will obtain [some kind of blue](https://youtu.be/0fC1qSxpmKo)... most likely.  What if we combine the learned vectors associated to yellow and green? Will the resulting vector be similar to the learned vector of blue too?  
-- *Segmenting COCO or using other sources of images:* COCO provides a set of very heterogeneous images: people, landscapes, sports etc. What if we run this pipeline on a subset of images that share the same semantics? Lets say, only on images of landscapes, or only images of restaurants. In those cases, for a given color, how the learned
+- *Segmenting COCO or using other sources of images:* COCO provides a set of very heterogeneous images: people, landscapes, sports etc. What if we run this pipeline on a subset of images that share the same semantics? Let's say, only on images of landscapes, or only images of restaurants. In those cases, for a given color, how the learned
 representations obtained from different sets relate? 
 
 
@@ -241,10 +241,10 @@ So far, we have been considering only the images and their colors. But the COCO 
 provides a set of captions for each image, a source of data that looks quite irresistible.
 Then the question is, how can we incorporate such information? How the representations of the colors
 could be `improved` by informing our model/pipeline about the caption associated to the images we
-use to obtain the palettes. I don't know the answer yet, but lets explore a bit to see in which 
+use to obtain the palettes. I don't know the answer yet, but let's explore a bit to see in which 
 direction we should move.
 
-Lets not make things difficult and keep working with the validation part of COCO. For each image, we 
+Let"s not make things difficult and keep working with the validation part of COCO. For each image, we 
 can obtain one or more captions.  The from each image $$i \in I$$, we can obtain a 
 pair $$(p_i, s_i)$$, where $$p_i = \{ c_1, ..., c_N \}$$ is  the associated palette of $$N$$ colors, 
 and $$s_i = \{  w_1, ..., w_M \}$$ the caption expressed as a sequence of  words. For each 
@@ -263,9 +263,9 @@ Hmmm it seems there is going to be necessary to obtain a representation of the s
 is not difficult, as we can just do a plain average of the word vectors in $$s_i$$, use something 
 like [Doc2vec](http://proceedings.mlr.press/v32/le14.pdf) or if we care about the dependencies (we probably should), 
 we can use an RNN to encode the sentence and  capture the last hidden state as a representation 
-of the sentence.  In any case, lets assume that for each sentence $$s_i$$ we obtain a dense sentence vector $$sv_i$$. 
+of the sentence.  In any case, let"s assume that for each sentence $$s_i$$ we obtain a dense sentence vector $$sv_i$$. 
 
-Lets start with a very simple experiment. For each pair $$(p_i, sv_i)$$ lets use kNN to obtain the $$k$$ 
+Let"s start with a very simple experiment. For each pair $$(p_i, sv_i)$$ let"s use kNN to obtain the $$k$$ 
 closest pairs, based on the cosine similarity between sentence vectors 
 
 $$p_i, sv_i    \rightarrow kNN_{sv_i} = \{  sv_1, sv_2 , ... , sv_K\}$$  
@@ -275,8 +275,6 @@ transitively, associate the palette $$p_i$$ with a set of $$K$$ palettes based o
 underlying similarity of their associated sentences. 
 
 ![diagram6](/assets/img/blog/colors-in-context-img/diagram6.png)  
-
-
 
 
 For example, for the following  instance:
@@ -340,7 +338,10 @@ While there is still quick degradation on the semantic
 similarity across sentences, at least we can see a bit
 more cohesion at color level. 
 
-This is getting more interesting. We could then  TODO
+This is getting more interesting, but I do not a clear 
+approach to treat the high variability ( in  other words, 
+the randomness) of the color-token relationship in this
+configuration.
 
 ## More Structure through graphs
 
@@ -355,7 +356,7 @@ are families of techniques from image processing that compute an
 intermediate graph between image segments, for example, when 
 performing image compression.
 
-Lets see some examples of color graphs obtained from both COCO dataset
+Let"s see some examples of color graphs obtained from both COCO dataset
 samples as well from art pieces from the WikiArt website:
 
 `COCO`: 
@@ -402,7 +403,7 @@ as we need to define in advance a window, that could be restricting
 long term color dependencies present on the images. 
 
 
-Lets explore another alternative that is provided  by the family of 
+Let's explore another alternative that is provided  by the family of 
 graph neural networks. This family of models are based on a 
 message passing schema, where we iteratively learn node representations
 by propagating information through the edge structure. In that sense,
@@ -464,7 +465,7 @@ That is an interesting  design decision in terms of data acquisition when design
 a machine learning model under this scenario
 
 While the loss can help us to automate the the search for better parameters, does not
-tell much about the actual results. Lets take a look at some samples from the generated
+tell much about the actual results. Let's take a look at some samples from the generated
 colors. In the first place, we have the results for the labeled set. It seems to
 be a easy task for the model, naturally. This is just a safe check, just to 
 make sure we are not making any big mistake. In any case, I can see clear differences in terms of

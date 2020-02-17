@@ -8,7 +8,7 @@ image: arctic-1.jpg
 color: "#D95B43"
 ---
 
-We have explored the relationship between language and colors
+We have been exploring the relationship between language and colors
 from both word and character level perspectives, but in 
 isolation. Then, the natural question that arises is what 
 if subword structures play an important role in color 
@@ -17,37 +17,36 @@ and word level representations when modeling color-language
 relationships?
 
 When we reviewed the results of the experiments on color generation
-from descriptions using a character 
-level recurrent model, we found quite interesting 
+from descriptions using a character-level recurrent model, we found quite interesting 
 examples where, as we progressed on the sequences of 
 characters, the generated colors suddenly changed. That was 
 the case of descriptions such as `Strawberry lipstick` (or 
 something like that), where the color generation up the character
  `w` (from strawberry) was giving us a brown-ish color, naturally 
 associated with the word `straw`, which was also present during training. 
-Then, suddenly, as the model incorporated the remaining tokens 
-sequentially, `b -> e -> r -> r...` the output color was 
+Then, suddenly, as the model incorporated the remaining characters 
+sequentially, `b -> e -> r -> r...`, the output color was 
 gradually changing to something more reddish (associated to
 strawberry). 
 
 This led us to think, how does the grounding of a 
 word or sentence can be understood in terms of the interplay
 between its words and characters? For a given description, is it 
-a specific character pattern that impact the most on the 
+a specific character pattern that impacts the most on the 
 changes at color generation? or what are the common subword 
 structures that command or condition more strongly the color 
 generation? 
 
 In order to answer those questions, we need a way to quantify 
 the contribution of character and word level representations 
-together. Lets say we have two ways to obtain a feature vector
-for each word present in a description. The first one: we use a RNN  which learns a 
-character based feature vector from the word, just like we did before.
+together. Let's say we have two ways to obtain a feature vector
+for each word present in a color description. The first one: we use a RNN  which learns a 
+character-based feature vector from the word, just like we did before.
 The second one:
 we directly query a source of pretrained vectors, such as Word2vec
 or Glove. In this setting, which one contributes then most to minimize 
-the loss, lets say, expressed as the MSE between the generated 
-color and the ground truth? What type of combination is the optimal ?
+the loss, let's say, expressed as the MSE between the generated 
+color and the ground truth? What type of combination is the optimal?
 
 
 Fortunately, there has been quite interesting research
@@ -58,8 +57,8 @@ through the concept of `gates`, such as in
 [Balazs et. al.](https://arxiv.org/pdf/1904.05584.pdf) 
 or [Miyamoto et. al.](https://arxiv.org/abs/1606.01700), which 
 in simple terms means to learn a parameter $g$ that we can use 
-to weight the vector representations coming from both char 
-and word levels:
+to weight the vector representations coming from both character 
+and word levels to obtain a final word representation $$w$$:
 
 $$w = w_{char} * g +  w_{word} * (1-g)$$ 
 
@@ -68,10 +67,10 @@ the same, in which the idea is to have a fully connected layer
 that takes as input the word level representation and  outputs 
 a scalar or a vector. 
 
-Lets conduct a couple of experiments to see if this way of 
-modeling color descriptions allow us to obtain interesting 
-insights. As always, lets start with the data. For the 
-purpose of this study, we can reuse the data
+Let's conduct a couple of experiments to see if this way of 
+modeling color descriptions allows us to obtain interesting 
+insights. As always, let's start with the data. For the 
+purpose of this study, we can reuse the 
 data extracted from ColourLovers, which we have used previously. 
 This source of data is quite interesting given the variability
 and abstractness in the use of language. Additionally, while 
@@ -81,7 +80,7 @@ POS patterns.
 
 ![](/assets/img/blog/color-gates-img/pos_freqs.png) 
 
-Lets obtain a sample from the top 5 groups of patterns with most 
+Let's obtain a sample from the top 5 groups of patterns with most 
 descriptions. This is what we get:
 
 `('ADJ', 'NOUN')`:
@@ -161,7 +160,7 @@ Spacy didn't have much context to work with when deciding the tag.
 
 </table>
 
-In general we can see a good correlation between what each description 
+In general, we can see a good correlation between what each description 
 expresses and the colors it has associated. 
 
 There are several instances where the adjective is quite vague, 
@@ -170,7 +169,7 @@ we can expect any model to have a hard time trying to figure
 out how to learn the specific variation of the color. In that example,
 the noun associated is `milk`, which we know has the color `white`
 as the most probable reference. But then, how to turn a plain 
-version of `white` in to `haunted milk`. Here is where it relies
+version of `white` (a RGB tuple [255,255,255]) into `haunted milk`. Here is where it relies
 my main hypothesis on the usefulness of the gating mechanism.
 I expect models that are only character-based or only  word-based 
 to perform poorly as it seems to be necessary  to consider 
@@ -181,11 +180,11 @@ word level vector might be enough. But for making sense of what is
 `haunted`, I think the model should take into account substructures such 
 as `haunt`, which can be only incorporated via the character level 
 representation. Then, 
-as `haunt` can be more associated to `pale` or `ghostly` terms (as in 
+as `haunt` could be more associated to `pale` or `ghostly` terms (as in 
 `The haunted house`, or based on this interesting [list](https://www.thesaurus.com/browse/haunted) ), 
 the model could learn to associate the colors from other
-ghost-centric descriptions present in the data (thats important 
-to highlight, I assume that `haunted` in the sense ghost related stuff, 
+ghost-centric descriptions present in the data (that's important 
+to highlight, I assume that `haunted` in the sense of ghost related stuff, 
 but it could be the case the given the data, we are referring to 
 another type of connotation. Anyway, [here](https://dictionary.cambridge.org/dictionary/english/haunt) 
 is a good definition of what `haunt` means).
@@ -201,11 +200,11 @@ In terms of how to operationalize a gating mechanism, we can follow
 the standard approach from the Balazs et. al. paper, as seen in the following diagram:
 ![](/assets/img/blog/color-gates-img/gating-model.png) 
 
-Here, we have the description `vanilla cream`. The ultimate
+Here I made up the color description `vanilla cream`. The ultimate
 goal is to obtain a vector representation for the whole
 description that can be fed into a linear layer to generate the 
-color tuple (as a RGB or Lab color vector). We can do that by processing  each word at a time and 
-then aggregate the word level features vectors. That can be done 
+color tuple (as a RGB or Lab color vector). We can do that by processing  
+each word at a time and then aggregate the word level features vectors. That can be done 
 summing or averaging them, or, if we care about the ordering and
 dependency between tokens (we should), we could use a word level
 RNN over the word-level representations and use the final hidden vector
@@ -215,8 +214,8 @@ But the core part is how to obtain a word-level representation. Here
 is where the gating mechanism comes to play. For each word in the description, 
 we follow previous work and run two simultaneous processes. The first one
 consists of obtaining a character-level feature vector of the word by means
-of a LSTM that runs over the sequence of characters. This representation accounts
-for the morphology aspects of the word and allow us to give more 
+of a LSTM that runs over the sequence of characters. This representation (roughly) accounts
+for the morphology aspects of the word and allows us to give more 
 flexibility to the final representation. 
 
 The second process is to query
@@ -234,7 +233,7 @@ such  as sun, school bus, vanilla, etc.
 Glove vectors were obtained through a task that is different to 
 color description grounding, which is basically training a language model, where
 we try to maximize the likelihood of a word given a defined context. In that sense,
-if we assume two yellow things, such as `banana` and `taxi`, their vectors in Glove
+if we assume two yellow entities, such as `banana` and `taxi`, their vectors in Glove
 will probably be quite distant, as those words do not co-occur so frequently. In 
 Glove, the closest vectors to `banana` are probably are associated to other fruits, 
 such as apple or orange, and the closest vectors to `taxi` will be probably 
@@ -246,31 +245,31 @@ as, for example, WordNet, or set them as trainable, which will naturally
 modify the spatial position. That could be an interesting experiment: to check how 
 much the task changes de vectors we associate, in advance, to a defined color. 
 
-Ok, having such model ready, and the data we discussed above, we can start our main
-experiment. Lets consider the following models:
+Ok, having the idea we want to test and the data we discussed above, we can start our main
+experiment. Let's consider the following models:
 
-
-- Character-based LSTM (char-only)
+- Character-based LSTM (`char-only`)
 - Combine Character-level LSTM  and Word-level by concatenation
-  - word level vectors initialized randomly (concat-random)
-  - word level vectors initialized with Glove (concat-glove)
+  - word level vectors initialized randomly (`concat-random`)
+  - word level vectors initialized with Glove (`concat-glove`)
 - Combine Character-level LSTM  and Word-level by gating
-  - word level vectors initialized randomly (gating-random)   
-  - word level vectors initialized with Glove (gating-glove)
+  - word level vectors initialized randomly (`gating-random`)   
+  - word level vectors initialized with Glove (`gating-glove`)
 
-
-Let's take a look at the results from this five models and see 
+These five models allow us to distinguish and compare
+how the word and character level representations are being used and  learned
+in the context of color grounding.  Let's take a look at the results from this five models and see 
 what interesting stuff we can get.
 
 Something important to notice is that models that combine
 representations tend to be harder to train than just character 
-level based model. In, in the exploratory runs, it was
+level based model. During the exploratory runs, it was
 kind of  difficult to find  a configuration that make 
 the training stable. The most promising optimizer across
 models was Adam, with a very low initial learning  of 0.0001. 
 Overfitting was a huge issue, therefore using decay was essential
-(more important that Dropout I would say )  to let the training and 
-dev loss to achieve  a quasi-stable state.  
+(more important that Dropout I would say)  to let the training and 
+dev loss to achieve  a quasi-stable state.
 
 Regarding the use of pretrained vectors, does Glove help? 
 Contrary to my initial assumption, it kinda help XD:  
@@ -278,39 +277,48 @@ Contrary to my initial assumption, it kinda help XD:
 ![](/assets/img/blog/color-gates-img/loss1clean.png) 
 
 The above graph says a lot. In the first place we can see that 
-when we use glove, in both glove and random models we can achieve
+when we use Glove vectors, in both gating and concat models we can achieve
 a lower dev loss. The difference is not that big but it is considerable
 specially as both models reached a stable state in terms of their
 training loss. The second interesting thing here is  
-that doe this dataset, basically gating does not give any 
+that for this dataset, basically gating does not give any 
 advantage over the simple concatenation of word representations 
-when we use glove, and when we use random vectors, clearly concatenation
-beats gating by a respectable margin.  
+when we Glove is used. When we use random vectors, clearly concatenation
+beats gating by a respectable margin.
 
 Now, if we take the two best performing models and compare against
-a char-only model, we can see a clear advantage:
-
+a `char-only` model, we can see a clear advantage:
 
 ![](/assets/img/blog/color-gates-img/loss2clean.png) 
 
-The char-only model needs to learn from  scratch more fine-grained
-relationships, therefore it is natural for it to be slower. Having 
-access to a word level representation to encapsule characters as 
-cohesive entities, seems to really speed up the training, and allows
+The `char-only` model needs to learn from  scratch more fine-grained
+relationships, therefore it is natural for it to be slower. But even
+being slower, we can see the this model reaches a stable loss (at both
+training and dev time) that is higher than than the other alternatives.
+
+It seems having 
+access to a word level representation, as a way to encapsule characters as 
+cohesive entities, really speed up the training, and allows
 to model to achieve a lower dev loss.
 
-
 Having visualized the losses, let's take a look a the actual 
-generated colors for a sample from  the unseen dataset.  
+generated colors for a random sample from  the unseen dataset.  
 
 <table class="table_colors" ><tr><th>Descripton</th><th>gating random</th><th>gating glove</th><th>concat random</th><th>concat glove</th><th>only char</th><th> Ground truth</th></tr><tr><td>bat ears</td><td> <div style='width:60px; height:30px;background:#5b484a'> </div> </td><td> <div style='width:60px; height:30px;background:#794946'> </div> </td><td> <div style='width:60px; height:30px;background:#4f3f52'> </div> </td><td> <div style='width:60px; height:30px;background:#7e4945'> </div> </td><td> <div style='width:60px; height:30px;background:#989782'> </div> </td><td> <div style='width:60px; height:30px;background:#8b7c83'> </div> </td></tr><tr><td>sequoia glitter</td><td> <div style='width:60px; height:30px;background:#90736a'> </div> </td><td> <div style='width:60px; height:30px;background:#8d6169'> </div> </td><td> <div style='width:60px; height:30px;background:#92776c'> </div> </td><td> <div style='width:60px; height:30px;background:#936362'> </div> </td><td> <div style='width:60px; height:30px;background:#856a7a'> </div> </td><td> <div style='width:60px; height:30px;background:#c46411'> </div> </td></tr><tr><td>romantic music</td><td> <div style='width:60px; height:30px;background:#a47868'> </div> </td><td> <div style='width:60px; height:30px;background:#a7667a'> </div> </td><td> <div style='width:60px; height:30px;background:#b0637a'> </div> </td><td> <div style='width:60px; height:30px;background:#ab687c'> </div> </td><td> <div style='width:60px; height:30px;background:#927881'> </div> </td><td> <div style='width:60px; height:30px;background:#bbb9df'> </div> </td></tr><tr><td>kitty espionage</td><td> <div style='width:60px; height:30px;background:#ac8372'> </div> </td><td> <div style='width:60px; height:30px;background:#958288'> </div> </td><td> <div style='width:60px; height:30px;background:#b7926a'> </div> </td><td> <div style='width:60px; height:30px;background:#958184'> </div> </td><td> <div style='width:60px; height:30px;background:#8f787a'> </div> </td><td> <div style='width:60px; height:30px;background:#fac162'> </div> </td></tr><tr><td>first peach</td><td> <div style='width:60px; height:30px;background:#eea480'> </div> </td><td> <div style='width:60px; height:30px;background:#f7a076'> </div> </td><td> <div style='width:60px; height:30px;background:#f0a57f'> </div> </td><td> <div style='width:60px; height:30px;background:#f6a67c'> </div> </td><td> <div style='width:60px; height:30px;background:#e3ab7f'> </div> </td><td> <div style='width:60px; height:30px;background:#eabc9d'> </div> </td></tr><tr><td>sunny eyes</td><td> <div style='width:60px; height:30px;background:#b69582'> </div> </td><td> <div style='width:60px; height:30px;background:#b5b36d'> </div> </td><td> <div style='width:60px; height:30px;background:#b0b66c'> </div> </td><td> <div style='width:60px; height:30px;background:#aab16e'> </div> </td><td> <div style='width:60px; height:30px;background:#b2a271'> </div> </td><td> <div style='width:60px; height:30px;background:#ff0579'> </div> </td></tr><tr><td>black diamond eyes</td><td> <div style='width:60px; height:30px;background:#434b59'> </div> </td><td> <div style='width:60px; height:30px;background:#4a4c68'> </div> </td><td> <div style='width:60px; height:30px;background:#364567'> </div> </td><td> <div style='width:60px; height:30px;background:#233b5c'> </div> </td><td> <div style='width:60px; height:30px;background:#4e554a'> </div> </td><td> <div style='width:60px; height:30px;background:#31161c'> </div> </td></tr><tr><td>empty canvas</td><td> <div style='width:60px; height:30px;background:#ab9e91'> </div> </td><td> <div style='width:60px; height:30px;background:#9aa292'> </div> </td><td> <div style='width:60px; height:30px;background:#b1ad90'> </div> </td><td> <div style='width:60px; height:30px;background:#98a79a'> </div> </td><td> <div style='width:60px; height:30px;background:#a47e71'> </div> </td><td> <div style='width:60px; height:30px;background:#cedd90'> </div> </td></tr><tr><td>tangerine fade</td><td> <div style='width:60px; height:30px;background:#ec7e55'> </div> </td><td> <div style='width:60px; height:30px;background:#ea904b'> </div> </td><td> <div style='width:60px; height:30px;background:#ed8f51'> </div> </td><td> <div style='width:60px; height:30px;background:#eb8b51'> </div> </td><td> <div style='width:60px; height:30px;background:#a28d76'> </div> </td><td> <div style='width:60px; height:30px;background:#efa04c'> </div> </td></tr><tr><td>witchy rendezvous</td><td> <div style='width:60px; height:30px;background:#785a57'> </div> </td><td> <div style='width:60px; height:30px;background:#64405c'> </div> </td><td> <div style='width:60px; height:30px;background:#825560'> </div> </td><td> <div style='width:60px; height:30px;background:#603255'> </div> </td><td> <div style='width:60px; height:30px;background:#b08876'> </div> </td><td> <div style='width:60px; height:30px;background:#762075'> </div> </td></tr></table>
+
+Interestingly, for the case of the description `first peach` all models perform quite ok, all colors 
+are well associated with what we understand as a peach. Now, if we look at the results for the
+`witchy rendezvous`, we can see that the models that get closer to the ground truth are the ones using
+Glove, both concatenating and with gates. I wonder how that purple-ish tendency is generated, as
+from the components of the description (`witchy`  and  `rendezvous`) it is not so direct we can obtain/ imagine a purple color. Finally, from the description `tangerine fade` we can see how the `char-only` model
+is underperforming in comparison to the rest of the approaches. 
 
 
 Well, the above experiment led us with a weird feeling. 
 I was expecting that a gating mechanism really improved
 the color generation over just a simple concatenation
 of the word representations. But let's not give up yet. 
-Lets use a different scenario to 
+Let's use a different scenario to 
 to see if the gating mechanism can shine. 
 
 In the previous experiment, for simplicity, we prepared the data
@@ -325,7 +333,7 @@ or rare, tightly associated to the person's cultural
 background or experiences. Most likely those words
 will not have a pretrained vector available. 
 
-Thats an interesting scenario to assess the usefulness 
+That's an interesting scenario to assess the usefulness 
 of the gating mechanism. When a word we use has not 
 an associated pretrained vector, what we basically do 
 is to assign a random vector...which can be quite useless
@@ -334,7 +342,7 @@ in most cases.
 In that sense, we can see a good opportunity
 for the gating mechanism: if we are currently trying 
 to obtain a vector representation for a word in a sentence,
-lets say the adjective `breakable`
+let's say the adjective `breakable`
 but such world does not have a pretrained vector associated, 
 would it be great if the gating mechanism put more 
 weight into the character level representation, which could
@@ -344,10 +352,10 @@ that are associated to the target word, such as  `broken` or
 
 In order to test this new hypothesis, we need a new dataset
 that actually contains words without a proper pretrained
-representation and even noisier color descriptions. Lets 
+representation and even noisier color descriptions. Let's 
 generate such dataset and inspect its characteristics.
 
-Lets relax a little bit the descriptions we are allowing words
+Let's relax a little bit the descriptions we are allowing words
 that do not appear initially in Glove, but still only
 allowing words whose frequency is higher than two and also 
 descriptions that are at least two word long. We can regard
@@ -376,14 +384,29 @@ Here we can see that the gating model is able to reach
 a lower test loss than the rest of alternatives.
 But at the same time, we can see that the character-based
 model is now able slightly outperform the other 
-methods.
+methods, if we let it train for a longer time. 
 
+The different regime that governs the training of the `char-only` model 
+with respect to the rest makes it a bit difficult to compare, and  of course
+depending on what we want maximize we could fine tune accordingly. The differences
+in the number of epochs that each model has derive from the decay setting that I  used
+where I am more interested in achieving a stable (hopefully convergent ) training 
+loss, rather than a very low training loss followed by a increase. 
+ 
 
 Well, as a result, after taking into consideration the experiments and
 the different datasets,  we cannot directly conclude that a gating mechanism 
 always provide a better 
-performance than the rest of configurations. We are considering a generic 
+performance than the rest of configurations. Maybe the problem is that we are 
+considering a generic 
 architecture for the specific problem of color grounding. My guess is
 that we should design a more ad-hoc mechanism that takes into consideration
-the unique characteristics of the problem. In the next post, lets keep 
-exploring this problem and testing  some alternatives. 
+the unique characteristics of the problem. In the next post, let's keep 
+exploring this problem and testing  some alternatives. I think we can 
+try several stuff, from moving to other color spaces to make the training faster
+(ans  maybe more stable), to incorporate external knowledge to guide the generation 
+in a more efficient way. 
+
+In any case, the associated code is / will be available here:
+
+<https://github.com/solargrammars/color-gates>

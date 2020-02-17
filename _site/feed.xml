@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.6.3">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2020-02-16T16:05:27+09:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Solar Grammars</title><subtitle></subtitle><author><name></name></author><entry><title type="html">Combining Word and Character level Representations from Color Descriptions</title><link href="http://localhost:4000/blog/color-gates.html" rel="alternate" type="text/html" title="Combining Word and Character level Representations from Color Descriptions" /><published>2017-01-04T00:00:00+09:00</published><updated>2017-01-04T00:00:00+09:00</updated><id>http://localhost:4000/blog/color-gates</id><content type="html" xml:base="http://localhost:4000/blog/color-gates.html">&lt;p&gt;We have explored the relationship between language and colors
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.6.3">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2020-02-18T00:08:43+09:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Solar Grammars</title><subtitle></subtitle><author><name></name></author><entry><title type="html">Combining Word and Character level Representations from Color Descriptions</title><link href="http://localhost:4000/blog/color-gates.html" rel="alternate" type="text/html" title="Combining Word and Character level Representations from Color Descriptions" /><published>2017-01-04T00:00:00+09:00</published><updated>2017-01-04T00:00:00+09:00</updated><id>http://localhost:4000/blog/color-gates</id><content type="html" xml:base="http://localhost:4000/blog/color-gates.html">&lt;p&gt;We have been exploring the relationship between language and colors
 from both word and character level perspectives, but in 
 isolation. Then, the natural question that arises is what 
 if subword structures play an important role in color 
@@ -7,37 +7,36 @@ and word level representations when modeling color-language
 relationships?&lt;/p&gt;
 
 &lt;p&gt;When we reviewed the results of the experiments on color generation
-from descriptions using a character 
-level recurrent model, we found quite interesting 
+from descriptions using a character-level recurrent model, we found quite interesting 
 examples where, as we progressed on the sequences of 
 characters, the generated colors suddenly changed. That was 
 the case of descriptions such as &lt;code class=&quot;highlighter-rouge&quot;&gt;Strawberry lipstick&lt;/code&gt; (or 
 something like that), where the color generation up the character
  &lt;code class=&quot;highlighter-rouge&quot;&gt;w&lt;/code&gt; (from strawberry) was giving us a brown-ish color, naturally 
 associated with the word &lt;code class=&quot;highlighter-rouge&quot;&gt;straw&lt;/code&gt;, which was also present during training. 
-Then, suddenly, as the model incorporated the remaining tokens 
-sequentially, &lt;code class=&quot;highlighter-rouge&quot;&gt;b -&amp;gt; e -&amp;gt; r -&amp;gt; r...&lt;/code&gt; the output color was 
+Then, suddenly, as the model incorporated the remaining characters 
+sequentially, &lt;code class=&quot;highlighter-rouge&quot;&gt;b -&amp;gt; e -&amp;gt; r -&amp;gt; r...&lt;/code&gt;, the output color was 
 gradually changing to something more reddish (associated to
 strawberry).&lt;/p&gt;
 
 &lt;p&gt;This led us to think, how does the grounding of a 
 word or sentence can be understood in terms of the interplay
 between its words and characters? For a given description, is it 
-a specific character pattern that impact the most on the 
+a specific character pattern that impacts the most on the 
 changes at color generation? or what are the common subword 
 structures that command or condition more strongly the color 
 generation?&lt;/p&gt;
 
 &lt;p&gt;In order to answer those questions, we need a way to quantify 
 the contribution of character and word level representations 
-together. Lets say we have two ways to obtain a feature vector
-for each word present in a description. The first one: we use a RNN  which learns a 
-character based feature vector from the word, just like we did before.
+together. Let’s say we have two ways to obtain a feature vector
+for each word present in a color description. The first one: we use a RNN  which learns a 
+character-based feature vector from the word, just like we did before.
 The second one:
 we directly query a source of pretrained vectors, such as Word2vec
 or Glove. In this setting, which one contributes then most to minimize 
-the loss, lets say, expressed as the MSE between the generated 
-color and the ground truth? What type of combination is the optimal ?&lt;/p&gt;
+the loss, let’s say, expressed as the MSE between the generated 
+color and the ground truth? What type of combination is the optimal?&lt;/p&gt;
 
 &lt;p&gt;Fortunately, there has been quite interesting research
 on the interplay between character and  word level 
@@ -47,8 +46,8 @@ through the concept of &lt;code class=&quot;highlighter-rouge&quot;&gt;gates&lt;
 &lt;a href=&quot;https://arxiv.org/pdf/1904.05584.pdf&quot;&gt;Balazs et. al.&lt;/a&gt; 
 or &lt;a href=&quot;https://arxiv.org/abs/1606.01700&quot;&gt;Miyamoto et. al.&lt;/a&gt;, which 
 in simple terms means to learn a parameter $g$ that we can use 
-to weight the vector representations coming from both char 
-and word levels:&lt;/p&gt;
+to weight the vector representations coming from both character 
+and word levels to obtain a final word representation &lt;script type=&quot;math/tex&quot;&gt;w&lt;/script&gt;:&lt;/p&gt;
 
 &lt;script type=&quot;math/tex; mode=display&quot;&gt;w = w_{char} * g +  w_{word} * (1-g)&lt;/script&gt;
 
@@ -57,10 +56,10 @@ the same, in which the idea is to have a fully connected layer
 that takes as input the word level representation and  outputs 
 a scalar or a vector.&lt;/p&gt;
 
-&lt;p&gt;Lets conduct a couple of experiments to see if this way of 
-modeling color descriptions allow us to obtain interesting 
-insights. As always, lets start with the data. For the 
-purpose of this study, we can reuse the data
+&lt;p&gt;Let’s conduct a couple of experiments to see if this way of 
+modeling color descriptions allows us to obtain interesting 
+insights. As always, let’s start with the data. For the 
+purpose of this study, we can reuse the 
 data extracted from ColourLovers, which we have used previously. 
 This source of data is quite interesting given the variability
 and abstractness in the use of language. Additionally, while 
@@ -70,7 +69,7 @@ POS patterns.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;/assets/img/blog/color-gates-img/pos_freqs.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;Lets obtain a sample from the top 5 groups of patterns with most 
+&lt;p&gt;Let’s obtain a sample from the top 5 groups of patterns with most 
 descriptions. This is what we get:&lt;/p&gt;
 
 &lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;('ADJ', 'NOUN')&lt;/code&gt;:&lt;/p&gt;
@@ -149,7 +148,7 @@ Spacy didn’t have much context to work with when deciding the tag.&lt;/p&gt;
 
 &lt;/table&gt;
 
-&lt;p&gt;In general we can see a good correlation between what each description 
+&lt;p&gt;In general, we can see a good correlation between what each description 
 expresses and the colors it has associated.&lt;/p&gt;
 
 &lt;p&gt;There are several instances where the adjective is quite vague, 
@@ -158,7 +157,7 @@ we can expect any model to have a hard time trying to figure
 out how to learn the specific variation of the color. In that example,
 the noun associated is &lt;code class=&quot;highlighter-rouge&quot;&gt;milk&lt;/code&gt;, which we know has the color &lt;code class=&quot;highlighter-rouge&quot;&gt;white&lt;/code&gt;
 as the most probable reference. But then, how to turn a plain 
-version of &lt;code class=&quot;highlighter-rouge&quot;&gt;white&lt;/code&gt; in to &lt;code class=&quot;highlighter-rouge&quot;&gt;haunted milk&lt;/code&gt;. Here is where it relies
+version of &lt;code class=&quot;highlighter-rouge&quot;&gt;white&lt;/code&gt; (a RGB tuple [255,255,255]) into &lt;code class=&quot;highlighter-rouge&quot;&gt;haunted milk&lt;/code&gt;. Here is where it relies
 my main hypothesis on the usefulness of the gating mechanism.
 I expect models that are only character-based or only  word-based 
 to perform poorly as it seems to be necessary  to consider 
@@ -169,11 +168,11 @@ word level vector might be enough. But for making sense of what is
 &lt;code class=&quot;highlighter-rouge&quot;&gt;haunted&lt;/code&gt;, I think the model should take into account substructures such 
 as &lt;code class=&quot;highlighter-rouge&quot;&gt;haunt&lt;/code&gt;, which can be only incorporated via the character level 
 representation. Then, 
-as &lt;code class=&quot;highlighter-rouge&quot;&gt;haunt&lt;/code&gt; can be more associated to &lt;code class=&quot;highlighter-rouge&quot;&gt;pale&lt;/code&gt; or &lt;code class=&quot;highlighter-rouge&quot;&gt;ghostly&lt;/code&gt; terms (as in 
+as &lt;code class=&quot;highlighter-rouge&quot;&gt;haunt&lt;/code&gt; could be more associated to &lt;code class=&quot;highlighter-rouge&quot;&gt;pale&lt;/code&gt; or &lt;code class=&quot;highlighter-rouge&quot;&gt;ghostly&lt;/code&gt; terms (as in 
 &lt;code class=&quot;highlighter-rouge&quot;&gt;The haunted house&lt;/code&gt;, or based on this interesting &lt;a href=&quot;https://www.thesaurus.com/browse/haunted&quot;&gt;list&lt;/a&gt; ), 
 the model could learn to associate the colors from other
-ghost-centric descriptions present in the data (thats important 
-to highlight, I assume that &lt;code class=&quot;highlighter-rouge&quot;&gt;haunted&lt;/code&gt; in the sense ghost related stuff, 
+ghost-centric descriptions present in the data (that’s important 
+to highlight, I assume that &lt;code class=&quot;highlighter-rouge&quot;&gt;haunted&lt;/code&gt; in the sense of ghost related stuff, 
 but it could be the case the given the data, we are referring to 
 another type of connotation. Anyway, &lt;a href=&quot;https://dictionary.cambridge.org/dictionary/english/haunt&quot;&gt;here&lt;/a&gt; 
 is a good definition of what &lt;code class=&quot;highlighter-rouge&quot;&gt;haunt&lt;/code&gt; means).&lt;/p&gt;
@@ -188,11 +187,11 @@ a weight we can later inspect to give to obtain more explanatory insights.&lt;/p
 the standard approach from the Balazs et. al. paper, as seen in the following diagram:
 &lt;img src=&quot;/assets/img/blog/color-gates-img/gating-model.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;Here, we have the description &lt;code class=&quot;highlighter-rouge&quot;&gt;vanilla cream&lt;/code&gt;. The ultimate
+&lt;p&gt;Here I made up the color description &lt;code class=&quot;highlighter-rouge&quot;&gt;vanilla cream&lt;/code&gt;. The ultimate
 goal is to obtain a vector representation for the whole
 description that can be fed into a linear layer to generate the 
-color tuple (as a RGB or Lab color vector). We can do that by processing  each word at a time and 
-then aggregate the word level features vectors. That can be done 
+color tuple (as a RGB or Lab color vector). We can do that by processing&lt;br /&gt;
+each word at a time and then aggregate the word level features vectors. That can be done 
 summing or averaging them, or, if we care about the ordering and
 dependency between tokens (we should), we could use a word level
 RNN over the word-level representations and use the final hidden vector
@@ -202,8 +201,8 @@ as a description-level vector.&lt;/p&gt;
 is where the gating mechanism comes to play. For each word in the description, 
 we follow previous work and run two simultaneous processes. The first one
 consists of obtaining a character-level feature vector of the word by means
-of a LSTM that runs over the sequence of characters. This representation accounts
-for the morphology aspects of the word and allow us to give more 
+of a LSTM that runs over the sequence of characters. This representation (roughly) accounts
+for the morphology aspects of the word and allows us to give more 
 flexibility to the final representation.&lt;/p&gt;
 
 &lt;p&gt;The second process is to query
@@ -221,7 +220,7 @@ such  as sun, school bus, vanilla, etc.&lt;/p&gt;
 &lt;p&gt;Glove vectors were obtained through a task that is different to 
 color description grounding, which is basically training a language model, where
 we try to maximize the likelihood of a word given a defined context. In that sense,
-if we assume two yellow things, such as &lt;code class=&quot;highlighter-rouge&quot;&gt;banana&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;taxi&lt;/code&gt;, their vectors in Glove
+if we assume two yellow entities, such as &lt;code class=&quot;highlighter-rouge&quot;&gt;banana&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;taxi&lt;/code&gt;, their vectors in Glove
 will probably be quite distant, as those words do not co-occur so frequently. In 
 Glove, the closest vectors to &lt;code class=&quot;highlighter-rouge&quot;&gt;banana&lt;/code&gt; are probably are associated to other fruits, 
 such as apple or orange, and the closest vectors to &lt;code class=&quot;highlighter-rouge&quot;&gt;taxi&lt;/code&gt; will be probably 
@@ -233,36 +232,38 @@ as, for example, WordNet, or set them as trainable, which will naturally
 modify the spatial position. That could be an interesting experiment: to check how 
 much the task changes de vectors we associate, in advance, to a defined color.&lt;/p&gt;
 
-&lt;p&gt;Ok, having such model ready, and the data we discussed above, we can start our main
-experiment. Lets consider the following models:&lt;/p&gt;
+&lt;p&gt;Ok, having the idea we want to test and the data we discussed above, we can start our main
+experiment. Let’s consider the following models:&lt;/p&gt;
 
 &lt;ul&gt;
-  &lt;li&gt;Character-based LSTM (char-only)&lt;/li&gt;
+  &lt;li&gt;Character-based LSTM (&lt;code class=&quot;highlighter-rouge&quot;&gt;char-only&lt;/code&gt;)&lt;/li&gt;
   &lt;li&gt;Combine Character-level LSTM  and Word-level by concatenation
     &lt;ul&gt;
-      &lt;li&gt;word level vectors initialized randomly (concat-random)&lt;/li&gt;
-      &lt;li&gt;word level vectors initialized with Glove (concat-glove)&lt;/li&gt;
+      &lt;li&gt;word level vectors initialized randomly (&lt;code class=&quot;highlighter-rouge&quot;&gt;concat-random&lt;/code&gt;)&lt;/li&gt;
+      &lt;li&gt;word level vectors initialized with Glove (&lt;code class=&quot;highlighter-rouge&quot;&gt;concat-glove&lt;/code&gt;)&lt;/li&gt;
     &lt;/ul&gt;
   &lt;/li&gt;
   &lt;li&gt;Combine Character-level LSTM  and Word-level by gating
     &lt;ul&gt;
-      &lt;li&gt;word level vectors initialized randomly (gating-random)&lt;/li&gt;
-      &lt;li&gt;word level vectors initialized with Glove (gating-glove)&lt;/li&gt;
+      &lt;li&gt;word level vectors initialized randomly (&lt;code class=&quot;highlighter-rouge&quot;&gt;gating-random&lt;/code&gt;)&lt;/li&gt;
+      &lt;li&gt;word level vectors initialized with Glove (&lt;code class=&quot;highlighter-rouge&quot;&gt;gating-glove&lt;/code&gt;)&lt;/li&gt;
     &lt;/ul&gt;
   &lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;Let’s take a look at the results from this five models and see 
+&lt;p&gt;These five models allow us to distinguish and compare
+how the word and character level representations are being used and  learned
+in the context of color grounding.  Let’s take a look at the results from this five models and see 
 what interesting stuff we can get.&lt;/p&gt;
 
 &lt;p&gt;Something important to notice is that models that combine
 representations tend to be harder to train than just character 
-level based model. In, in the exploratory runs, it was
+level based model. During the exploratory runs, it was
 kind of  difficult to find  a configuration that make 
 the training stable. The most promising optimizer across
 models was Adam, with a very low initial learning  of 0.0001. 
 Overfitting was a huge issue, therefore using decay was essential
-(more important that Dropout I would say )  to let the training and 
+(more important that Dropout I would say)  to let the training and 
 dev loss to achieve  a quasi-stable state.&lt;/p&gt;
 
 &lt;p&gt;Regarding the use of pretrained vectors, does Glove help? 
@@ -271,36 +272,47 @@ Contrary to my initial assumption, it kinda help XD:&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;/assets/img/blog/color-gates-img/loss1clean.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;The above graph says a lot. In the first place we can see that 
-when we use glove, in both glove and random models we can achieve
+when we use Glove vectors, in both gating and concat models we can achieve
 a lower dev loss. The difference is not that big but it is considerable
 specially as both models reached a stable state in terms of their
 training loss. The second interesting thing here is&lt;br /&gt;
-that doe this dataset, basically gating does not give any 
+that for this dataset, basically gating does not give any 
 advantage over the simple concatenation of word representations 
-when we use glove, and when we use random vectors, clearly concatenation
+when we Glove is used. When we use random vectors, clearly concatenation
 beats gating by a respectable margin.&lt;/p&gt;
 
 &lt;p&gt;Now, if we take the two best performing models and compare against
-a char-only model, we can see a clear advantage:&lt;/p&gt;
+a &lt;code class=&quot;highlighter-rouge&quot;&gt;char-only&lt;/code&gt; model, we can see a clear advantage:&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;/assets/img/blog/color-gates-img/loss2clean.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;The char-only model needs to learn from  scratch more fine-grained
-relationships, therefore it is natural for it to be slower. Having 
-access to a word level representation to encapsule characters as 
-cohesive entities, seems to really speed up the training, and allows
+&lt;p&gt;The &lt;code class=&quot;highlighter-rouge&quot;&gt;char-only&lt;/code&gt; model needs to learn from  scratch more fine-grained
+relationships, therefore it is natural for it to be slower. But even
+being slower, we can see the this model reaches a stable loss (at both
+training and dev time) that is higher than than the other alternatives.&lt;/p&gt;
+
+&lt;p&gt;It seems having 
+access to a word level representation, as a way to encapsule characters as 
+cohesive entities, really speed up the training, and allows
 to model to achieve a lower dev loss.&lt;/p&gt;
 
 &lt;p&gt;Having visualized the losses, let’s take a look a the actual 
-generated colors for a sample from  the unseen dataset.&lt;/p&gt;
+generated colors for a random sample from  the unseen dataset.&lt;/p&gt;
 
 &lt;table class=&quot;table_colors&quot;&gt;&lt;tr&gt;&lt;th&gt;Descripton&lt;/th&gt;&lt;th&gt;gating random&lt;/th&gt;&lt;th&gt;gating glove&lt;/th&gt;&lt;th&gt;concat random&lt;/th&gt;&lt;th&gt;concat glove&lt;/th&gt;&lt;th&gt;only char&lt;/th&gt;&lt;th&gt; Ground truth&lt;/th&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;bat ears&lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#5b484a&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#794946&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#4f3f52&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#7e4945&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#989782&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#8b7c83&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;sequoia glitter&lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#90736a&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#8d6169&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#92776c&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#936362&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#856a7a&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#c46411&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;romantic music&lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#a47868&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#a7667a&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#b0637a&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#ab687c&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#927881&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#bbb9df&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;kitty espionage&lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#ac8372&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#958288&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#b7926a&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#958184&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#8f787a&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#fac162&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;first peach&lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#eea480&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#f7a076&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#f0a57f&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#f6a67c&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#e3ab7f&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#eabc9d&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;sunny eyes&lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#b69582&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#b5b36d&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#b0b66c&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#aab16e&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#b2a271&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#ff0579&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;black diamond eyes&lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#434b59&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#4a4c68&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#364567&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#233b5c&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#4e554a&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#31161c&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;empty canvas&lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#ab9e91&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#9aa292&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#b1ad90&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#98a79a&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#a47e71&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#cedd90&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;tangerine fade&lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#ec7e55&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#ea904b&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#ed8f51&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#eb8b51&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#a28d76&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#efa04c&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;witchy rendezvous&lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#785a57&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#64405c&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#825560&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#603255&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#b08876&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;td&gt; &lt;div style=&quot;width:60px; height:30px;background:#762075&quot;&gt; &lt;/div&gt; &lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;p&gt;Interestingly, for the case of the description &lt;code class=&quot;highlighter-rouge&quot;&gt;first peach&lt;/code&gt; all models perform quite ok, all colors 
+are well associated with what we understand as a peach. Now, if we look at the results for the
+&lt;code class=&quot;highlighter-rouge&quot;&gt;witchy rendezvous&lt;/code&gt;, we can see that the models that get closer to the ground truth are the ones using
+Glove, both concatenating and with gates. I wonder how that purple-ish tendency is generated, as
+from the components of the description (&lt;code class=&quot;highlighter-rouge&quot;&gt;witchy&lt;/code&gt;  and  &lt;code class=&quot;highlighter-rouge&quot;&gt;rendezvous&lt;/code&gt;) it is not so direct we can obtain/ imagine a purple color. Finally, from the description &lt;code class=&quot;highlighter-rouge&quot;&gt;tangerine fade&lt;/code&gt; we can see how the &lt;code class=&quot;highlighter-rouge&quot;&gt;char-only&lt;/code&gt; model
+is underperforming in comparison to the rest of the approaches.&lt;/p&gt;
 
 &lt;p&gt;Well, the above experiment led us with a weird feeling. 
 I was expecting that a gating mechanism really improved
 the color generation over just a simple concatenation
 of the word representations. But let’s not give up yet. 
-Lets use a different scenario to 
+Let’s use a different scenario to 
 to see if the gating mechanism can shine.&lt;/p&gt;
 
 &lt;p&gt;In the previous experiment, for simplicity, we prepared the data
@@ -315,7 +327,7 @@ or rare, tightly associated to the person’s cultural
 background or experiences. Most likely those words
 will not have a pretrained vector available.&lt;/p&gt;
 
-&lt;p&gt;Thats an interesting scenario to assess the usefulness 
+&lt;p&gt;That’s an interesting scenario to assess the usefulness 
 of the gating mechanism. When a word we use has not 
 an associated pretrained vector, what we basically do 
 is to assign a random vector…which can be quite useless
@@ -324,7 +336,7 @@ in most cases.&lt;/p&gt;
 &lt;p&gt;In that sense, we can see a good opportunity
 for the gating mechanism: if we are currently trying 
 to obtain a vector representation for a word in a sentence,
-lets say the adjective &lt;code class=&quot;highlighter-rouge&quot;&gt;breakable&lt;/code&gt;
+let’s say the adjective &lt;code class=&quot;highlighter-rouge&quot;&gt;breakable&lt;/code&gt;
 but such world does not have a pretrained vector associated, 
 would it be great if the gating mechanism put more 
 weight into the character level representation, which could
@@ -334,10 +346,10 @@ that are associated to the target word, such as  &lt;code class=&quot;highlighte
 
 &lt;p&gt;In order to test this new hypothesis, we need a new dataset
 that actually contains words without a proper pretrained
-representation and even noisier color descriptions. Lets 
+representation and even noisier color descriptions. Let’s 
 generate such dataset and inspect its characteristics.&lt;/p&gt;
 
-&lt;p&gt;Lets relax a little bit the descriptions we are allowing words
+&lt;p&gt;Let’s relax a little bit the descriptions we are allowing words
 that do not appear initially in Glove, but still only
 allowing words whose frequency is higher than two and also 
 descriptions that are at least two word long. We can regard
@@ -366,20 +378,35 @@ symbols.&lt;/p&gt;
 a lower test loss than the rest of alternatives.
 But at the same time, we can see that the character-based
 model is now able slightly outperform the other 
-methods.&lt;/p&gt;
+methods, if we let it train for a longer time.&lt;/p&gt;
+
+&lt;p&gt;The different regime that governs the training of the &lt;code class=&quot;highlighter-rouge&quot;&gt;char-only&lt;/code&gt; model 
+with respect to the rest makes it a bit difficult to compare, and  of course
+depending on what we want maximize we could fine tune accordingly. The differences
+in the number of epochs that each model has derive from the decay setting that I  used
+where I am more interested in achieving a stable (hopefully convergent ) training 
+loss, rather than a very low training loss followed by a increase.&lt;/p&gt;
 
 &lt;p&gt;Well, as a result, after taking into consideration the experiments and
 the different datasets,  we cannot directly conclude that a gating mechanism 
 always provide a better 
-performance than the rest of configurations. We are considering a generic 
+performance than the rest of configurations. Maybe the problem is that we are 
+considering a generic 
 architecture for the specific problem of color grounding. My guess is
 that we should design a more ad-hoc mechanism that takes into consideration
-the unique characteristics of the problem. In the next post, lets keep 
-exploring this problem and testing  some alternatives.&lt;/p&gt;</content><author><name>Solar Grammars</name></author><category term="blog" /><summary type="html">We have explored the relationship between language and colors from both word and character level perspectives, but in isolation. Then, the natural question that arises is what if subword structures play an important role in color grounding? In other words, what if we combine character and word level representations when modeling color-language relationships?</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:4000/arctic-1.jpg" /></entry><entry><title type="html">Palettes and Graphs as Color Context</title><link href="http://localhost:4000/blog/colors-in-context.html" rel="alternate" type="text/html" title="Palettes and Graphs as Color Context" /><published>2017-01-03T00:00:00+09:00</published><updated>2017-01-03T00:00:00+09:00</updated><id>http://localhost:4000/blog/colors-in-context</id><content type="html" xml:base="http://localhost:4000/blog/colors-in-context.html">&lt;p&gt;Colors are usually perceived in as part of a composition. It is rare that we can 
+the unique characteristics of the problem. In the next post, let’s keep 
+exploring this problem and testing  some alternatives. I think we can 
+try several stuff, from moving to other color spaces to make the training faster
+(ans  maybe more stable), to incorporate external knowledge to guide the generation 
+in a more efficient way.&lt;/p&gt;
+
+&lt;p&gt;In any case, the associated code is / will be available here:&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/solargrammars/color-gates&quot;&gt;https://github.com/solargrammars/color-gates&lt;/a&gt;&lt;/p&gt;</content><author><name>Solar Grammars</name></author><category term="blog" /><summary type="html">We have been exploring the relationship between language and colors from both word and character level perspectives, but in isolation. Then, the natural question that arises is what if subword structures play an important role in color grounding? In other words, what if we combine character and word level representations when modeling color-language relationships?</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:4000/arctic-1.jpg" /></entry><entry><title type="html">Palettes and Graphs as Color Context</title><link href="http://localhost:4000/blog/colors-in-context.html" rel="alternate" type="text/html" title="Palettes and Graphs as Color Context" /><published>2017-01-03T00:00:00+09:00</published><updated>2017-01-03T00:00:00+09:00</updated><id>http://localhost:4000/blog/colors-in-context</id><content type="html" xml:base="http://localhost:4000/blog/colors-in-context.html">&lt;p&gt;Colors are usually perceived as part of a composition. It is rare that we can 
 find them in isolation in nature. Sometimes we find
 articles, usually associated to marketing, where people make a direct relationship
 between a color and an emotion or a feeling. For example, when the color
-red is associated to &lt;code class=&quot;highlighter-rouge&quot;&gt;passion&lt;/code&gt; and and green to &lt;code class=&quot;highlighter-rouge&quot;&gt;hope&lt;/code&gt;. Such relationships could
+red is associated to &lt;code class=&quot;highlighter-rouge&quot;&gt;passion&lt;/code&gt; and green to &lt;code class=&quot;highlighter-rouge&quot;&gt;hope&lt;/code&gt;. Such relationships could
 be true to some extent, but I think it is also important to consider the context associated
 to such perceptions. A red color indeed can express passion, but in some cases, given 
 the set of other colors present in the composition, it could also express sadness or fear.&lt;/p&gt;
@@ -400,7 +427,7 @@ it is the most primitive way to do compression. While a palette cannot
 provide a representation of the semantics of the image, at least it can inform us about
 the main colors used and their distribution.&lt;/p&gt;
 
-&lt;p&gt;Lets assume we have a set of images from which we can extract a color palette of &lt;script type=&quot;math/tex&quot;&gt;n&lt;/script&gt; colors, &lt;script type=&quot;math/tex&quot;&gt;p_i = \{ c_1, ..., c_n \}&lt;/script&gt;. 
+&lt;p&gt;Let’s assume we have a set of images from which we can extract a color palette of &lt;script type=&quot;math/tex&quot;&gt;n&lt;/script&gt; colors, &lt;script type=&quot;math/tex&quot;&gt;p_i = \{ c_1, ..., c_n \}&lt;/script&gt;. 
 With such dataset, we could conduct a simple experiment: We know that in natural language, 
 we can assume that words that occur in the same contexts tend to have the similar meaning, i.e.,
 &lt;em&gt;you can know a word by the company it keeps&lt;/em&gt;, which is known as the distributional hypothesis. 
@@ -413,8 +440,8 @@ a common agreement on  how bathrooms look like, like a pattern in which such col
 &lt;code class=&quot;highlighter-rouge&quot;&gt;greens&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;browns&lt;/code&gt; will be predominant, while &lt;code class=&quot;highlighter-rouge&quot;&gt;pinks&lt;/code&gt; will be very unlikely to appear. Can 
 we leverage such regularities to learn dense feature vectors for each color?&lt;/p&gt;
 
-&lt;p&gt;Lets start with a very simple approach, using very well known tools to see if we are heading
-in a feasible direction. Firstly, we need some data.  For simplicity, lets use the validation set 
+&lt;p&gt;Let’s start with a very simple approach, using very well known tools to see if we are heading
+in a feasible direction. Firstly, we need some data.  For simplicity, let’s use the validation set 
 of the Microsoft COCO dataset. For each image, let’s capture a color palette of 6 colors.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;/assets/img/blog/colors-in-context-img/p1.jpg&quot; width=&quot;400px&quot; /&gt;&lt;/p&gt;
@@ -430,7 +457,7 @@ in terms of their absolute proportion on the image.&lt;/p&gt;
 &lt;img src=&quot;/assets/img/blog/colors-in-context-img/p26.png&quot; style=&quot;height:50px;&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;With this data, we can test a direct analogy from natural language BOW models.
-Lets recall such formulation as , lets say we have a sentence &lt;script type=&quot;math/tex&quot;&gt;s&lt;/script&gt; composed
+Let’s recall such formulation as , let’s say we have a sentence &lt;script type=&quot;math/tex&quot;&gt;s&lt;/script&gt; composed
 by &lt;script type=&quot;math/tex&quot;&gt;n&lt;/script&gt; words , &lt;script type=&quot;math/tex&quot;&gt;s  = \{  w_1, w_2 , ... , w_n \}&lt;/script&gt;, then a CBOW approach
 learn vectors &lt;script type=&quot;math/tex&quot;&gt;v_i&lt;/script&gt; for a word &lt;script type=&quot;math/tex&quot;&gt;w_i&lt;/script&gt; as maximizing the likelihood 
 of &lt;script type=&quot;math/tex&quot;&gt;w_i&lt;/script&gt; given its neighborhood  &lt;script type=&quot;math/tex&quot;&gt;\{ w_{i-c} , ... , w_{i+c} \}&lt;/script&gt;.&lt;/p&gt;
@@ -445,7 +472,7 @@ them as different. To solve this issue, we can discretize their representation b
 cluster. Therefore, on a palette that contains one of these scarlet variations, instead of 
 using the actual color, we can use the centroid/medoid of the associated cluster.&lt;/p&gt;
 
-&lt;p&gt;Lets see first if clustering colors makes sense. For simplicity we can take the RGB or LAB 
+&lt;p&gt;Let’s see first if clustering colors makes sense. For simplicity we can take the RGB or LAB 
 tuples as feature vectors an apply K-means. In order to get a
 rough estimation of the optimal number of clusters, we can take a look at both 
  distortion ( the average of the squared distances from the cluster centers of the respective 
@@ -460,7 +487,7 @@ extracted, conforming a group of around 22.000 total colors that we clustered us
 representation. Changing  the amount of images or using the LAB format as feature vector, did 
 not change considerably  the results.&lt;/p&gt;
 
-&lt;p&gt;Lets take a look at the clusters visually. With &lt;script type=&quot;math/tex&quot;&gt;k&lt;/script&gt; = 25, we can see something like this:&lt;/p&gt;
+&lt;p&gt;Let’s take a look at the clusters visually. With &lt;script type=&quot;math/tex&quot;&gt;k&lt;/script&gt; = 25, we can see something like this:&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;/assets/img/blog/colors-in-context-img/cluster_palettes/0.png&quot; style=&quot;float:left;&quot; /&gt;&lt;br /&gt;
 &lt;img src=&quot;/assets/img/blog/colors-in-context-img/cluster_palettes/1.png&quot; style=&quot;float:left;&quot; /&gt;&lt;br /&gt;
@@ -493,7 +520,7 @@ the groups tend to make sense, as there is a clear distinction between them and 
 can refine and adapt the number of clusters  based on the requirements of any  downstream task, but let’s use this result for the moment.&lt;/p&gt;
 
 &lt;p&gt;With this, we can  associate each color with its cluster id so 
-we can generate  the reduced palettes. Now, lets learn a vector representation from each element in the reduced
+we can generate  the reduced palettes. Now, let’s learn a vector representation from each element in the reduced
 palettes, i.e., a dense vector for each cluster id. We want to exploit the co-occurrence of the colors in the palettes
 making a direct analogy as how words co occur in a set of sentences. In that sense we can train the reduced palettes in
 the same way sentences are used in CBOW:&lt;/p&gt;
@@ -547,9 +574,9 @@ have associated to each point the original RGB color, so we can visualize the ve
   &lt;/tbody&gt;
 &lt;/table&gt;
 
-&lt;p&gt;Based on the above, we can start question ourselves a bit and 
+&lt;p&gt;Based on the above, we can question ourselves a bit and 
 try to ask what would make a good context-informed color
-representation? Is it ok if we obtain vectors that group 
+representation? Is it ok if we obtain vectors that associate 
 similar colors  into well defined groups? In some sense yes, 
 but for such thing probably just using the RGB or LAB 
 representation of the colors is enough. I think while it is
@@ -558,13 +585,13 @@ similar colors, at the same time  I find it equally important that
 these representation also encode the closeness of the colors 
 in the context of the images the come from. Going back 
 to the example we talked before, if we analyze images
-of landscapes of forests, we probably can see groups of greens (lets
-say , representing trees , vegetation ) closer to groups
+of landscapes of forests, we probably can see groups of greens (let’s
+say , representing trees or vegetation ) closer to groups
 of light blues and whites on one side (the clouds and sky)
 and also some groups of brown and grays (the ground). 
 It is not entirely clear which configuration is better, but
 from the results, I would probably choose something between 4 and 5
-for context window.&lt;/p&gt;
+as a context window.&lt;/p&gt;
 
 &lt;p&gt;At this point, we have a vector representation the can 
 be associated to the whole cluster. Thats fine, but what we really
@@ -575,7 +602,7 @@ each color in the cluster in terms of its distance to the centroid.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;/assets/img/blog/colors-in-context-img/diagram1.png&quot; alt=&quot;diagram1&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;In the above figure, lets say for cluster &lt;script type=&quot;math/tex&quot;&gt;k&lt;/script&gt;  we obtained a vector representation
+&lt;p&gt;In the above figure, let’s say for cluster &lt;script type=&quot;math/tex&quot;&gt;k&lt;/script&gt;  we obtained a vector representation
 &lt;script type=&quot;math/tex&quot;&gt;v_k&lt;/script&gt;. Let &lt;script type=&quot;math/tex&quot;&gt;c_i&lt;/script&gt; be the medoid color and we arbitrarily associate &lt;script type=&quot;math/tex&quot;&gt;v_k&lt;/script&gt; to that point.
 Then, we need to find a way to obtain a vector to all the other $c_j$ members of the cluster, taking
 into account &lt;script type=&quot;math/tex&quot;&gt;v_k&lt;/script&gt; as reference. A natural way to proceed would be to use the distance  &lt;script type=&quot;math/tex&quot;&gt;d_{ij}&lt;/script&gt; between &lt;script type=&quot;math/tex&quot;&gt;c_i&lt;/script&gt; and
@@ -612,7 +639,7 @@ we can do  is try to merge the steps into one single model, by means of working 
 from the palettes, without having to apply any reduction.&lt;/p&gt;
   &lt;/li&gt;
   &lt;li&gt;&lt;em&gt;Vector arithmetics:&lt;/em&gt; if we combine yellow and green in the RGB space,  we probably will obtain &lt;a href=&quot;https://youtu.be/0fC1qSxpmKo&quot;&gt;some kind of blue&lt;/a&gt;… most likely.  What if we combine the learned vectors associated to yellow and green? Will the resulting vector be similar to the learned vector of blue too?&lt;/li&gt;
-  &lt;li&gt;&lt;em&gt;Segmenting COCO or using other sources of images:&lt;/em&gt; COCO provides a set of very heterogeneous images: people, landscapes, sports etc. What if we run this pipeline on a subset of images that share the same semantics? Lets say, only on images of landscapes, or only images of restaurants. In those cases, for a given color, how the learned
+  &lt;li&gt;&lt;em&gt;Segmenting COCO or using other sources of images:&lt;/em&gt; COCO provides a set of very heterogeneous images: people, landscapes, sports etc. What if we run this pipeline on a subset of images that share the same semantics? Let’s say, only on images of landscapes, or only images of restaurants. In those cases, for a given color, how the learned
 representations obtained from different sets relate?&lt;/li&gt;
 &lt;/ul&gt;
 
@@ -622,10 +649,10 @@ representations obtained from different sets relate?&lt;/li&gt;
 provides a set of captions for each image, a source of data that looks quite irresistible.
 Then the question is, how can we incorporate such information? How the representations of the colors
 could be &lt;code class=&quot;highlighter-rouge&quot;&gt;improved&lt;/code&gt; by informing our model/pipeline about the caption associated to the images we
-use to obtain the palettes. I don’t know the answer yet, but lets explore a bit to see in which 
+use to obtain the palettes. I don’t know the answer yet, but let’s explore a bit to see in which 
 direction we should move.&lt;/p&gt;
 
-&lt;p&gt;Lets not make things difficult and keep working with the validation part of COCO. For each image, we 
+&lt;p&gt;Let”s not make things difficult and keep working with the validation part of COCO. For each image, we 
 can obtain one or more captions.  The from each image &lt;script type=&quot;math/tex&quot;&gt;i \in I&lt;/script&gt;, we can obtain a 
 pair &lt;script type=&quot;math/tex&quot;&gt;(p_i, s_i)&lt;/script&gt;, where &lt;script type=&quot;math/tex&quot;&gt;p_i = \{ c_1, ..., c_N \}&lt;/script&gt; is  the associated palette of &lt;script type=&quot;math/tex&quot;&gt;N&lt;/script&gt; colors, 
 and &lt;script type=&quot;math/tex&quot;&gt;s_i = \{  w_1, ..., w_M \}&lt;/script&gt; the caption expressed as a sequence of  words. For each 
@@ -644,9 +671,9 @@ to one relationship between the sentences and the palettes:&lt;/p&gt;
 is not difficult, as we can just do a plain average of the word vectors in &lt;script type=&quot;math/tex&quot;&gt;s_i&lt;/script&gt;, use something 
 like &lt;a href=&quot;http://proceedings.mlr.press/v32/le14.pdf&quot;&gt;Doc2vec&lt;/a&gt; or if we care about the dependencies (we probably should), 
 we can use an RNN to encode the sentence and  capture the last hidden state as a representation 
-of the sentence.  In any case, lets assume that for each sentence &lt;script type=&quot;math/tex&quot;&gt;s_i&lt;/script&gt; we obtain a dense sentence vector &lt;script type=&quot;math/tex&quot;&gt;sv_i&lt;/script&gt;.&lt;/p&gt;
+of the sentence.  In any case, let”s assume that for each sentence &lt;script type=&quot;math/tex&quot;&gt;s_i&lt;/script&gt; we obtain a dense sentence vector &lt;script type=&quot;math/tex&quot;&gt;sv_i&lt;/script&gt;.&lt;/p&gt;
 
-&lt;p&gt;Lets start with a very simple experiment. For each pair &lt;script type=&quot;math/tex&quot;&gt;(p_i, sv_i)&lt;/script&gt; lets use kNN to obtain the &lt;script type=&quot;math/tex&quot;&gt;k&lt;/script&gt; 
+&lt;p&gt;Let”s start with a very simple experiment. For each pair &lt;script type=&quot;math/tex&quot;&gt;(p_i, sv_i)&lt;/script&gt; let”s use kNN to obtain the &lt;script type=&quot;math/tex&quot;&gt;k&lt;/script&gt; 
 closest pairs, based on the cosine similarity between sentence vectors&lt;/p&gt;
 
 &lt;script type=&quot;math/tex; mode=display&quot;&gt;p_i, sv_i    \rightarrow kNN_{sv_i} = \{  sv_1, sv_2 , ... , sv_K\}&lt;/script&gt;
@@ -713,7 +740,10 @@ a color, for example &lt;strong&gt;forest&lt;/strong&gt;, which I expected to be
 similarity across sentences, at least we can see a bit
 more cohesion at color level.&lt;/p&gt;
 
-&lt;p&gt;This is getting more interesting. We could then  TODO&lt;/p&gt;
+&lt;p&gt;This is getting more interesting, but I do not a clear 
+approach to treat the high variability ( in  other words, 
+the randomness) of the color-token relationship in this
+configuration.&lt;/p&gt;
 
 &lt;h2 id=&quot;more-structure-through-graphs&quot;&gt;More Structure through graphs&lt;/h2&gt;
 
@@ -728,7 +758,7 @@ are families of techniques from image processing that compute an
 intermediate graph between image segments, for example, when 
 performing image compression.&lt;/p&gt;
 
-&lt;p&gt;Lets see some examples of color graphs obtained from both COCO dataset
+&lt;p&gt;Let”s see some examples of color graphs obtained from both COCO dataset
 samples as well from art pieces from the WikiArt website:&lt;/p&gt;
 
 &lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;COCO&lt;/code&gt;:&lt;/p&gt;
@@ -818,7 +848,7 @@ to visualize the progression of colors in certain zones. But at the same time,
 as we need to define in advance a window, that could be restricting 
 long term color dependencies present on the images.&lt;/p&gt;
 
-&lt;p&gt;Lets explore another alternative that is provided  by the family of 
+&lt;p&gt;Let’s explore another alternative that is provided  by the family of 
 graph neural networks. This family of models are based on a 
 message passing schema, where we iteratively learn node representations
 by propagating information through the edge structure. In that sense,
@@ -880,7 +910,7 @@ That is an interesting  design decision in terms of data acquisition when design
 a machine learning model under this scenario&lt;/p&gt;
 
 &lt;p&gt;While the loss can help us to automate the the search for better parameters, does not
-tell much about the actual results. Lets take a look at some samples from the generated
+tell much about the actual results. Let’s take a look at some samples from the generated
 colors. In the first place, we have the results for the labeled set. It seems to
 be a easy task for the model, naturally. This is just a safe check, just to 
 make sure we are not making any big mistake. In any case, I can see clear differences in terms of
@@ -954,7 +984,7 @@ but in turn that could generate a very disjoint graph, just small connected comp
 
 &lt;p&gt;The code to reproduce the experiments on this article will be available here:&lt;/p&gt;
 
-&lt;p&gt;&lt;a href=&quot;https://github.com/solargrammars/colors-in-context&quot;&gt;https://github.com/solargrammars/colors-in-context&lt;/a&gt;&lt;/p&gt;</content><author><name>Solar Grammars</name></author><category term="blog" /><summary type="html">Colors are usually perceived in as part of a composition. It is rare that we can find them in isolation in nature. Sometimes we find articles, usually associated to marketing, where people make a direct relationship between a color and an emotion or a feeling. For example, when the color red is associated to passion and and green to hope. Such relationships could be true to some extent, but I think it is also important to consider the context associated to such perceptions. A red color indeed can express passion, but in some cases, given the set of other colors present in the composition, it could also express sadness or fear.</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:4000/arctic-1.jpg" /></entry><entry><title type="html">Grounding Color Comparatives</title><link href="http://localhost:4000/blog/grounding-color-comparatives.html" rel="alternate" type="text/html" title="Grounding Color Comparatives" /><published>2017-01-02T00:00:00+09:00</published><updated>2017-01-02T00:00:00+09:00</updated><id>http://localhost:4000/blog/grounding-color-comparatives</id><content type="html" xml:base="http://localhost:4000/blog/grounding-color-comparatives.html">&lt;p&gt;The methods  we have covered so far allowed  us to learn  a direct mapping between colors and language. One possible limitation of those approaches is that in reality color perception is intrinsically contextual, in the sense that usually we come up with a description for a newly seen color based on a predefined reference. For example, when
+&lt;p&gt;&lt;a href=&quot;https://github.com/solargrammars/colors-in-context&quot;&gt;https://github.com/solargrammars/colors-in-context&lt;/a&gt;&lt;/p&gt;</content><author><name>Solar Grammars</name></author><category term="blog" /><summary type="html">Colors are usually perceived as part of a composition. It is rare that we can find them in isolation in nature. Sometimes we find articles, usually associated to marketing, where people make a direct relationship between a color and an emotion or a feeling. For example, when the color red is associated to passion and green to hope. Such relationships could be true to some extent, but I think it is also important to consider the context associated to such perceptions. A red color indeed can express passion, but in some cases, given the set of other colors present in the composition, it could also express sadness or fear.</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:4000/arctic-1.jpg" /></entry><entry><title type="html">Grounding Color Comparatives</title><link href="http://localhost:4000/blog/grounding-color-comparatives.html" rel="alternate" type="text/html" title="Grounding Color Comparatives" /><published>2017-01-02T00:00:00+09:00</published><updated>2017-01-02T00:00:00+09:00</updated><id>http://localhost:4000/blog/grounding-color-comparatives</id><content type="html" xml:base="http://localhost:4000/blog/grounding-color-comparatives.html">&lt;p&gt;The methods  we have covered so far allowed  us to learn  a direct mapping between colors and language. One possible limitation of those approaches is that in reality color perception is intrinsically contextual, in the sense that usually we come up with a description for a newly seen color based on a predefined reference. For example, when
 we say a given color is &lt;code class=&quot;highlighter-rouge&quot;&gt;mustard yellow&lt;/code&gt;, we are basically relating our experienced notion of &lt;code class=&quot;highlighter-rouge&quot;&gt;mustard&lt;/code&gt;  and a reference &lt;code class=&quot;highlighter-rouge&quot;&gt;yellow&lt;/code&gt; and associating them
 to express our perception through language. Another example can be seen when we say &lt;code class=&quot;highlighter-rouge&quot;&gt;dark green&lt;/code&gt; or &lt;code class=&quot;highlighter-rouge&quot;&gt;deep blue&lt;/code&gt;. In these cases we are adding an adjective to a color based or our predefined notion of it. In that sense, in order to communicate our perception of  &lt;code class=&quot;highlighter-rouge&quot;&gt;dark green&lt;/code&gt;, we use our preconceived reference of what we understand as &lt;code class=&quot;highlighter-rouge&quot;&gt;green&lt;/code&gt; and its &lt;code class=&quot;highlighter-rouge&quot;&gt;dark&lt;/code&gt; variant. In this process, we are implicitly internalizing that the color we are perceiving is &lt;code class=&quot;highlighter-rouge&quot;&gt;darker&lt;/code&gt; than 
 the reference we have.&lt;/p&gt;
