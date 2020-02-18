@@ -7,6 +7,21 @@
 		<atom:link href="/rss-feed.xml" rel="self" type="application/rss+xml" />
 		
 			<item>
+				<title>Program Repair by Policy Learning (in progress)</title>
+				
+					<dc:creator>Solar Grammars</dc:creator>
+				
+				
+					<description>&lt;p&gt;Repairing a bug is essentially a search problem. At source code level, it is necessary to find the combination of structural and syntactic changes that lead us obtain a version of the code on which the reported fault is not present anymore. Therefore, the code needs to be transformed, from a defective state to a healthy one. We assume this transformation can be achieved by adding, modifying or even deleting certain portions of the code. Most existing techniques for repair take the problem only from the source code perspective, and therefore, only consider the syntactic aspects of the program. While this configuration appear as the most natural approach, I think we can explore a more top-down way, in the sense of explicitly consider how humans find their way to fix a bug.&lt;/p&gt;
+
+</description>
+				
+				<pubDate>Tue, 18 Feb 2020 22:02:25 +0900</pubDate>
+				<link>http://localhost:4000/blog/hoc.html</link>
+				<guid isPermaLink="true">http://localhost:4000/blog/hoc.html</guid>
+			</item>
+		
+			<item>
 				<title>Combining Word and Character level Representations from Color Descriptions</title>
 				
 					<dc:creator>Solar Grammars</dc:creator>

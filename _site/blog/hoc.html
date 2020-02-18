@@ -1,0 +1,212 @@
+<!doctype html>
+<html>
+
+<head>
+
+  <title>
+    
+      Program Repair by Policy Learning (in progress) | Solar Grammars
+    
+  </title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="utf-8">
+
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <link rel="stylesheet" href="/assets/css/syntax.css">
+  <!-- Use Atom -->
+  <link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="Solar Grammars" />
+  <!-- RSS-v2.0
+  <link href="/rss-feed.xml" type="application/rss+xml" rel="alternate" title="Solar Grammars | "/>
+  //-->
+
+
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto|Source+Code+Pro">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">
+
+  <script type="text/javascript" async
+    src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+  </script>
+
+  <!-- Google Analytics -->
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', '', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+  <!-- Use Jekyll SEO plugin -->
+  <!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Program Repair by Policy Learning (in progress) | Solar Grammars</title>
+<meta name="generator" content="Jekyll v3.6.3" />
+<meta property="og:title" content="Program Repair by Policy Learning (in progress)" />
+<meta name="author" content="Solar Grammars" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Repairing a bug is essentially a search problem. At source code level, it is necessary to find the combination of structural and syntactic changes that lead us obtain a version of the code on which the reported fault is not present anymore. Therefore, the code needs to be transformed, from a defective state to a healthy one. We assume this transformation can be achieved by adding, modifying or even deleting certain portions of the code. Most existing techniques for repair take the problem only from the source code perspective, and therefore, only consider the syntactic aspects of the program. While this configuration appear as the most natural approach, I think we can explore a more top-down way, in the sense of explicitly consider how humans find their way to fix a bug." />
+<meta property="og:description" content="Repairing a bug is essentially a search problem. At source code level, it is necessary to find the combination of structural and syntactic changes that lead us obtain a version of the code on which the reported fault is not present anymore. Therefore, the code needs to be transformed, from a defective state to a healthy one. We assume this transformation can be achieved by adding, modifying or even deleting certain portions of the code. Most existing techniques for repair take the problem only from the source code perspective, and therefore, only consider the syntactic aspects of the program. While this configuration appear as the most natural approach, I think we can explore a more top-down way, in the sense of explicitly consider how humans find their way to fix a bug." />
+<link rel="canonical" href="http://localhost:4000/blog/hoc.html" />
+<meta property="og:url" content="http://localhost:4000/blog/hoc.html" />
+<meta property="og:site_name" content="Solar Grammars" />
+<meta property="og:image" content="http://localhost:4000/blog/learn-color-reps/gre_set10.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-02-18T22:02:25+09:00" />
+<script type="application/ld+json">
+{"description":"Repairing a bug is essentially a search problem. At source code level, it is necessary to find the combination of structural and syntactic changes that lead us obtain a version of the code on which the reported fault is not present anymore. Therefore, the code needs to be transformed, from a defective state to a healthy one. We assume this transformation can be achieved by adding, modifying or even deleting certain portions of the code. Most existing techniques for repair take the problem only from the source code perspective, and therefore, only consider the syntactic aspects of the program. While this configuration appear as the most natural approach, I think we can explore a more top-down way, in the sense of explicitly consider how humans find their way to fix a bug.","@type":"BlogPosting","image":"http://localhost:4000/blog/learn-color-reps/gre_set10.png","url":"http://localhost:4000/blog/hoc.html","headline":"Program Repair by Policy Learning (in progress)","dateModified":"2020-02-18T22:02:25+09:00","datePublished":"2020-02-18T22:02:25+09:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/blog/hoc.html"},"author":{"@type":"Person","name":"Solar Grammars"},"@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+</head>
+
+
+<body>
+
+<div class="container">
+  <header class="site-header">
+  <h3 class="site-title">
+    <!--
+    <img  src="../assets/img/SG.jpg" style="width:50px;max-width:50px;float:left;margin:5px 10px 0 0;">
+    -->
+    <a href="/">Solar Grammars</a>
+  </h3>
+  <nav class="menu-list">
+    
+      <a href="/pages/contact.html" class="menu-link">Contact</a>
+    
+
+    
+      <a href="https://twitter.com/solargrammars" class="menu-link" target="_blank"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+    
+      <a href="mailto:solargrammars@gmail.com" class="menu-link" target="_blank"><i class="fa fa-envelope" aria-hidden="true"></i></a>
+    
+      <a href="feed.xml" class="menu-link" target="_blank"><i class="fa fa-rss-square" aria-hidden="true"></i></a>
+    
+  </nav>
+  <div class="dropdown">
+    <button class="dropbtn"><i class="fa fa-bars" aria-hidden="true"></i></button>
+    <div class="dropdown-content">
+      
+        <a href="/pages/contact.html" class="menu-link">Contact</a>
+      
+
+      
+        <a href="https://twitter.com/solargrammars" class="menu-link" target="_blank"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+      
+        <a href="mailto:solargrammars@gmail.com" class="menu-link" target="_blank"><i class="fa fa-envelope" aria-hidden="true"></i></a>
+      
+        <a href="feed.xml" class="menu-link" target="_blank"><i class="fa fa-rss-square" aria-hidden="true"></i></a>
+      
+    </div>
+  </div>
+</header>
+
+  <div class="posts-wrapper">
+    <div class="page-content">
+  <h1>
+    Program Repair by Policy Learning (in progress)
+  </h1>
+
+  <span class="post-date">
+    Written on
+    
+      Solar Grammars
+    
+  </span>
+
+  <!--
+  
+    <div class="featured-image">
+      <img src="/assets/img/blog/learn-color-reps/gre_set10.png">
+    </div>
+  
+  -->
+  <article>
+    <p>Repairing a bug is essentially a search problem. At source code level, it is necessary to find the combination of structural and syntactic changes that lead us obtain a version of the code on which the reported fault is not present anymore. Therefore, the code needs to be transformed, from a defective state to a healthy one. We assume this transformation can be achieved by adding, modifying or even deleting certain portions of the code. Most existing techniques for repair take the problem only from the source code perspective, and therefore, only consider the syntactic aspects of the program. While this configuration appear as the most natural approach, I think we can explore a more top-down way, in the sense of explicitly consider how humans find their way to fix a bug.</p>
+
+<p>In that sense, we can model the bug fixing dynamics as a sequence of progressive modifications that conform a trajectory across the space of feasible solutions followed by a human when trying to repair a program. The goal is to understand the transitions between code level changes that lead to reliable and effective solution.</p>
+
+<p>Therefore, we firstly need to let a program <code class="highlighter-rouge">observe</code> how real faults are fixed by humans, by means of considering editing activity. After capturing this transitions, our model could be able to extract the distributional patterns necessary to carry out a new fix.</p>
+
+<p>Instead of using supervised learning approach, where we assume the existence of a training set of the form <script type="math/tex">(X,y)</script>, where <script type="math/tex">X</script> represents a set of features and <script type="math/tex">y</script> a defined label associated to each instance, here we are more interested on obtaining sequential data, in the form of chain of consecutive changes from which we can learn how the trajectory of partial changes impact the overall solution.</p>
+
+<p>In terms of how to model the problem, I think  that reinforcement learning fits well our requirement: instead of learning from a fixed mapping between the dependent variable feature representations and a label, the learning process in this case is cast as sequential decision making, where the learner understand its current state and choose the action that will most likely maximize the future rewards. Therefore, the first step is to obtain data that represents real transitions developers follow when they build or modify a program. To this end, we can rely on data from Massive Open Online Courses (MOOCs).</p>
+
+<p>MOOCs represent one of the most interesting initiatives aimed at spreading high quality education content, with the goal of democratizing education. As the impact of that goal could be huge, the amount of complexity involved is also considerable, in both social and technical dimensions.</p>
+
+<p>One the key elements that a massive online system needs to address is related to the diversity of students. Contrary to a standard teaching setting, where we can expect certain level of homogeneity of skills and cultural background, the openness and accessibility of massive online classes is characterized by the diversity of the participants. Given the low entry barriers, we can expect users coming from the most diverse cultural backgrounds, geographical locations, etc. While diversity represents a positive aspect, as it is in fact one of the desired elements these systems seek, at the same time it represents challenge, in terms of the volume and the variability of the content that students generate.</p>
+
+<p>In terms of understanding participants, literature has focused on several aspects, such as motivations, incentives, among others, which are key to optimize the user experience and retention rate, similarly to the research in other collaborative systems such Open Source software development.</p>
+
+<p>One specific element that has attracted my attention is how can we track and understand users learning ability. This is of high relevance , as it touches the core of the platform and impacts directly on the success of the initiative: If we cannot understand users learning ability and design or adapt tools to optimize their performance, the degree of engagement will drop naturally. One way to explore this problem is to analyze the students solutions to the assignments. The online learning initiative  <code class="highlighter-rouge">One Hour Code</code> <a href="https://code.org/research">https://code.org/research</a>, which tries to teach programming skills, has a public dataset consisting on the sequences of partial solutions users submit in order to complete a programming assignment. The interesting part of this dataset is that it contains additionally a <code class="highlighter-rouge">hint</code> for a given partial state contributed by experts. These hints are aimed at improving the task solving process when a user gets stuck. Moreover, as we can see the full set of trajectories that each user follow on each assignment, we can capture the transitions (code changes) that were most effective, which means, that led to reach a correct solution in the shortest way.</p>
+
+  </article>
+
+  <div class="post-share">
+    <div class="post-date">Feel free to share!</div>
+    <div class="sharing-icons">
+      <a href="https://twitter.com/intent/tweet?text=Program Repair by Policy Learning (in progress)&amp;url=/blog/hoc.html" target="_blank"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+      <a href="https://www.facebook.com/sharer/sharer.php?u=/blog/hoc.html&amp;title=Program Repair by Policy Learning (in progress)" target="_blank"><i class="fa fa-facebook" aria-hidden="true"></i></a>
+      <a href="https://plus.google.com/share?url=/blog/hoc.html" target="_blank"><i class="fa fa-google-plus" aria-hidden="true"></i></a>
+    </div>
+  </div>
+  <!--
+  <div class="related">
+    <h2>You may also enjoy...</h2>
+    
+    <ul class="related-posts">
+      
+        
+          
+          
+        
+          
+            <li>
+              <h3>
+                <a href="/blog/color-gates.html">
+                  <div class="related-thumbnail">
+                    
+                      <img src="http://localhost:4000/assets/img/arctic-1.jpg">
+                    
+                  </div>
+                  <div class="related-title">
+                    Combining Word and Character level Representations from Color Descriptions
+                  </div>
+                  
+                </a>
+              </h3>
+            </li>
+            
+          
+        
+      
+    </ul>
+  </div>
+  -->
+  
+
+</div>
+
+  </div>
+  <footer class="footer">
+  <!--
+  
+    <a href="https://twitter.com/solargrammars" class="menu-link" target="_blank"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+  
+    <a href="mailto:solargrammars@gmail.com" class="menu-link" target="_blank"><i class="fa fa-envelope" aria-hidden="true"></i></a>
+  
+    <a href="feed.xml" class="menu-link" target="_blank"><i class="fa fa-rss-square" aria-hidden="true"></i></a>
+  
+  -->
+<!--
+  <div class="post-date"><a href="/">Solar Grammars</a></div>
+-->
+</footer>
+
+</div>
+
+</body>
+</html>
