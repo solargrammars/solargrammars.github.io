@@ -1,4 +1,73 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.6.3">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2020-02-18T22:02:25+09:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Solar Grammars</title><subtitle></subtitle><author><name></name></author><entry><title type="html">Combining Word and Character level Representations from Color Descriptions</title><link href="http://localhost:4000/blog/color-gates.html" rel="alternate" type="text/html" title="Combining Word and Character level Representations from Color Descriptions" /><published>2017-01-04T00:00:00+09:00</published><updated>2017-01-04T00:00:00+09:00</updated><id>http://localhost:4000/blog/color-gates</id><content type="html" xml:base="http://localhost:4000/blog/color-gates.html">&lt;p&gt;We have been exploring the relationship between language and colors
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.6.3">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2020-02-21T23:52:40+09:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Solar Grammars</title><subtitle></subtitle><author><name></name></author><entry><title type="html">Program Repair by Policy Learning (in progress)</title><link href="http://localhost:4000/blog/hoc-program-repair.html" rel="alternate" type="text/html" title="Program Repair by Policy Learning (in progress)" /><published>2017-01-05T00:00:00+09:00</published><updated>2017-01-05T00:00:00+09:00</updated><id>http://localhost:4000/blog/hoc-program-repair</id><content type="html" xml:base="http://localhost:4000/blog/hoc-program-repair.html">&lt;p&gt;Repairing a bug is essentially a search problem. At source code level, it is necessary to find the combination of structural and syntactic changes that lead us obtain a version of the code on which the reported fault is not present anymore. Therefore, the code needs to be transformed, from a defective state to a healthy one. We assume this transformation can be achieved by adding, modifying or even deleting certain portions of the code. Most existing techniques for repair take the problem only from the source code perspective, and therefore, only consider the syntactic aspects of the program. While this configuration appear as the most natural approach, I think we can explore a more top-down way, in the sense of explicitly consider how humans find their way to fix a bug.&lt;/p&gt;
+
+&lt;p&gt;In that sense, we can model the bug fixing dynamics as a sequence of progressive modifications that conform a trajectory across the space of feasible solutions followed by a human when trying to repair a program. The goal is to understand the transitions between code level changes that lead to reliable and effective solution.&lt;/p&gt;
+
+&lt;p&gt;Therefore, we firstly need to let a program &lt;code class=&quot;highlighter-rouge&quot;&gt;observe&lt;/code&gt; how real faults are fixed by humans, by means of considering editing activity. After capturing this transitions, our model could be able to extract the distributional patterns necessary to carry out a new fix.&lt;/p&gt;
+
+&lt;p&gt;Instead of using supervised learning approach, where we assume the existence of a training set of the form &lt;script type=&quot;math/tex&quot;&gt;(X,y)&lt;/script&gt;, where &lt;script type=&quot;math/tex&quot;&gt;X&lt;/script&gt; represents a set of features and &lt;script type=&quot;math/tex&quot;&gt;y&lt;/script&gt; a defined label associated to each instance, here we are more interested on obtaining sequential data, in the form of chain of consecutive changes from which we can learn how the trajectory of partial changes impact the overall solution.&lt;/p&gt;
+
+&lt;p&gt;In terms of how to model the problem, I think  that reinforcement learning fits well our requirement: instead of learning from a fixed mapping between the dependent variable feature representations and a label, the learning process in this case is cast as sequential decision making, where the learner understand its current state and choose the action that will most likely maximize the future rewards. Therefore, the first step is to obtain data that represents real transitions developers follow when they build or modify a program. To this end, we can rely on data from Massive Open Online Courses (MOOCs).&lt;/p&gt;
+
+&lt;p&gt;MOOCs represent one of the most interesting initiatives aimed at spreading high quality education content, with the goal of democratizing education. As the impact of that goal could be huge, the amount of complexity involved is also considerable, in both social and technical dimensions.&lt;/p&gt;
+
+&lt;p&gt;One the key elements that a massive online system needs to address is related to the diversity of students. Contrary to a standard teaching setting, where we can expect certain level of homogeneity of skills and cultural background, the openness and accessibility of massive online classes is characterized by the diversity of the participants. Given the low entry barriers, we can expect users coming from the most diverse cultural backgrounds, geographical locations, etc. While diversity represents a positive aspect, as it is in fact one of the desired elements these systems seek, at the same time it represents challenge, in terms of the volume and the variability of the content that students generate.&lt;/p&gt;
+
+&lt;p&gt;In terms of understanding participants, literature has focused on several aspects, such as motivations, incentives, among others, which are key to optimize the user experience and retention rate, similarly to the research in other collaborative systems such Open Source software development.&lt;/p&gt;
+
+&lt;p&gt;One specific element that has attracted my attention is how can we track and understand users learning ability. This is of high relevance , as it touches the core of the platform and impacts directly on the success of the initiative: If we cannot understand users learning ability and design or adapt tools to optimize their performance, the degree of engagement will drop naturally. One way to explore this problem is to analyze the students solutions to the assignments. The online learning initiative  &lt;code class=&quot;highlighter-rouge&quot;&gt;One Hour Code&lt;/code&gt; &lt;a href=&quot;https://code.org/research&quot;&gt;https://code.org/research&lt;/a&gt;, which tries to teach programming skills, has a public dataset consisting on the sequences of partial solutions users submit in order to complete a programming assignment.&lt;/p&gt;
+
+&lt;p&gt;There are two main papers associated to this dataset. The first one , &lt;a href=&quot;https://stanford.edu/~cpiech/bio/papers/inferringProblemSolvingPolicies.pdf&quot;&gt;Autonomously Generating Hints by Inferring Problem Solving Policies&lt;/a&gt; by Piech et. al., where the dataset is presented, along with a set of heuristics for hint recommendation, and &lt;a href=&quot;http://educationaldatamining.org/EDM2017/proc_files/papers/paper_129.pdf&quot;&gt;Learning to Represent Student Knowledge on Programming Exercises Using Deep Learning&lt;/a&gt;, by Wang et. al., where a recurrent model is used to characterize the student trajectories by learning feature representations of the partial submissions.&lt;/p&gt;
+
+&lt;p&gt;The richness  of the data from Hour of Code resides in that, for each users that attempts to solve an assignment, a version of the current work is saved automatically on the system every time the user perform a change. Therefore, we are  able to capture the sequences of steps that a user followed from the beginning  until she reached a final solution.&lt;/p&gt;
+
+&lt;p&gt;The dataset comprises user activity  from December 2013 to March 2014,  conformed by more than 137 million partial solutions for two defined coding problems, &lt;a href=&quot;https://studio.code.org/hoc/4&quot;&gt;HOC4&lt;/a&gt; and  &lt;a href=&quot;https://studio.code.org/hoc/18&quot;&gt;HOC18&lt;/a&gt;.  &lt;code class=&quot;highlighter-rouge&quot;&gt;HOC4&lt;/code&gt; requires the users to string together a series of moves and  turns, which is a problem of medium difficulty. &lt;code class=&quot;highlighter-rouge&quot;&gt;HOC18&lt;/code&gt; required users to efficiently make use of a if-else condition inside a loop, which we can consider a more challenging problem.&lt;/p&gt;
+
+&lt;p&gt;Given the restrictions imposed by the platform, a student can produce a finite set of possible states (partial solutions). The dataset provides the set of all possible states and the legal transitions between them. That can be transformed into a graph, for example, here is the corresponding for HOC4:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/img/blog/repair-policies/hoc4.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;As each state is basically a partial solution, it is actually a program. The dataset provides the actual Abstract Syntax Trees (AST)
+associated to the  submissions from real participants. For each problem , we can obtain the list of ASTs with their associated frequency. For example, in the case of HOC4, the AST associated to the id 3 is&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;{'id': '7',
+ 'children': [{'id': '6',
+   'children': [{'id': '0', 'type': 'maze_moveForward'},
+    {'id': '2',
+     'children': [{'id': '1', 'type': 'turnLeft'}],
+     'type': 'maze_turn'},
+    {'id': '4',
+     'children': [{'id': '3', 'type': 'turnRight'}],
+     'type': 'maze_turn'},
+    {'id': '5', 'type': 'maze_moveForward'}],
+   'type': 'statementList'}],
+ 'type': 'program'}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;We can clearly see the hierarchy associated to the instructions this program contains. As HOC4 is rather simple, there is no much complexity. If we visualize an AST from  HOC18 we can see more interesting things, such as the use of an if-else statement.&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;{'id': '9',
+ 'children': [{'id': '8',
+   'children': [{'id': '7',
+     'children': [{'id': '6',
+       'children': [{'id': '0', 'type': 'isPathForward'},
+        {'id': '3',
+         'children': [{'id': '2',
+           'children': [{'id': '1', 'type': 'turnRight'}],
+           'type': 'maze_turn'}],
+         'type': 'DO'},
+        {'id': '5',
+         'children': [{'id': '4', 'type': 'maze_moveForward'}],
+         'type': 'ELSE'}],
+       'type': 'maze_ifElse'}],
+     'type': 'DO'}],
+   'type': 'maze_forever'}],
+ 'type': 'program'}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;In addition to the frequency for each partial submission, the dataset also provides the results of the running unit tests, which can give a notion of their correctness.&lt;/p&gt;
+
+&lt;p&gt;The interesting part of this dataset is that it contains additionally a &lt;code class=&quot;highlighter-rouge&quot;&gt;hint&lt;/code&gt; for a given partial state contributed by experts. These hints are aimed at improving the task solving process when a user gets stuck. Moreover, as we can see the full set of trajectories that each user follow on each assignment, we can capture the transitions (code changes) that were most effective, which means, that led to reach a correct solution in the shortest way.&lt;/p&gt;
+
+&lt;p&gt;In addition to the partial solution transitions, this dataset contains a goal standard for both problems that consists of a manually labeled, for each  partial state, which next state the user &lt;code class=&quot;highlighter-rouge&quot;&gt;should&lt;/code&gt;  follow, based on the expert judgement.&lt;/p&gt;</content><author><name>Solar Grammars</name></author><category term="blog" /><summary type="html">Repairing a bug is essentially a search problem. At source code level, it is necessary to find the combination of structural and syntactic changes that lead us obtain a version of the code on which the reported fault is not present anymore. Therefore, the code needs to be transformed, from a defective state to a healthy one. We assume this transformation can be achieved by adding, modifying or even deleting certain portions of the code. Most existing techniques for repair take the problem only from the source code perspective, and therefore, only consider the syntactic aspects of the program. While this configuration appear as the most natural approach, I think we can explore a more top-down way, in the sense of explicitly consider how humans find their way to fix a bug.</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:4000/blog/learn-color-reps/gre_set10.png" /></entry><entry><title type="html">Combining Word and Character level Representations from Color Descriptions</title><link href="http://localhost:4000/blog/color-gates.html" rel="alternate" type="text/html" title="Combining Word and Character level Representations from Color Descriptions" /><published>2017-01-04T00:00:00+09:00</published><updated>2017-01-04T00:00:00+09:00</updated><id>http://localhost:4000/blog/color-gates</id><content type="html" xml:base="http://localhost:4000/blog/color-gates.html">&lt;p&gt;We have been exploring the relationship between language and colors
 from both word and character level perspectives, but in 
 isolation. Then, the natural question that arises is what 
 if subword structures play an important role in color 
