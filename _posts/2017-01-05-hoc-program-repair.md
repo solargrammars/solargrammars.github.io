@@ -78,8 +78,30 @@ We can clearly see the hierarchy associated to the instructions this program con
 
 In addition to the frequency for each partial submission, the dataset also provides the results of the running unit tests, which can give a notion of their correctness.
 
+Another key element of the data are the trajectories each user follows when trying to solve the problems. For example, in the case
+of HOC4, we can access around 55K  unique trajectories, which have been seen at least once during the period considered. 
+Here is a  sample of ten trajectories :
 
-The interesting part of this dataset is that it contains additionally a `hint` for a given partial state contributed by experts. These hints are aimed at improving the task solving process when a user gets stuck. Moreover, as we can see the full set of trajectories that each user follow on each assignment, we can capture the transitions (code changes) that were most effective, which means, that led to reach a correct solution in the shortest way.
+```
+{'trajectory': ['6', '17', '1', '59', '22', '22', '32', '0'], 'count': 1}
+{'trajectory': ['5', '68', '3302'], 'count': 1}
+{'trajectory': ['39', '3', '89', '2', '4', '1', '32', '39', '37', '32', '22', '37', '26', '19', '26', '37', '3', '31', '3', '0'], 'count': 1}
+{'trajectory': ['1', '4', '2', '40', '105', '150', '451', '1322', '2342', '3', '22', '45', '138', '108', '284', '316', '2', '18', '2', '0'], 'count': 1}
+{'trajectory': ['3', '276', '276', '1', '3', '1', '2', '0'], 'count': 1}
+{'trajectory': ['1', '31', '22', '0'], 'count': 2}
+{'trajectory': ['103', '8'], 'count': 10}
+{'trajectory': ['23', '47', '28', '3', '77', '77', '0'], 'count': 1}
+{'trajectory': ['125', '95'], 'count': 3}
+{'trajectory': ['10', '20', '1', '2', '0'], 'count': 1}
+
+```
+As we can see, each trajectory is represented as a sequence of ASTs ids. The variable `count` expresses how many time
+such trajectory has been seen. In terms of the length of the sequences, we can take a look at the following 
+histogram (there are trajectories with more than 100 elements, but removed them from the diagram for visualization purposes). 
+
+![](/assets/img/blog/repair-policies/hoc4-hist-truncated.png) 
 
 In addition to the partial solution transitions, this dataset contains a goal standard for both problems that consists of a manually labeled, for each  partial state, which next state the user `should`  follow, based on the expert judgement. 
+
+The interesting part of this dataset is that it contains additionally a `hint` for a given partial state contributed by experts. These hints are aimed at improving the task solving process when a user gets stuck. Moreover, as we can see the full set of trajectories that each user follow on each assignment, we can capture the transitions (code changes) that were most effective, which means, that led to reach a correct solution in the shortest way.
 
