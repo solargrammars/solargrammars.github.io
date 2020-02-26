@@ -105,3 +105,14 @@ In addition to the partial solution transitions, this dataset contains a goal st
 
 The interesting part of this dataset is that it contains additionally a `hint` for a given partial state contributed by experts. These hints are aimed at improving the task solving process when a user gets stuck. Moreover, as we can see the full set of trajectories that each user follow on each assignment, we can capture the transitions (code changes) that were most effective, which means, that led to reach a correct solution in the shortest way.
 
+
+
+## The learning problem
+
+The main idea is to model the sequential process of fixing, or more generally, the trajectory of source code changes from an initial (partial or incomplete) state to a final (complete) state with a reinforcement learning agent.
+
+![](/assets/img/blog/repair-policies/diagram.png) 
+
+In the above diagram, lets assume the current state is depicted by the blue node, then we want to learn to 
+traverse the graph to reach the green node, the correct program state. At each step, the agent needs to 
+understand its own state, i.e., internalize (or learn) a representation of the current program state , and based on that decide with action to take next.
