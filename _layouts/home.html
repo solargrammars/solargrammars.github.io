@@ -3,7 +3,8 @@ layout: default
 title: Home
 ---
 
-{% for post in paginator.posts %}
+
+{% for post in site.categories.blog %}
 
 <article>
   <a href="{{ site.github.url }}{{ post.url }}">
@@ -13,12 +14,27 @@ title: Home
   </a>
 </article>
 
+{% endfor %}
 
+<h3>Other stuff</h3> 
 
+{% for post in site.categories.notes %}
+
+<article>
+  <a href="{{ site.github.url }}{{ post.url }}">
+    <div class="featured-posts" {% if post.color %}style="background-color:{{ post.color }}"{% endif %}>
+      <h2><span>{{ post.title }}</span></h2>
+    </div>
+  </a>
+</article>
 
 {% endfor %}
 
+
+
 <!-- Pagination links -->
+
+<!--
 <div class="pagination">
   {% if paginator.next_page %}
     <a class="pagination-button pagination-active next" href="{{ site.github.url }}{{ paginator.next_page_path }}">{{ site.data.settings.pagination.previous_page }}</a>
@@ -32,3 +48,5 @@ title: Home
       <span class="pagination-button">{{ site.data.settings.pagination.next_page }}</span>
   {% endif %}
 </div>
+
+-->

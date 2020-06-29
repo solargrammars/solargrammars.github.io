@@ -1,0 +1,236 @@
+<!doctype html>
+<html>
+
+<head>
+
+  <title>
+    
+      Autoencoding Color-Language Representations | Solar Grammars
+    
+  </title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="utf-8">
+
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <link rel="stylesheet" href="/assets/css/syntax.css">
+  <!-- Use Atom -->
+  <!--<link type="application/atom+xml" rel="alternate" href="http://pablomentat.duckdns.org:4000/rss-feed.xml" title="Solar Grammars" />-->
+  
+  <link href="/rss-feed.xml" type="application/rss+xml" rel="alternate" title="Solar Grammars | "/>
+  
+
+
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto|Source+Code+Pro">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">
+
+  <script type="text/javascript" async
+    src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+  </script>
+
+  <!-- Google Analytics -->
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-163457888-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+  <!-- Use Jekyll SEO plugin -->
+  <!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Autoencoding Color-Language Representations | Solar Grammars</title>
+<meta name="generator" content="Jekyll v3.6.3" />
+<meta property="og:title" content="Autoencoding Color-Language Representations" />
+<meta name="author" content="Solar Grammars" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Autoencoding color representations" />
+<meta property="og:description" content="Autoencoding color representations" />
+<link rel="canonical" href="http://pablomentat.duckdns.org:4000/blog/aecolors.html" />
+<meta property="og:url" content="http://pablomentat.duckdns.org:4000/blog/aecolors.html" />
+<meta property="og:site_name" content="Solar Grammars" />
+<meta property="og:image" content="http://pablomentat.duckdns.org:4000/blog/learn-color-reps/gre_set10.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-06-30T01:15:37+09:00" />
+<script type="application/ld+json">
+{"@type":"BlogPosting","headline":"Autoencoding Color-Language Representations","dateModified":"2020-06-30T01:15:37+09:00","datePublished":"2020-06-30T01:15:37+09:00","author":{"@type":"Person","name":"Solar Grammars"},"url":"http://pablomentat.duckdns.org:4000/blog/aecolors.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://pablomentat.duckdns.org:4000/blog/aecolors.html"},"image":"http://pablomentat.duckdns.org:4000/blog/learn-color-reps/gre_set10.png","description":"Autoencoding color representations","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+</head>
+
+
+<body>
+
+<div class="container">
+  <header class="site-header">
+  <h3 class="site-title">
+    <!--
+    <img  src="../assets/img/SG.jpg" style="width:50px;max-width:50px;float:left;margin:5px 10px 0 0;">
+    -->
+    <a href="/">Solar Grammars</a>
+  </h3>
+  <nav class="menu-list">
+    
+      <a href="/pages/contact.html" class="menu-link">Contact</a>
+    
+
+    
+      <a href="https://twitter.com/solargrammars" class="menu-link" target="_blank"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+    
+      <a href="mailto:solargrammars@gmail.com" class="menu-link" target="_blank"><i class="fa fa-envelope" aria-hidden="true"></i></a>
+    
+      <a href="rss-feed.xml" class="menu-link" target="_blank"><i class="fa fa-rss-square" aria-hidden="true"></i></a>
+    
+  </nav>
+  <div class="dropdown">
+    <button class="dropbtn"><i class="fa fa-bars" aria-hidden="true"></i></button>
+    <div class="dropdown-content">
+      
+        <a href="/pages/contact.html" class="menu-link">Contact</a>
+      
+
+      
+        <a href="https://twitter.com/solargrammars" class="menu-link" target="_blank"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+      
+        <a href="mailto:solargrammars@gmail.com" class="menu-link" target="_blank"><i class="fa fa-envelope" aria-hidden="true"></i></a>
+      
+        <a href="rss-feed.xml" class="menu-link" target="_blank"><i class="fa fa-rss-square" aria-hidden="true"></i></a>
+      
+    </div>
+  </div>
+</header>
+
+  <div class="posts-wrapper">
+    <div class="page-content">
+  <h1>
+    Autoencoding Color-Language Representations
+  </h1>
+
+  <span class="post-date">
+    Written on
+    
+      Solar Grammars
+    
+  </span>
+
+  <!--
+  
+    <div class="featured-image">
+      <img src="/assets/img/blog/learn-color-reps/gre_set10.png">
+    </div>
+  
+  -->
+  <article>
+    <p>Autoencoding color representations</p>
+
+<p>In this post, we will analyze and replicate an interesting report that appeared few years
+ago, in which authors make use of an autoencoder to learn color-language representations.</p>
+
+<p>This idea is interesting as the autoencoder operates over the color descriptions by encoding
+and decoding them while at the same time forcing the latent space to
+be as close as possible to an actual colors associated to the descriptions.</p>
+
+<p>The report uses the data from the MacMahan paper, which we have been using extensively in this
+blog, and that originally came from a survey on XCXCXC.</p>
+
+<p>The paper follows a standard AE architecture (is not a variatonal, as in the standard VAE formulation)
+Given a pair (color, description), the encoder takes the sequence of tokens from the description and 
+produce a vector representation. For this purpose, a GRU net is used. Again, as with all the papers
+we have reviewed so far that use that dataset, I think using a recurrent neural network to encode
+a description consisting of at most three tokens could be a little bit overkill, but lets stick to
+the paper to see if we can get closer to the results reported.</p>
+
+<p>So, a GRU rnn encodes the description into a vector representation, which is passed to a linear
+layer to obtain latent representation, a three dimensional vector with
+values between 0 and 1, which is set to match that normalized representation of the associated color.</p>
+
+<p>The decoder takes the latent representation and map it back to the description representation space.
+Such resulting vector is fed into another GRU rnn which generates one token at a time, hoping
+to reconstruct the original description by softmaxing over the training vocabulary.</p>
+
+<p>In terms of the loss function, it is formalized as the sum of the <code class="highlighter-rouge">reconstruction</code> loss, 
+basically the cross entropy between the generated and ground truth description, and the <code class="highlighter-rouge">visual</code> loss,
+which the authors relate to how far is the learned latent representation associated to a description
+to the actual color (expressed as a RGB tuple).</p>
+
+<p>Such <code class="highlighter-rouge">visual</code> loss can be formulated in many ways, including cosine distance or simply euclidean distance.
+The authors proposed the use of several alternatives, such as max-margin distance. The reported results
+are obtained using an ad-hoc loss of the form <script type="math/tex">D_{RGB}(enc(x), v(x)) = || enc(x)2 - v(x)2||2</script>, where <script type="math/tex">x</script>
+represents the description, <script type="math/tex">enc(x)</script> the latent representation obtained from the encoder ,and 
+<script type="math/tex">v(x)</script> is the color representation (RGB vector).</p>
+
+<p>There is an hyperparameter <script type="math/tex">\mu</script> that controls the trade off betweeen the two losess, which I found
+quite escesstual to obtain good results.</p>
+
+
+  </article>
+
+  <div class="post-share">
+    <div class="post-date">Feel free to share!</div>
+    <div class="sharing-icons">
+      <a href="https://twitter.com/intent/tweet?text=Autoencoding Color-Language Representations&amp;url=/blog/aecolors.html" target="_blank"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+      <!--<a href="https://www.facebook.com/sharer/sharer.php?u=/blog/aecolors.html&amp;title=Autoencoding Color-Language Representations" target="_blank"><i class="fa fa-facebook" aria-hidden="true"></i></a>
+      <a href="https://plus.google.com/share?url=/blog/aecolors.html" target="_blank"><i class="fa fa-google-plus" aria-hidden="true"></i></a>-->
+    </div>
+  </div>
+  <!--
+  <div class="related">
+    <h2>You may also enjoy...</h2>
+    
+    <ul class="related-posts">
+      
+        
+          
+          
+        
+          
+            <li>
+              <h3>
+                <a href="/blog/hoc-program-repair.html">
+                  <div class="related-thumbnail">
+                    
+                      <img src="http://pablomentat.duckdns.org:4000/assets/img/blog/learn-color-reps/gre_set10.png">
+                    
+                  </div>
+                  <div class="related-title">
+                    Program Repair by Policy Learning (in progress)
+                  </div>
+                  
+                </a>
+              </h3>
+            </li>
+            
+          
+        
+      
+    </ul>
+  </div>
+  -->
+  
+
+</div>
+
+  </div>
+  <footer class="footer">
+  <!--
+  
+    <a href="https://twitter.com/solargrammars" class="menu-link" target="_blank"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+  
+    <a href="mailto:solargrammars@gmail.com" class="menu-link" target="_blank"><i class="fa fa-envelope" aria-hidden="true"></i></a>
+  
+    <a href="rss-feed.xml" class="menu-link" target="_blank"><i class="fa fa-rss-square" aria-hidden="true"></i></a>
+  
+  -->
+<!--
+  <div class="post-date"><a href="/">Solar Grammars</a></div>
+-->
+</footer>
+
+</div>
+
+</body>
+</html>

@@ -15,10 +15,10 @@
   <link rel="stylesheet" href="/assets/css/main.css">
   <link rel="stylesheet" href="/assets/css/syntax.css">
   <!-- Use Atom -->
-  <link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="Solar Grammars" />
-  <!-- RSS-v2.0
+  <!--<link type="application/atom+xml" rel="alternate" href="http://pablomentat.duckdns.org:4000/rss-feed.xml" title="Solar Grammars" />-->
+  
   <link href="/rss-feed.xml" type="application/rss+xml" rel="alternate" title="Solar Grammars | "/>
-  //-->
+  
 
 
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto|Source+Code+Pro">
@@ -35,7 +35,7 @@
   m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
   })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
-  ga('create', '', 'auto');
+  ga('create', 'UA-163457888-1', 'auto');
   ga('send', 'pageview');
 </script>
 
@@ -49,14 +49,14 @@
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="Repairing a bug is essentially a search problem. At source code level, it is necessary to find the combination of structural and syntactic changes that lead us obtain a version of the code on which the reported fault is not present anymore. Therefore, the code needs to be transformed, from a defective state to a healthy one. We assume this transformation can be achieved by adding, modifying or even deleting certain portions of the code. Most existing techniques for repair take the problem only from the source code perspective, and therefore, only consider the syntactic aspects of the program. While this configuration appear as the most natural approach, I think we can explore a more top-down way, in the sense of explicitly consider how humans find their way to fix a bug." />
 <meta property="og:description" content="Repairing a bug is essentially a search problem. At source code level, it is necessary to find the combination of structural and syntactic changes that lead us obtain a version of the code on which the reported fault is not present anymore. Therefore, the code needs to be transformed, from a defective state to a healthy one. We assume this transformation can be achieved by adding, modifying or even deleting certain portions of the code. Most existing techniques for repair take the problem only from the source code perspective, and therefore, only consider the syntactic aspects of the program. While this configuration appear as the most natural approach, I think we can explore a more top-down way, in the sense of explicitly consider how humans find their way to fix a bug." />
-<link rel="canonical" href="http://localhost:4000/blog/hoc-program-repair.html" />
-<meta property="og:url" content="http://localhost:4000/blog/hoc-program-repair.html" />
+<link rel="canonical" href="http://pablomentat.duckdns.org:4000/blog/hoc-program-repair.html" />
+<meta property="og:url" content="http://pablomentat.duckdns.org:4000/blog/hoc-program-repair.html" />
 <meta property="og:site_name" content="Solar Grammars" />
-<meta property="og:image" content="http://localhost:4000/blog/learn-color-reps/gre_set10.png" />
+<meta property="og:image" content="http://pablomentat.duckdns.org:4000/blog/learn-color-reps/gre_set10.png" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2017-01-05T00:00:00+09:00" />
 <script type="application/ld+json">
-{"description":"Repairing a bug is essentially a search problem. At source code level, it is necessary to find the combination of structural and syntactic changes that lead us obtain a version of the code on which the reported fault is not present anymore. Therefore, the code needs to be transformed, from a defective state to a healthy one. We assume this transformation can be achieved by adding, modifying or even deleting certain portions of the code. Most existing techniques for repair take the problem only from the source code perspective, and therefore, only consider the syntactic aspects of the program. While this configuration appear as the most natural approach, I think we can explore a more top-down way, in the sense of explicitly consider how humans find their way to fix a bug.","@type":"BlogPosting","image":"http://localhost:4000/blog/learn-color-reps/gre_set10.png","url":"http://localhost:4000/blog/hoc-program-repair.html","headline":"Program Repair by Policy Learning (in progress)","dateModified":"2017-01-05T00:00:00+09:00","datePublished":"2017-01-05T00:00:00+09:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/blog/hoc-program-repair.html"},"author":{"@type":"Person","name":"Solar Grammars"},"@context":"https://schema.org"}</script>
+{"@type":"BlogPosting","headline":"Program Repair by Policy Learning (in progress)","dateModified":"2017-01-05T00:00:00+09:00","datePublished":"2017-01-05T00:00:00+09:00","author":{"@type":"Person","name":"Solar Grammars"},"url":"http://pablomentat.duckdns.org:4000/blog/hoc-program-repair.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://pablomentat.duckdns.org:4000/blog/hoc-program-repair.html"},"image":"http://pablomentat.duckdns.org:4000/blog/learn-color-reps/gre_set10.png","description":"Repairing a bug is essentially a search problem. At source code level, it is necessary to find the combination of structural and syntactic changes that lead us obtain a version of the code on which the reported fault is not present anymore. Therefore, the code needs to be transformed, from a defective state to a healthy one. We assume this transformation can be achieved by adding, modifying or even deleting certain portions of the code. Most existing techniques for repair take the problem only from the source code perspective, and therefore, only consider the syntactic aspects of the program. While this configuration appear as the most natural approach, I think we can explore a more top-down way, in the sense of explicitly consider how humans find their way to fix a bug.","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
 
@@ -83,7 +83,7 @@
     
       <a href="mailto:solargrammars@gmail.com" class="menu-link" target="_blank"><i class="fa fa-envelope" aria-hidden="true"></i></a>
     
-      <a href="feed.xml" class="menu-link" target="_blank"><i class="fa fa-rss-square" aria-hidden="true"></i></a>
+      <a href="rss-feed.xml" class="menu-link" target="_blank"><i class="fa fa-rss-square" aria-hidden="true"></i></a>
     
   </nav>
   <div class="dropdown">
@@ -98,7 +98,7 @@
       
         <a href="mailto:solargrammars@gmail.com" class="menu-link" target="_blank"><i class="fa fa-envelope" aria-hidden="true"></i></a>
       
-        <a href="feed.xml" class="menu-link" target="_blank"><i class="fa fa-rss-square" aria-hidden="true"></i></a>
+        <a href="rss-feed.xml" class="menu-link" target="_blank"><i class="fa fa-rss-square" aria-hidden="true"></i></a>
       
     </div>
   </div>
@@ -234,8 +234,8 @@ understand its own state, i.e., internalize (or learn) a representation of the c
     <div class="post-date">Feel free to share!</div>
     <div class="sharing-icons">
       <a href="https://twitter.com/intent/tweet?text=Program Repair by Policy Learning (in progress)&amp;url=/blog/hoc-program-repair.html" target="_blank"><i class="fa fa-twitter" aria-hidden="true"></i></a>
-      <a href="https://www.facebook.com/sharer/sharer.php?u=/blog/hoc-program-repair.html&amp;title=Program Repair by Policy Learning (in progress)" target="_blank"><i class="fa fa-facebook" aria-hidden="true"></i></a>
-      <a href="https://plus.google.com/share?url=/blog/hoc-program-repair.html" target="_blank"><i class="fa fa-google-plus" aria-hidden="true"></i></a>
+      <!--<a href="https://www.facebook.com/sharer/sharer.php?u=/blog/hoc-program-repair.html&amp;title=Program Repair by Policy Learning (in progress)" target="_blank"><i class="fa fa-facebook" aria-hidden="true"></i></a>
+      <a href="https://plus.google.com/share?url=/blog/hoc-program-repair.html" target="_blank"><i class="fa fa-google-plus" aria-hidden="true"></i></a>-->
     </div>
   </div>
   <!--
@@ -246,25 +246,25 @@ understand its own state, i.e., internalize (or learn) a representation of the c
       
         
           
-          
-        
-          
             <li>
               <h3>
-                <a href="/blog/color-gates.html">
+                <a href="/blog/aecolors.html">
                   <div class="related-thumbnail">
                     
-                      <img src="http://localhost:4000/assets/img/arctic-1.jpg">
+                      <img src="http://pablomentat.duckdns.org:4000/assets/img/blog/learn-color-reps/gre_set10.png">
                     
                   </div>
                   <div class="related-title">
-                    Combining Word and Character level Representations from Color Descriptions
+                    Autoencoding Color-Language Representations
                   </div>
                   
                 </a>
               </h3>
             </li>
             
+          
+        
+          
           
         
       
@@ -283,7 +283,7 @@ understand its own state, i.e., internalize (or learn) a representation of the c
   
     <a href="mailto:solargrammars@gmail.com" class="menu-link" target="_blank"><i class="fa fa-envelope" aria-hidden="true"></i></a>
   
-    <a href="feed.xml" class="menu-link" target="_blank"><i class="fa fa-rss-square" aria-hidden="true"></i></a>
+    <a href="rss-feed.xml" class="menu-link" target="_blank"><i class="fa fa-rss-square" aria-hidden="true"></i></a>
   
   -->
 <!--
