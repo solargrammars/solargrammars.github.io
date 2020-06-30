@@ -7,6 +7,25 @@
 		<atom:link href="/rss-feed.xml" rel="self" type="application/rss+xml" />
 		
 			<item>
+				<title>Macropad Building Instructions</title>
+				
+					<dc:creator>Solar Grammars</dc:creator>
+				
+				
+					<description>&lt;p&gt;&lt;a href=&quot;https://github.com/e3w2q/su120-keyboard&quot;&gt;SU120&lt;/a&gt; appears to be an extremely 
+flexible PCB for unleashing our creativity in terms of mechanical 
+keyboard crafting. Here I will 
+quickly summarize the steps I followed to build a very basic
+macropad, just scratching the surface of what seems to be possible.&lt;/p&gt;
+
+</description>
+				
+				<pubDate>Wed, 01 Jul 2020 01:03:41 +0900</pubDate>
+				<link>http://pablomentat.duckdns.org:4000/notes/macropad.html</link>
+				<guid isPermaLink="true">http://pablomentat.duckdns.org:4000/notes/macropad.html</guid>
+			</item>
+		
+			<item>
 				<title>Autoencoding Color-Language Representations</title>
 				
 					<dc:creator>Solar Grammars</dc:creator>
@@ -19,24 +38,6 @@
 				<pubDate>Tue, 30 Jun 2020 01:15:37 +0900</pubDate>
 				<link>http://pablomentat.duckdns.org:4000/blog/aecolors.html</link>
 				<guid isPermaLink="true">http://pablomentat.duckdns.org:4000/blog/aecolors.html</guid>
-			</item>
-		
-			<item>
-				<title>Macropad Building Instructions</title>
-				
-					<dc:creator>Solar Grammars</dc:creator>
-				
-				
-					<description>&lt;p&gt;SU120 appears to be an extremely flexible PCB for unleashing our 
-creativity in terms of mechanical keyboard crafting. Here I will 
-quickly summarize the steps I followed to build a very basic
-macropad, just scratching the surface of what seems to be possible.&lt;/p&gt;
-
-</description>
-				
-				<pubDate>Tue, 30 Jun 2020 01:03:54 +0900</pubDate>
-				<link>http://pablomentat.duckdns.org:4000/notes/macropad.html</link>
-				<guid isPermaLink="true">http://pablomentat.duckdns.org:4000/notes/macropad.html</guid>
 			</item>
 		
 			<item>
